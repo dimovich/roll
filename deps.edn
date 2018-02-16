@@ -1,0 +1,18 @@
+{:paths ["src/clj" "src/cljs" "src/cljc"]
+ :deps {org.clojure/clojurescript {:mvn/version "1.9.946"}
+        org.clojure/core.async    {:mvn/version "0.4.474"}
+        compojure    {:mvn/version "1.6.0"},
+        integrant    {:mvn/version "0.6.3"}
+        http-kit     {:mvn/version "2.2.0"}
+        cider/cider-nrepl         {:mvn/version "0.16.0"}
+        org.clojure/tools.nrepl   {:mvn/version "0.2.13"}
+        javax.servlet/servlet-api {:mvn/version "3.0-alpha-1"}
+        com.taoensso/timbre       {:mvn/version "4.10.0"}
+        prismatic/dommy           {:mvn/version "1.1.0"}
+        reagent                   {:mvn/version "0.8.0-alpha2"}
+        re-frame                  {:mvn/version "0.10.2"}
+        cljs-ajax                 {:mvn/version "0.7.3"}
+        day8.re-frame/http-fx     {:mvn/version "0.1.4"}
+        com.cemerick/url          {:mvn/version "0.1.1"}
+        ;;[day8.re-frame/trace "0.1.11"]
+        jkkramer/verily           {:mvn/version "0.6.1"}}}
