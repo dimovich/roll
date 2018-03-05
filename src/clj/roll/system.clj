@@ -17,9 +17,22 @@
 
 
 
-(defmethod ig/halt-key! :adapter/server [_ server]
-  (when server
-    (server)))
+(defmethod ig/halt-key! :adapter/server [_ stop-fn]
+  (when stop-fn
+    (info "stopping server...")
+    (stop-fn)))
+
+
+
+(defmethod ig/init-key :adapter/sente [_ opts]
+  (info "starting sente: " opts))
+
+
+
+(defmethod ig/halt-key! :adapter/sente [_ stop-fn]
+  (when stop-fn
+    (info "stopping sente...")
+    (stop-fn)))
 
 
 
@@ -30,6 +43,7 @@
 
 
 (defmethod ig/halt-key! :repl/repl [_ server]
+  (info "stopping repl...")
   (some-> server
           repl/stop))
 
