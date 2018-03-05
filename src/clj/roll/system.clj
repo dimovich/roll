@@ -2,25 +2,41 @@
   (:require [roll.repl          :as repl]
             [roll.handler       :as handler]
             [integrant.core     :as ig]
-            [org.httpkit.server :as server]
-            [taoensso.timbre    :as timbre :refer [info]]))
+            [org.httpkit.server :as httpkit]
+            [taoensso.timbre    :as timbre :refer [info]]
+            [clojure.spec.alpha :as s]))
 
 
 (defonce state (atom nil))
 
-
-(defmethod ig/init-key :adapter/server [_ opts]
-  (info "starting server: " opts)
-  (server/run-server (or (resolve (:handler opts))
-                         handler/handler)
-                     (select-keys opts [:port])))
+(derive :adapter/httpkit :adapter/ring)
 
 
+(s/def ::port pos-int?)
+(s/def ::handler var?)
 
-(defmethod ig/halt-key! :adapter/server [_ stop-fn]
+(defmethod ig/pre-init-spec :adapter/ring [_]
+  (s/keys :req-un [::port ::handler]))
+  
+
+
+(defmethod ig/init-key :adapter/httpkit [_ opts]
+  (info "starting httpkit: " opts)
+  (httpkit/run-server (or (:handler opts)
+                          handler/handler)
+                      (select-keys opts [:port])))
+
+
+
+(defmethod ig/halt-key! :adapter/httpkit [_ stop-fn]
   (when stop-fn
-    (info "stopping server...")
+    (info "stopping httpkit...")
     (stop-fn)))
+
+
+(defmethod ig/init-key :adapter/handler [_ opts]
+  (info "getting handler:" (:handler opts))
+  (resolve (:handler opts)))
 
 
 
