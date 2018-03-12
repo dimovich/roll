@@ -15,8 +15,9 @@
 (s/def ::port pos-int?)
 (s/def ::handler var?)
 
+
 (defmethod ig/pre-init-spec :adapter/ring [_]
-  (s/keys :req-un [::port ::handler]))
+  (s/keys :req-un [::port #_::handler]))
   
 
 

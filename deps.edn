@@ -2,7 +2,8 @@
  :deps {;;org.clojure/clojurescript {:mvn/version "1.9.946"}
         org.clojure/clojurescript {:mvn/version "1.10.126"}
         org.clojure/core.async    {:mvn/version "0.4.474"}
-        compojure    {:mvn/version "1.6.0"},
+        compojure    {:mvn/version "1.6.0"}
+        meta-merge   {:mvn/version "1.0.0"}
         integrant    {:mvn/version "0.6.3"}
         http-kit     {:mvn/version "2.2.0"}
         cheshire     {:mvn/version "5.8.0"}
