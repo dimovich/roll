@@ -5,27 +5,28 @@
         com.rpl/specter {:mvn/version "1.1.0"}
         compojure    {:mvn/version "1.6.0"}
         meta-merge   {:mvn/version "1.0.0"}
-        integrant    {:mvn/version "0.6.3"}
+        integrant    {:mvn/version "0.7.0-alpha1"}
         http-kit     {:mvn/version "2.2.0"}
         cheshire     {:mvn/version "5.8.0"}
         clj-http     {:mvn/version "3.7.0"}
-        clj-time     {:mvn/version "0.14.2"},
-        ring-transit {:mvn/version "0.1.6"},
-        hiccup       {:mvn/version "2.0.0-alpha1"},
-        bk/ring-gzip {:mvn/version "0.2.1"},
+        clj-time     {:mvn/version "0.14.2"}
+        ring-transit {:mvn/version "0.1.6"}
+        hiccup       {:mvn/version "2.0.0-alpha1"}
+        bk/ring-gzip {:mvn/version "0.2.1"}
         buddy/buddy-auth      {:mvn/version "2.1.0"}
         buddy/buddy-hashers   {:mvn/version "1.3.0"}
         buddy/buddy-sign      {:mvn/version "2.2.0"}
         buddy/buddy-core      {:mvn/version "1.4.0"}
-        ring/ring-core        {:mvn/version "1.6.3"},
-        org.clojure/data.fressian {:mvn/version "0.2.1"},
-        ring-middleware-format    {:mvn/version "0.7.2"},
+        ring/ring-core        {:mvn/version "1.6.3"}
+        com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+        org.clojure/data.fressian {:mvn/version "0.2.1"}
+        ring-middleware-format    {:mvn/version "0.7.2"}
         cider/cider-nrepl         {:mvn/version "0.16.0"}
         org.clojure/tools.nrepl   {:mvn/version "0.2.13"}
         javax.servlet/servlet-api {:mvn/version "3.0-alpha-1"}
         com.taoensso/timbre       {:mvn/version "4.10.0"}
         org.jsoup/jsoup           {:mvn/version "1.11.2"}
-        com.draines/postal        {:mvn/version "2.0.2"},
+        com.draines/postal        {:mvn/version "2.0.2"}
         prismatic/dommy           {:mvn/version "1.1.0"}
         reagent                   {:mvn/version "0.8.0-alpha2"}
         re-frame                  {:mvn/version "0.10.2"}
