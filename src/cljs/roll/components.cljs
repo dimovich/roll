@@ -18,12 +18,7 @@
 
 
 (defn search-tag [opts tag]
-  [:div.search-tag
-   [:span.helper-valign]
-   [:span.search-tag-text {} tag]
-   [:img.search-tag-close
-    (merge {:src "img/x.svg"}
-           opts)]])
+  [:div.search-tag opts (str "#" tag)])
 
 
 
@@ -47,15 +42,7 @@
 
     (fn []
       [:div.search-box
-
-       ;; Tags
-       (map-indexed
-        (fn [idx tag]
-          [search-tag {:on-click #(remove-tag idx)
-                       :key idx}
-           tag])
-        @tags)
-
+       
        ;; Search input
        [editable :input {:state text
                          :auto-focus true
@@ -71,5 +58,12 @@
                                                         (reset! text nil))
                                           "Backspace" (when (empty? @text)
                                                         (pop-tag))
-                                          false))}]])))
+                                          false))}]
+       ;; Tags
+       (map-indexed
+        (fn [idx tag]
+          [search-tag {:on-click #(remove-tag idx)
+                       :key idx}
+           tag])
+        (reverse @tags))])))
 
