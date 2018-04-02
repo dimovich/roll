@@ -60,10 +60,11 @@
                                                         (pop-tag))
                                           false))}]
        ;; Tags
-       (map-indexed
-        (fn [idx tag]
-          [search-tag {:on-click #(remove-tag idx)
-                       :key idx}
-           tag])
-        (reverse @tags))])))
+       (reverse
+        (map-indexed
+         (fn [idx tag]
+           [search-tag {:on-click #(remove-tag idx)
+                        :key idx}
+            tag])
+         @tags))])))
 
