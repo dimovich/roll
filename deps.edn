@@ -10,7 +10,7 @@
         http-kit     {:mvn/version "2.2.0"}
         cheshire     {:mvn/version "5.8.0"}
         clj-http     {:mvn/version "3.8.0"}
-        clj-time     {:mvn/version "0.14.2"}
+        clj-time     {:mvn/version "0.14.3"}
         ring-transit {:mvn/version "0.1.6"}
         hiccup       {:mvn/version "2.0.0-alpha1"}
         bk/ring-gzip {:mvn/version "0.3.0"}
@@ -35,7 +35,11 @@
         day8.re-frame/http-fx     {:mvn/version "0.1.6"}
         com.cemerick/url          {:mvn/version "0.1.1"}
         ;;[day8.re-frame/trace "0.1.11"]
-        jkkramer/verily           {:mvn/version "0.6.1"}}}
+        jkkramer/verily           {:mvn/version "0.6.1"}}
+
+ :aliases
+ {:repl
+  {:main-opts ["-m" "roll.core"]}}}
 
 
 ;;com.datomic/datomic-pro   {:mvn/version "0.9.5661"}
