@@ -4,6 +4,7 @@
             [integrant.core     :as ig]
             [org.httpkit.server :as httpkit]
             [taoensso.timbre    :as timbre :refer [info]]
+            [taoensso.timbre.appenders.core :as appenders]
             [clojure.spec.alpha :as s]))
 
 
@@ -66,6 +67,22 @@
 
 
 
+(def default-appenders
+  {:println (timbre/println-appender {:stream :auto})
+   :spit    (appenders/spit-appender {:fname  "timbre.log"})})
+
+
+(defmethod ig/init-key :timbre/timbre [_ {:keys [appenders]}]
+  (when appenders
+    (info "timbre appenders:" appenders)
+    (timbre/merge-config!
+     {:appenders (->> appenders
+                      (select-keys default-appenders)
+                      (merge (zipmap (keys default-appenders)
+                                     (repeat nil))))})))
+
+
+
 (defn destroy []
   (info "shutting down...")
   (some-> (:system @state)
@@ -76,10 +93,8 @@
 (defn init [{path :path}]
   (timbre/set-config!
    {:level :info
-    :output-fn (fn [{:keys [timestamp_ level msg_]}]
-                 (str (second (clojure.string/split (force timestamp_) #" ")) " "
-                      (force msg_)))
-    :appenders {:println (timbre/println-appender {:stream :auto})}})
+    :output-fn (fn [{:keys [timestamp_ level msg_]}] (force msg_))
+    :appenders (select-keys default-appenders [:println])})
 
   
   (let [config (ig/read-string (slurp path))]
