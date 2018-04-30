@@ -8,4 +8,3 @@
   (files     "/" {:root "resources"}) ;; to serve static resources
   (resources "/" {:root "resources"}) ;; to serve anything else
   (not-found "Page Not Found")) ;; page not found
-    
