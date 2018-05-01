@@ -6,13 +6,15 @@
         cider/cider-nrepl         {:mvn/version "0.16.0"}
         com.rpl/specter {:mvn/version "1.1.0"}
         compojure    {:mvn/version "1.6.0"}
-        integrant    {:mvn/version "0.7.0-alpha1"}
+        integrant    {:mvn/version "0.7.0-alpha2"}
         http-kit     {:mvn/version "2.2.0"}
         cheshire     {:mvn/version "5.8.0"}
         ring/ring-core            {:mvn/version "1.6.3"}
         javax.servlet/servlet-api {:mvn/version "2.5"}
-        com.taoensso/timbre   {:mvn/version "4.10.0"}}
-
+        com.taoensso/timbre   {:mvn/version "4.10.0"}
+        ;;jkkramer/verily           {:mvn/version "0.6.1"}
+        }
+ 
  :aliases
  {:repl
   {:main-opts ["-m" "roll.core"]}}}
