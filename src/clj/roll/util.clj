@@ -1,6 +1,11 @@
 (ns roll.util)
 
 
+(defmacro load-edn [file]
+  (slurp file))
+
+
+
 (defmacro with-in-> [in & body]
   `(-> ~in
        slurp

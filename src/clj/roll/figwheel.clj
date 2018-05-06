@@ -1,7 +1,7 @@
 (ns roll.figwheel
   (:require [figwheel-sidecar.repl-api :refer [cljs-repl start-figwheel!]]))
 
-(def source-dirs ["src"])
+(def source-dirs ["src/cljs" "src/cljc"])
 (def css-dirs   ["resources/public/css"])
 
 (def compiler-config (clojure.edn/read-string (slurp "cljs.edn")))
