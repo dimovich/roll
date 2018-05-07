@@ -1,11 +1,12 @@
 (ns roll.system
-  (:require [roll.repl          :as repl]
-            [roll.handler       :as handler]
-            [integrant.core     :as ig]
+  (:require [integrant.core     :as ig]
             [org.httpkit.server :as httpkit]
             [taoensso.timbre    :as timbre :refer [info]]
             [taoensso.timbre.appenders.core :as appenders]
-            [clojure.spec.alpha :as s]))
+            [clojure.spec.alpha :as s]
+            [roll.repl          :as repl]
+            [roll.handler       :as handler]
+            [roll.figwheel      :refer [figwheel]]))
 
 
 (defonce state (atom nil))
@@ -39,6 +40,12 @@
 (defmethod ig/init-key :adapter/handler [_ opts]
   (info "getting handler:" (:handler opts))
   (resolve (:handler opts)))
+
+
+
+(defmethod ig/init-key :figwheel/figwheel [_ opts]
+  (info "starting figwheel...")
+  (figwheel))
 
 
 
