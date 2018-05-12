@@ -12,6 +12,10 @@
         ring/ring-core            {:mvn/version "1.6.3"}
         javax.servlet/servlet-api {:mvn/version "2.5"}
         com.taoensso/timbre   {:mvn/version "4.10.0"}
+        com.cemerick/piggieback {:mvn/version "0.2.2"
+                                 :exclusions  [com.google.javascript/closure-compiler]}
+        figwheel-sidecar {:mvn/version "0.5.15"
+                          :exclusions  [com.google.javascript/closure-compiler]}
         ;;jkkramer/verily           {:mvn/version "0.6.1"}
         }
  

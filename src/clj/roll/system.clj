@@ -5,8 +5,7 @@
             [taoensso.timbre.appenders.core :as appenders]
             [clojure.spec.alpha :as s]
             [roll.repl     :as repl]
-            [roll.handler  :as handler]
-            [roll.figwheel :as figwheel]))
+            [roll.handler  :as handler]))
 
 
 (defonce state (atom nil))
