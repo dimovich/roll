@@ -4,9 +4,9 @@
             [taoensso.timbre    :as timbre :refer [info]]
             [taoensso.timbre.appenders.core :as appenders]
             [clojure.spec.alpha :as s]
-            [roll.repl          :as repl]
-            [roll.handler       :as handler]
-            [roll.figwheel      :refer [figwheel]]))
+            [roll.repl     :as repl]
+            [roll.handler  :as handler]
+            [roll.figwheel :as figwheel]))
 
 
 (defonce state (atom nil))
@@ -37,15 +37,10 @@
     (stop-fn)))
 
 
+
 (defmethod ig/init-key :adapter/handler [_ opts]
   (info "getting handler:" (:handler opts))
   (resolve (:handler opts)))
-
-
-
-(defmethod ig/init-key :figwheel/figwheel [_ opts]
-  (info "starting figwheel...")
-  (figwheel))
 
 
 
