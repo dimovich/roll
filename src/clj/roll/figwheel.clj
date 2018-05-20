@@ -20,7 +20,7 @@
                                              "cemerick.piggieback/wrap-cljs-repl"]}
        :all-builds [{:id           "dev"
                      :figwheel     (or (select-keys opts [:on-jsload]) true)
-                     :source-paths (into source-dirs extra-source-dirs)
+                     :source-paths (into (or extra-source-dirs []) source-dirs)
                      :compiler     dev-config}]}
 
       (update :figwheel-options merge
