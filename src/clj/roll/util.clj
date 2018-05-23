@@ -17,7 +17,7 @@
 
 
 (defmacro with-out-> [out & body]
-  `(binding [*print-length* false]
+  `(binding [*print-length* nil]
      (-> ~@body
          pr-str
          (#(spit ~out %)))))
@@ -25,7 +25,7 @@
 
 
 (defmacro with-in-out-> [in out & body]
-  `(binding [*print-length* false]
+  `(binding [*print-length* nil]
      (-> ~in
          slurp
          clojure.edn/read-string
