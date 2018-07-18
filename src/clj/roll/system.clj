@@ -3,7 +3,8 @@
             [org.httpkit.server :as httpkit]
             [taoensso.timbre    :as timbre :refer [info]]
             [taoensso.timbre.appenders.core :as appenders]
-            [clojure.spec.alpha :as s]
+            [nginx.clojure.embed :as embed]
+            [clojure.spec.alpha  :as s]
             [roll.repl     :as repl]
             [roll.handler  :as handler]))
 
@@ -11,14 +12,15 @@
 (defonce state (atom nil))
 
 (derive :adapter/httpkit :adapter/ring)
+(derive :adapter/nginx   :adapter/ring)
 
 
 (s/def ::port pos-int?)
 (s/def ::handler var?)
 
 
-(defmethod ig/pre-init-spec :adapter/ring [_]
-  (s/keys :req-un [::port #_::handler]))
+#_(defmethod ig/pre-init-spec :adapter/ring [_]
+    (s/keys :req-un [::port #_::handler]))
   
 
 
@@ -34,6 +36,23 @@
   (when stop-fn
     (info "stopping httpkit...")
     (stop-fn)))
+
+
+
+(defmethod ig/init-key
+  :adapter/nginx [_ {:keys [config] :as opts}]
+  (info "starting nginx: " opts)
+  (if config
+    (embed/run-server config)
+    (embed/run-server (or (:handler opts)
+                          handler/handler)
+                      (select-keys opts [:port]))))
+
+
+
+(defmethod ig/halt-key! :adapter/nginx [_ _]
+  (info "stopping nginx...")
+  (embed/stop-server))
 
 
 

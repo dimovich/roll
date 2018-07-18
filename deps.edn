@@ -1,4 +1,4 @@
-{:paths ["src/clj" "src/cljs" "src/cljc"]
+{:paths ["src/clj" "src/cljs" "src/cljc" "resources"]
  :deps {org.clojure/clojure       {:mvn/version "1.10.0-alpha5"}
         org.clojure/clojurescript {:mvn/version "1.10.339"}
         org.clojure/core.async    {:mvn/version "0.4.474"}
@@ -14,6 +14,8 @@
         com.taoensso/timbre   {:mvn/version "4.10.0"}
         com.cemerick/piggieback {:mvn/version "0.2.2"
                                  :exclusions  [com.google.javascript/closure-compiler]}
+        nginx-clojure    {:mvn/version "0.4.5"}
+        nginx-clojure/nginx-clojure-embed {:mvn/version "0.4.5"}
         figwheel-sidecar {:mvn/version "0.5.16"
                           :exclusions  [com.google.javascript/closure-compiler]}
         ;;jkkramer/verily           {:mvn/version "0.6.1"}
