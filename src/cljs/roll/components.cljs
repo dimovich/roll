@@ -1,5 +1,5 @@
 (ns roll.components
-  (:require [taoensso.timbre :refer [info]]
+  (:require ;;[taoensso.timbre :refer [info]]
             [reagent.core :as r]))
 
 

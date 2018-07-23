@@ -1,4 +1,4 @@
-{:paths ["src/clj" "src/cljs" "src/cljc" "resources"]
+{:paths ["src/clj" "src/cljs" "src/cljc"]
  :deps {org.clojure/clojure       {:mvn/version "1.10.0-alpha5"}
         org.clojure/clojurescript {:mvn/version "1.10.339"}
         org.clojure/core.async    {:mvn/version "0.4.474"}
@@ -23,7 +23,8 @@
  
  :aliases
  {:repl
-  {:main-opts ["-m" "roll.core"]}}}
+  {:extra-paths ["resources"]
+   :main-opts ["-m" "roll.core"]}}}
 
 
 ;;com.datomic/datomic-pro   {:mvn/version "0.9.5661"}
