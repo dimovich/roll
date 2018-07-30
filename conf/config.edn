@@ -1,2 +1,2 @@
-{:repl/repl {:port 3315}
+{:repl/repl {:port 3311}
  :adapter/nginx {:config "conf/nginx.conf"}}

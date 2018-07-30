@@ -7,7 +7,7 @@
 
 
 (defn -main [& args]
-  (init {:path "config.edn"})
+  (init {:path "conf/config.edn"})
   
   (timbre/set-config!
    {:level :info
