@@ -6,7 +6,8 @@
             [nginx.clojure.embed :as embed]
             [clojure.spec.alpha  :as s]
             [roll.repl     :as repl]
-            [roll.handler  :as handler]))
+            [roll.handler  :as handler]
+            [roll.filewatch :as fw]))
 
 
 (defonce state (atom nil))
@@ -87,6 +88,31 @@
 
 
 
+(defmethod ig/init-key :data/file [_ {:keys [path init watch] :as opts}]
+  (let [opts (cond-> opts
+               (symbol? init)  (update :init  resolve)
+               (symbol? watch) (update :watch resolve))
+        {:keys [init watch]} opts]
+
+    (info "data file: " opts)
+    
+    (when init
+      (@init path))
+
+    (when-let [watch (if (true? watch) init watch)]
+      (fw/start-watch! path path @watch)
+      ;; return stop-fn
+      #(fw/stop-watch! path))))
+
+
+
+(defmethod ig/halt-key! :data/file [_ stop-fn]
+  (when stop-fn
+    (info "stopping data file watch...")
+    (stop-fn)))
+
+
+
 (def default-appenders
   {:println (timbre/println-appender {:stream :auto})
    :spit    (appenders/spit-appender {:fname  "timbre.log"})})
@@ -123,7 +149,7 @@
     (swap! state assoc :config config)
     
     (->> config
-         ig/init
+        ig/init
          (swap! state assoc :system))))
 
 

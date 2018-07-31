@@ -63,18 +63,18 @@
 (def state (atom {}))
 
 
-(defn stop-watcher! [k]
+(defn stop-watch! [k]
   (swap! state update k #(some-> % (.cancel))))
 
 
-(defn start-watcher! [k path opts]
+(defn start-watch! [k path opts]
   (let [f (file path)
         opts (if (fn? opts) {:modify opts} opts)]
     
     (when (.isFile f)
       ;; stop existing key handler
       (when (get @state k)
-        (stop-watcher! k))
+        (stop-watch! k))
       
       (let [fname (.getName f)]
         (swap!
@@ -84,6 +84,5 @@
               (transform
                [MAP-VALS] (fn [handler]
                             #(when (= fname (.toString (.context %)))
-                               (handler %))))
+                               (handler path))))
               (watch f)))))))
-

@@ -1,9 +1,9 @@
 (ns roll.core
   (:require [taoensso.timbre  :as timbre :refer [info]]
             [com.rpl.specter  :as sr :refer [ALL MAP-VALS transform select filterer map-key]]
-            [roll.system      :refer [init]]
             [clojure.pprint    :refer [pprint]]
-            [clojure.core.reducers :as r]))
+            [clojure.core.reducers :as r]
+            [roll.system      :refer [init]]))
 
 
 (defn -main [& args]
