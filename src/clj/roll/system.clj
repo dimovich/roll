@@ -1,13 +1,14 @@
 (ns roll.system
-  (:require [integrant.core     :as ig]
-            [org.httpkit.server :as httpkit]
-            [taoensso.timbre    :as timbre :refer [info]]
+  (:require [taoensso.timbre :as timbre :refer [info]]
             [taoensso.timbre.appenders.core :as appenders]
-            [nginx.clojure.embed :as embed]
-            [clojure.spec.alpha  :as s]
-            [roll.repl     :as repl]
-            [roll.handler  :as handler]
-            [roll.filewatch :as fw]))
+            [integrant.core :as ig]
+            [clojure.spec.alpha :as s]
+            [roll.filewatch :as fw]
+            [roll.repl]
+            [roll.handler]
+            [roll.nginx]
+            [roll.httpkit]
+            [roll.sente]))
 
 
 (defonce state (atom nil))
@@ -18,74 +19,6 @@
 
 (s/def ::port pos-int?)
 (s/def ::handler var?)
-
-
-#_(defmethod ig/pre-init-spec :adapter/ring [_]
-    (s/keys :req-un [::port #_::handler]))
-  
-
-
-(defmethod ig/init-key :adapter/httpkit [_ opts]
-  (info "starting httpkit: " opts)
-  (httpkit/run-server (or (:handler opts)
-                          handler/handler)
-                      (select-keys opts [:port])))
-
-
-
-(defmethod ig/halt-key! :adapter/httpkit [_ stop-fn]
-  (when stop-fn
-    (info "stopping httpkit...")
-    (stop-fn)))
-
-
-
-(defmethod ig/init-key
-  :adapter/nginx [_ {:keys [config] :as opts}]
-  (info "starting nginx: " opts)
-  (if config
-    (embed/run-server config)
-    (embed/run-server (or (:handler opts)
-                          handler/handler)
-                      (select-keys opts [:port]))))
-
-
-
-(defmethod ig/halt-key! :adapter/nginx [_ _]
-  (info "stopping nginx...")
-  (embed/stop-server))
-
-
-
-(defmethod ig/init-key :adapter/handler [_ opts]
-  (info "getting handler:" (:handler opts))
-  (resolve (:handler opts)))
-
-
-
-(defmethod ig/init-key :adapter/sente [_ opts]
-  (info "starting sente: " opts))
-
-
-
-(defmethod ig/halt-key! :adapter/sente [_ stop-fn]
-  (when stop-fn
-    (info "stopping sente...")
-    (stop-fn)))
-
-
-
-(defmethod ig/init-key :repl/repl [_ opts]
-  (info "starting repl:" opts)
-  (repl/start opts))
-
-
-
-(defmethod ig/halt-key! :repl/repl [_ server]
-  (info "stopping repl...")
-  (some-> server
-          repl/stop))
-
 
 
 (defmethod ig/init-key :data/file [_ {:keys [path init watch] :as opts}]
@@ -126,7 +59,6 @@
                       (select-keys default-appenders)
                       (merge (zipmap (keys default-appenders)
                                      (repeat nil))))})))
-
 
 
 (defn destroy []
