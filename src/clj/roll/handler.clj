@@ -15,14 +15,14 @@
 
 
 (defn init-router [& [{:keys [sente routes]}]]
-  (->
-   (cond-> []
-     routes (into @(resolve routes))
-     sente  (conj ["/chsk" {:get  (:ring-ajax-get-or-ws-handshake sente)
-                            :post (:ring-ajax-post sente)}]))
-   
-   (conj {:data {:middleware default-middlewares}})
-   ring/router))
+  (let [new-routes
+        (cond-> []
+          routes (into @(resolve routes))
+          sente  (conj ["/chsk" {:get  (:ring-ajax-get-or-ws-handshake sente)
+                                 :post (:ring-ajax-post sente)}])
+          true   (conj {:data {:middleware default-middlewares}}))]
+    
+    (ring/router new-routes)))
 
 
 (def reitit-router (atom (init-router)))

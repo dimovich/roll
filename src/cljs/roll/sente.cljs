@@ -1,9 +1,7 @@
 (ns roll.sente
-  (:require [cljs.core.async :as async  :refer [<! >! put! chan]]
-            [taoensso.timbre :refer [info]]
+  (:require [taoensso.timbre :refer [info]]
             [taoensso.sente  :as sente :refer [cb-success?]]
-            [taoensso.sente.packers.transit :as sente-transit]
-            [re-frame.core :as rf :refer [reg-fx]])
+            [taoensso.sente.packers.transit :as sente-transit])
   
   (:require-macros
    [cljs.core.async.macros :refer [go go-loop]]))
