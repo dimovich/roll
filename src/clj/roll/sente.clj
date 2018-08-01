@@ -6,6 +6,17 @@
             ;;[taoensso.sente.server-adapters.http-kit :refer [get-sch-adapter]]
             [taoensso.sente.packers.transit :as sente-transit]))
 
+(def sente-fns (atom nil))
+
+
+(defn connected-uids []
+  (:connected-uids @sente-fns))
+
+
+(defn send [& args]
+  (apply (:chsk-send! @sente-fns) args))
+
+
 
 ;; Sente
 ;;
@@ -59,7 +70,8 @@
     
     (->> @(resolve handler)
          (sente/start-server-chsk-router! (:ch-chsk fns))
-         (assoc fns :stop-fn))))
+         (assoc fns :stop-fn)
+         (reset! sente-fns))))
 
 
 

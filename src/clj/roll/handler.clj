@@ -17,7 +17,7 @@
 (defn init-router [& [{:keys [sente routes]}]]
   (->
    (cond-> []
-     routes (conj routes)
+     routes (into @(resolve routes))
      sente  (conj ["/chsk" {:get  (:ring-ajax-get-or-ws-handshake sente)
                             :post (:ring-ajax-post sente)}]))
    
