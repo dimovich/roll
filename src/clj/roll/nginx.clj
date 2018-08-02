@@ -1,25 +1,22 @@
 (ns roll.nginx
   (:require [taoensso.timbre :refer [info]]
             [nginx.clojure.embed :as embed]
-            [roll.handler :as handler]
-            [integrant.core :as ig]))
+            [integrant.core :as ig]
+            [roll.handler :refer [get-default-handler]]))
 
 
 
 
 (defmethod ig/init-key
-  :adapter/nginx [_ {:keys [config] :as opts}]
+  :adapter/nginx [_ {:keys [config handler] :as opts}]
   (info "starting nginx: " opts)
-  (if config
-    (embed/run-server config)
-    (embed/run-server (or (:handler opts)
-                          handler/handler)
-                      (select-keys opts [:port]))))
+  (let [handler (or handler (get-default-handler))]
+    (if config
+      (embed/run-server config)
+      (embed/run-server handler (select-keys opts [:port])))))
 
 
 
 (defmethod ig/halt-key! :adapter/nginx [_ _]
   (info "stopping nginx...")
   (embed/stop-server))
-
-

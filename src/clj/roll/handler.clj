@@ -5,14 +5,15 @@
             [taoensso.timbre :refer [info]]
             [reitit.core     :as r]
             [reitit.ring     :as ring]
-            [integrant.core  :as ig]))
+            [integrant.core  :as ig]
+            [roll.util :refer [resolve-map-vals]]))
 
 
 
 (def default-middlewares
-  [wrap-format
-   wrap-params
-   wrap-keyword-params])
+  [wrap-params
+   wrap-keyword-params
+   wrap-format])
 
 
 
@@ -30,12 +31,13 @@
 
 
 
-(defn init-handler [router]
+(defn init-handler [& [opts]]
   (ring/ring-handler
-   router
+   (init-router opts)
    (ring/routes
     (ring/create-resource-handler {:path "/"})
     (ring/create-default-handler))))
+
 
 
 (def ring-handler (atom (promise)))
@@ -44,16 +46,25 @@
   (@@ring-handler req))
 
 
-(defmethod ig/init-key :adapter/handler [_ {:as opts :keys [sente routes handler]}]
+
+(defn get-default-handler []
+  (when-not (realized? @ring-handler)
+    (deliver @ring-handler (init-handler)))
+  default-handler)
+
+
+
+
+(defmethod ig/init-key :adapter/handler [_ opts]
   (info "initializing handler:" opts)
 
-  (if handler
-    @(resolve handler)
+  (let [{:as opts :keys [handler]} (resolve-map-vals opts)]
+
+    (->> (or @handler (init-handler opts))
+         (deliver @ring-handler))
     
-    (do (->> (init-router opts)
-             (init-handler)
-             (deliver @ring-handler))
-        default-handler)))
+    default-handler))
+
 
 
 ;; make sure it's initialized even if we don't specify handler

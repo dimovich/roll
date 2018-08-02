@@ -64,12 +64,7 @@
   (info "starting sente: " opts)
   
   (let [{:as opts :keys [handler]
-         :or {handler event-msg-handler}}
-        (->> opts
-             ;;resolve all symbols
-             (transform [MAP-VALS]
-                        (fn [v]
-                          (if (symbol? v) @(resolve v) v))))
+         :or {handler event-msg-handler}} (resolve-map-vals opts)
         
         fns (-> opts (dissoc :handler)
                 (init-sente))]

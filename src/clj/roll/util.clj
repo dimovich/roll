@@ -1,6 +1,11 @@
 (ns roll.util
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]))
 
+
+
+(defn resolve-map-vals [m]
+  (transform [MAP-VALS] (fn [v] (if (symbol? v) @(resolve v) v))))
 
 
 (defmacro load-edn [file]

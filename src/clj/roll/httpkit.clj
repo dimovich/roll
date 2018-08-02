@@ -2,15 +2,14 @@
   (:require [taoensso.timbre :refer [info]]
             [integrant.core     :as ig]
             [org.httpkit.server :as httpkit]
-            [roll.handler       :as handler]))
+            [roll.handler       :refer [get-default-handler]]))
 
 
 
-(defmethod ig/init-key :adapter/httpkit [_ opts]
+(defmethod ig/init-key :adapter/httpkit [_ {:as opts :keys [handler]}]
   (info "starting httpkit: " opts)
-  (httpkit/run-server (or (:handler opts)
-                          handler/handler)
-                      (select-keys opts [:port])))
+  (let [handler (or handler (get-default-handler))]
+    (httpkit/run-server handler (select-keys opts [:port]))))
 
 
 
