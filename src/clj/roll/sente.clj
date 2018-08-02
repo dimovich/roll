@@ -5,7 +5,8 @@
             [taoensso.sente.server-adapters.nginx-clojure :refer [get-sch-adapter]]
             ;;[taoensso.sente.server-adapters.http-kit :refer [get-sch-adapter]]
             [taoensso.sente.packers.transit :as sente-transit]
-            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]))
+            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
+            [roll.util :refer [resolve-map-vals]]))
 
 
 ;; fixme: use tools.deps to dynamically load nginx / httpkit adapters?

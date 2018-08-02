@@ -20,12 +20,13 @@
 (defn init-router [& [{:keys [sente routes]}]]
   (let [new-routes
         (cond-> []
-          routes (into @(resolve routes))
+          routes (into routes)
           sente  (conj ["/chsk" {:get  (:ring-ajax-get-or-ws-handshake sente)
                                  :post (:ring-ajax-post sente)}])
           true   (conj {:data {:middleware default-middlewares}}))]
 
-    (info "routes:" (clojure.pprint/pprint new-routes))
+    (info "routes:")
+    (clojure.pprint/pprint new-routes)
     
     (ring/router new-routes)))
 
@@ -60,7 +61,7 @@
 
   (let [{:as opts :keys [handler]} (resolve-map-vals opts)]
 
-    (->> (or @handler (init-handler opts))
+    (->> (or handler (init-handler opts))
          (deliver @ring-handler))
     
     default-handler))

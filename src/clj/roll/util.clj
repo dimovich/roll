@@ -5,7 +5,12 @@
 
 
 (defn resolve-map-vals [m]
-  (transform [MAP-VALS] (fn [v] (if (symbol? v) @(resolve v) v))))
+  (->> m (transform
+          [MAP-VALS]
+          (fn [v]
+            (if (symbol? v)
+              @(resolve v)
+              v)))))
 
 
 (defmacro load-edn [file]
