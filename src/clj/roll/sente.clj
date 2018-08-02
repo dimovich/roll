@@ -11,6 +11,15 @@
 ;; fixme: use tools.deps to dynamically load nginx / httpkit adapters?
 
 
+(def sente-fns (atom nil))
+
+(defn send-evt [& args]
+  (some-> @sente-fns :chsk-send! (apply args)))
+
+(defn connected-uids []
+  (some-> @sente-fns :connected-uids))
+
+
 
 #_(defn event-msg-handler
   "Wraps `-event-msg-handler` with logging, error catching, etc."
@@ -55,7 +64,7 @@
   (info "starting sente: " opts)
   
   (let [{:as opts :keys [handler]
-         :or {handler event-message-handler}}
+         :or {handler event-msg-handler}}
         (->> opts
              ;;resolve all symbols
              (transform [MAP-VALS]
