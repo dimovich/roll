@@ -1,14 +1,14 @@
 (ns roll.system
   (:require [taoensso.timbre :as timbre :refer [info]]
             [taoensso.timbre.appenders.core :as appenders]
-            [integrant.core :as ig]
             [clojure.spec.alpha :as s]
-            [roll.filewatch]
-            [roll.repl]
+            [integrant.core :as ig]
             [roll.handler]
-            [roll.nginx]
             [roll.httpkit]
-            [roll.sente]))
+            [roll.sente]
+            [roll.nginx]
+            [roll.data]
+            [roll.repl]))
 
 
 (defonce state (atom nil))
@@ -56,8 +56,7 @@
 
     (swap! state assoc :config config)
     
-    (->> config
-        ig/init
+    (->> config (ig/init)
          (swap! state assoc :system))))
 
 

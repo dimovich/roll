@@ -60,8 +60,7 @@
 
 
 
-(defmethod ig/init-key :adapter/sente
-  [_ opts]
+(defn start-sente [& [opts]]
   (info "starting sente: " opts)
   
   (let [{:as opts :keys [handler]
@@ -74,6 +73,13 @@
          (sente/start-server-chsk-router! (:ch-chsk fns))
          (assoc fns :stop-fn)
          (reset! sente-fns))))
+
+
+
+
+(defmethod ig/init-key :adapter/sente
+  [_ opts]
+  (start-sente opts))
 
 
 

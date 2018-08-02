@@ -1,12 +1,13 @@
 (ns roll.handler
-  (:require [ring.middleware.params         :refer [wrap-params]]
+  (:require [taoensso.timbre :refer [info]]
+            [ring.middleware.params         :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [muuntaja.middleware            :refer [wrap-format]]
-            [taoensso.timbre :refer [info]]
-            [reitit.core     :as r]
-            [reitit.ring     :as ring]
-            [integrant.core  :as ig]
-            [roll.util :refer [resolve-map-vals]]))
+            [integrant.core :as ig]
+            [reitit.core :as r]
+            [reitit.ring :as ring]
+            [roll.sente  :as sente]
+            [roll.util   :refer [resolve-map-vals]]))
 
 
 
@@ -57,14 +58,12 @@
 (defmethod ig/init-key :adapter/handler [_ opts]
   (info "initializing handler with" (keys opts))
 
-  (let [{:as opts :keys [handler]} (resolve-map-vals opts)]
+  (let [{:as opts :keys [handler]}
+        (-> (resolve-map-vals opts)
+            (update :sente #(if (true? %) (sente/start-sente) %)))]
 
     (->> (or handler (init-handler opts))
          (deliver @ring-handler))
     
     default-handler))
 
-
-
-;; make sure it's initialized even if we don't specify handler
-;; (but httpkit wont work for example)

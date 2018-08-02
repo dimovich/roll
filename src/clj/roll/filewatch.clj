@@ -2,10 +2,8 @@
   (:require [taoensso.timbre :refer [info]]
             [clojure.java.io :refer [file]]
             [clojure.set     :refer [rename-keys]]
-            [integrant.core  :as ig]
             [clojure.core.async :as async]
-            [com.rpl.specter :as sr :refer [transform ALL MAP-VALS]]
-            [roll.util :refer [resolve-map-vals]])
+            [com.rpl.specter :as sr :refer [transform ALL MAP-VALS]])
   
   (:import  [java.nio.file Paths FileSystems
              StandardWatchEventKinds]))
@@ -83,33 +81,10 @@
         (swap!
          state assoc k
          (->> opts
-              ;; run handler only when this file is changed
+              ;; wrap handler and check if this file changed
               (transform
                [MAP-VALS] (fn [handler]
                             #(when (= fname (.toString (.context %)))
                                (info "modified:" path)
                                (handler path))))
               (watch f)))))))
-
-
-
-
-(defmethod ig/init-key :data/file [_ {:keys [path init watch] :as opts}]
-  (let [{:as opts :keys [init watch]} (resolve-map-vals opts)]
-    (info "data file: " opts)
-    
-    (when init
-      (init path))
-
-    (when-let [watch (if (true? watch) init watch)]
-      (start-watch! path path watch)
-      ;; return stop-fn
-      #(stop-watch! path))))
-
-
-
-(defmethod ig/halt-key! :data/file [_ stop-fn]
-  (when stop-fn
-    (info "stopping data file watch...")
-    (stop-fn)))
-
