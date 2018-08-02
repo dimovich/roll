@@ -1,17 +1,19 @@
 (ns roll.handler
   (:require [ring.middleware.params         :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
-            [muuntaja.middleware :refer [wrap-format]]
-            [reitit.ring         :as ring]
-            [integrant.core      :as ig]
-            [taoensso.timbre  :refer [info]]))
+            [muuntaja.middleware            :refer [wrap-format]]
+            [taoensso.timbre :refer [info]]
+            [reitit.core     :as r]
+            [reitit.ring     :as ring]
+            [integrant.core  :as ig]))
 
 
 
 (def default-middlewares
-  [wrap-params
-   wrap-keyword-params
-   wrap-format])
+  [wrap-format
+   wrap-params
+   wrap-keyword-params])
+
 
 
 (defn init-router [& [{:keys [sente routes]}]]
@@ -21,11 +23,11 @@
           sente  (conj ["/chsk" {:get  (:ring-ajax-get-or-ws-handshake sente)
                                  :post (:ring-ajax-post sente)}])
           true   (conj {:data {:middleware default-middlewares}}))]
+
+    (info "routes:" (clojure.pprint/pprint new-routes))
     
     (ring/router new-routes)))
 
-
-(def reitit-router (atom (init-router)))
 
 
 (defn init-handler [router]
@@ -36,20 +38,23 @@
     (ring/create-default-handler))))
 
 
-(def ring-handler (atom (init-handler (init-router))))
+(def ring-handler (atom (promise)))
+
+(defn default-handler [req]
+  (@@ring-handler req))
 
 
-(defn handler [req]
-  (@ring-handler req))
-
-
-
-(defmethod ig/init-key :adapter/handler [_ {:keys [sente routes] :as opts}]
+(defmethod ig/init-key :adapter/handler [_ {:as opts :keys [sente routes handler]}]
   (info "initializing handler:" opts)
-  
-  (->> (init-router opts)
-       (init-handler)
-       (reset! ring-handler))
-  
-  (or (some-> (:handler opts) resolve)
-      handler))
+
+  (if handler
+    @(resolve handler)
+    
+    (do (->> (init-router opts)
+             (init-handler)
+             (deliver @ring-handler))
+        default-handler)))
+
+
+;; make sure it's initialized even if we don't specify handler
+;; (but httpkit wont work for example)

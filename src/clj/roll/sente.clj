@@ -69,7 +69,7 @@
              ;;resolve all symbols
              (transform [MAP-VALS]
                         (fn [v]
-                          (cond-> v (symbol? v) @(resolve)))))
+                          (if (symbol? v) @(resolve v) v))))
         
         fns (-> opts (dissoc :handler)
                 (init-sente))]
