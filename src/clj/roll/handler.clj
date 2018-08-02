@@ -59,8 +59,9 @@
   (info "initializing handler with" (keys opts))
 
   (let [{:as opts :keys [handler]}
-        (-> (resolve-map-vals opts)
-            (update :sente #(if (true? %) (sente/start-sente) %)))]
+        (cond-> (resolve-map-vals opts)
+          (true? (:sente opts))
+          (assoc :sente (sente/start-sente)))]
 
     (->> (or handler (init-handler opts))
          (deliver @ring-handler))
