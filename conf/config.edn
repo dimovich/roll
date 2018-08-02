@@ -1,11 +1,10 @@
 {:repl/repl {:port 3311}
- :adapter/sente {:handler roll.sente/event-msg-handler
-                 ;;:handshake-data-fn data/handshake-fn
-                 }
-
+ :adapter/nginx {:config "conf/nginx.conf"}
+ 
  :adapter/handler {:sente #ig/ref :adapter/sente
                    ;;:routes handler/routes
                    }
- 
- :adapter/nginx {:config "conf/nginx.conf"
-                 :handler #ig/ref :adapter/handler}}
+
+ :adapter/sente {;;:handler roll.sente/event-msg-handler
+                 ;;:handshake-data-fn data/handshake-fn
+                 }}

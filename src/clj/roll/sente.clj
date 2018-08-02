@@ -4,22 +4,34 @@
             [integrant.core  :as ig]
             [taoensso.sente.server-adapters.nginx-clojure :refer [get-sch-adapter]]
             ;;[taoensso.sente.server-adapters.http-kit :refer [get-sch-adapter]]
-            [taoensso.sente.packers.transit :as sente-transit]))
-
-(def sente-fns (atom nil))
-
-
-(defn connected-uids []
-  (:connected-uids @sente-fns))
+            [taoensso.sente.packers.transit :as sente-transit]
+            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]))
 
 
-(defn send [& args]
-  (apply (:chsk-send! @sente-fns) args))
+;; fixme: use tools.deps to dynamically load nginx / httpkit adapters?
 
 
 
-;; Sente
-;;
+#_(defn event-msg-handler
+  "Wraps `-event-msg-handler` with logging, error catching, etc."
+  [{:as ev-msg :keys [id ?data event]}]
+  (-event-msg-handler ev-msg))
+
+
+
+(defmulti event-msg-handler :id)
+
+(defmethod event-msg-handler
+  :default         ; Default/fallback case (no other matching handler)
+  [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
+  (let [session (:session ring-req)
+        uid     (:uid     session)]
+    (when ?reply-fn
+      (?reply-fn {:umatched-event event}))))
+
+
+
+
 (defn init-sente [& [opts]]
   (let [{:keys [ch-recv send-fn connected-uids
                 ajax-post-fn ajax-get-or-ws-handshake-fn]}
@@ -38,37 +50,22 @@
 
 
 
-(defmulti -event-msg-handler :id)
-
-
-(defn event-msg-handler
-  "Wraps `-event-msg-handler` with logging, error catching, etc."
-  [{:as ev-msg :keys [id ?data event]}]
-  (-event-msg-handler ev-msg))
-
-
-
-(defmethod -event-msg-handler
-  :default ; Default/fallback case (no other matching handler)
-  [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
-  (let [session (:session ring-req)
-        uid     (:uid     session)]
-    (when ?reply-fn
-      (?reply-fn {:umatched-event event}))))
-
-
-
-
-
 (defmethod ig/init-key :adapter/sente
-  [_ {:keys [handler] :as opts}]
-  
+  [_ opts]
   (info "starting sente: " opts)
   
-  (let [fns (-> opts (dissoc :handler)
+  (let [{:as opts :keys [handler]
+         :or {handler event-message-handler}}
+        (->> opts
+             ;;resolve all symbols
+             (transform [MAP-VALS]
+                        (fn [v]
+                          (cond-> v (symbol? v) @(resolve)))))
+        
+        fns (-> opts (dissoc :handler)
                 (init-sente))]
     
-    (->> @(resolve handler)
+    (->> handler
          (sente/start-server-chsk-router! (:ch-chsk fns))
          (assoc fns :stop-fn)
          (reset! sente-fns))))
