@@ -1,8 +1,11 @@
 (ns roll.filewatch
-  (:require [clojure.java.io :refer [file]]
+  (:require [taoensso.timbre :refer [info]]
+            [clojure.java.io :refer [file]]
             [clojure.set     :refer [rename-keys]]
+            [integrant.core  :as ig]
             [clojure.core.async :as async]
-            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]])
+            [com.rpl.specter :as sr :refer [transform ALL MAP-VALS]]
+            [roll.util :refer [resolve-map-vals]])
   
   (:import  [java.nio.file Paths FileSystems
              StandardWatchEventKinds]))
@@ -10,8 +13,7 @@
 
 
 
-#_(defn event-handler [event]
-    (println (.kind event) (.context event)))
+#_(defn event-handler [file-path] ...)
 
 
 
@@ -24,8 +26,8 @@
                                StandardWatchEventKinds/OVERFLOW])
                  (keys)
                  (into-array))
-             (into-array
-              [(com.sun.nio.file.SensitivityWatchEventModifier/HIGH)])))
+             #_(into-array
+                [(com.sun.nio.file.SensitivityWatchEventModifier/HIGH)])))
 
 
 
@@ -43,6 +45,7 @@
     (let [k (.take watch-service)]
       (doseq [event (.pollEvents k)]
         (when-let [handler (get opts (.kind event))]
+          ;; fixme: call handler when file readable
           (handler event)))
       (when (.reset k) (recur)))))
 
@@ -84,5 +87,29 @@
               (transform
                [MAP-VALS] (fn [handler]
                             #(when (= fname (.toString (.context %)))
+                               (info "modified:" path)
                                (handler path))))
               (watch f)))))))
+
+
+
+
+(defmethod ig/init-key :data/file [_ {:keys [path init watch] :as opts}]
+  (let [{:as opts :keys [init watch]} (resolve-map-vals opts)]
+    (info "data file: " opts)
+    
+    (when init
+      (init path))
+
+    (when-let [watch (if (true? watch) init watch)]
+      (start-watch! path path watch)
+      ;; return stop-fn
+      #(stop-watch! path))))
+
+
+
+(defmethod ig/halt-key! :data/file [_ stop-fn]
+  (when stop-fn
+    (info "stopping data file watch...")
+    (stop-fn)))
+

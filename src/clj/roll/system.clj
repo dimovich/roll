@@ -3,7 +3,7 @@
             [taoensso.timbre.appenders.core :as appenders]
             [integrant.core :as ig]
             [clojure.spec.alpha :as s]
-            [roll.filewatch :as fw]
+            [roll.filewatch]
             [roll.repl]
             [roll.handler]
             [roll.nginx]
@@ -19,30 +19,6 @@
 
 (s/def ::port pos-int?)
 (s/def ::handler var?)
-
-
-(defmethod ig/init-key :data/file [_ {:keys [path init watch] :as opts}]
-  (let [opts (cond-> opts
-               (symbol? init)  (update :init  resolve)
-               (symbol? watch) (update :watch resolve))
-        {:keys [init watch]} opts]
-
-    (info "data file: " opts)
-    
-    (when init
-      (@init path))
-
-    (when-let [watch (if (true? watch) init watch)]
-      (fw/start-watch! path path @watch)
-      ;; return stop-fn
-      #(fw/stop-watch! path))))
-
-
-
-(defmethod ig/halt-key! :data/file [_ stop-fn]
-  (when stop-fn
-    (info "stopping data file watch...")
-    (stop-fn)))
 
 
 
