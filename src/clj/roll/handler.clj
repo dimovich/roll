@@ -7,7 +7,7 @@
             [reitit.core :as r]
             [reitit.ring :as ring]
             [roll.sente  :as sente]
-            [roll.util   :refer [resolve-map-vals]]))
+            [roll.util   :refer [resolve-map-syms]]))
 
 
 
@@ -59,7 +59,7 @@
   (info "initializing handler with" (keys opts))
 
   (let [{:as opts :keys [handler]}
-        (cond-> (resolve-map-vals opts)
+        (cond-> (resolve-map-syms opts)
           (true? (:sente opts))
           (assoc :sente (sente/start-sente)))]
 

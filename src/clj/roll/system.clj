@@ -27,6 +27,7 @@
    :spit    (appenders/spit-appender {:fname  "timbre.log"})})
 
 
+
 (defmethod ig/init-key :timbre/timbre [_ {:keys [appenders]}]
   (when appenders
     (info "timbre appenders:" appenders)
@@ -44,19 +45,19 @@
 
 
 
-(defn init [{path :path}]
+(defn init [{:keys [config]}]
   (timbre/set-config!
    {:level :info
     :output-fn (fn [{:keys [timestamp_ level msg_]}] (force msg_))
     :appenders (select-keys default-appenders [:println])})
 
   
-  (let [config (ig/read-string (slurp path))]
+  (let [ig-config (ig/read-string (slurp config))]
     (.addShutdownHook (Runtime/getRuntime) (Thread. destroy))
 
-    (swap! state assoc :config config)
+    (swap! state assoc :config ig-config)
     
-    (->> config (ig/init)
+    (->> ig-config (ig/init)
          (swap! state assoc :system))))
 
 

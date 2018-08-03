@@ -7,11 +7,6 @@
 
 
 (defn -main [& args]
-  (init {:path "conf/config.edn"})
-  
-  (timbre/set-config!
-   {:level :info
-    :output-fn (fn [{:keys [msg_]}] (force msg_))
-    :appenders {:println (timbre/println-appender {:stream :auto})}}))
+  (init {:config "conf/config.edn"}))
 
 

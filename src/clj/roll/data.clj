@@ -2,12 +2,12 @@
   (:require [taoensso.timbre :refer [info]]
             [integrant.core  :as ig]
             [roll.filewatch :as fw]
-            [roll.util :refer [resolve-map-vals]]))
+            [roll.util :refer [resolve-map-syms]]))
 
 
 
 (defmethod ig/init-key :data/file [_ {:keys [path init watch] :as opts}]
-  (let [{:as opts :keys [init watch]} (resolve-map-vals opts)]
+  (let [{:as opts :keys [init watch]} (resolve-map-syms opts)]
     (info "data file: " opts)
     
     (when init

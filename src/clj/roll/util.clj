@@ -4,7 +4,7 @@
 
 
 
-(defn resolve-map-vals [m]
+(defn resolve-map-syms [m]
   (->> m (transform
           [MAP-VALS]
           (fn [v]
