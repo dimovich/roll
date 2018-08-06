@@ -14,3 +14,4 @@ pom.xml.asc
 .nrepl-port
 logs
 .cpcache
+dump/

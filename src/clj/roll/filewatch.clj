@@ -70,7 +70,7 @@
 
 (defn start-watch! [k path opts]
   (let [f (file path)
-        opts (if (fn? opts) {:create opts} opts)]
+        opts (if (fn? opts) {:modify opts} opts)]
     
     (when (.isFile f)
       ;; stop existing key handler
