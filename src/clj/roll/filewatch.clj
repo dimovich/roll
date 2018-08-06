@@ -85,6 +85,6 @@
               (transform
                [MAP-VALS] (fn [handler]
                             #(when (= fname (.toString (.context %)))
-                               (info "modified:" path)
+                               ;;(info "modified:" path)
                                (handler path))))
               (watch f)))))))
