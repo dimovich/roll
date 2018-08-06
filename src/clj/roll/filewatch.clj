@@ -15,7 +15,8 @@
 
 
 
-(defn register-events! [dir watch-service opts]
+(defn register-events!
+  [dir watch-service opts]
   (.register dir watch-service
              (-> opts
                  (select-keys [StandardWatchEventKinds/ENTRY_CREATE
@@ -29,7 +30,8 @@
 
 
 
-(defn rename-event-keys [opts]
+(defn rename-event-keys
+  [opts]
   (rename-keys opts
                {:create StandardWatchEventKinds/ENTRY_CREATE
                 :modify StandardWatchEventKinds/ENTRY_MODIFY
@@ -38,7 +40,8 @@
 
 
 
-(defn watch-loop [watch-service opts]
+(defn watch-loop
+  [watch-service opts]
   (async/go-loop []
     (let [k (.take watch-service)]
       (doseq [event (.pollEvents k)]
@@ -49,12 +52,14 @@
 
 
 
-(defn watch [f opts]
+(defn watch
+  [f opts]
   (let [parent (or (-> f (.getParent)) ".")
-        dir  (->  parent (file) (.toURI) (Paths/get))
-        opts (rename-event-keys opts)
+        dir    (->  parent (file) (.toURI) (Paths/get))
+        opts   (rename-event-keys opts)
         watch-service (.newWatchService (FileSystems/getDefault))
-        watch-key (register-events! dir watch-service opts)]
+        watch-key     (register-events! dir watch-service opts)]
+
     (watch-loop watch-service opts)
     watch-key))
 
@@ -64,11 +69,13 @@
 (def state (atom {}))
 
 
-(defn stop-watch! [k]
+(defn stop-watch!
+  [k]
   (swap! state update k #(some-> % (.cancel))))
 
 
-(defn start-watch! [k path opts]
+(defn start-watch!
+  [k path opts]
   (let [f (file path)
         opts (if (fn? opts) {:modify opts} opts)]
     
@@ -84,6 +91,8 @@
               ;; wrap handler and check if this file changed
               (transform
                [MAP-VALS] (fn [handler]
+                            ;; file names are within directory so it's
+                            ;; safe to ignore full path
                             #(when (= fname (.toString (.context %)))
                                ;;(info "modified:" path)
                                (handler path))))
