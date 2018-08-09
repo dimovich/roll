@@ -18,7 +18,9 @@
 
 
 
-(defn init-router [& [{:keys [sente routes]}]]
+(defn init-router
+  "Create router with default middleware and optional extra routes."
+  [& [{:keys [sente routes]}]]
   (let [new-routes
         (cond-> []
           routes (into routes)
@@ -31,7 +33,9 @@
 
 
 
-(defn init-handler [& [opts]]
+(defn init-handler
+  "Initialize ring handler."
+  [& [opts]]
   (ring/ring-handler
    (init-router opts)
    (ring/routes
@@ -47,7 +51,9 @@
 
 
 
-(defn get-default-handler []
+(defn get-default-handler
+  "Make sure we have an initialized handler and return it."
+  []
   (when-not (realized? @ring-handler)
     (deliver @ring-handler (init-handler)))
   default-handler)

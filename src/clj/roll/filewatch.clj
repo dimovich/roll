@@ -9,13 +9,13 @@
              StandardWatchEventKinds]))
 
 
-
-
+;; format of the file handlers
 #_(defn event-handler [file-path] ...)
 
 
 
 (defn register-events!
+  "Register WatchService with the chosen event keys."
   [dir watch-service opts]
   (.register dir watch-service
              (-> opts
@@ -25,6 +25,7 @@
                                StandardWatchEventKinds/OVERFLOW])
                  (keys)
                  (into-array))
+             ;; for the Macs
              #_(into-array
                 [(com.sun.nio.file.SensitivityWatchEventModifier/HIGH)])))
 
@@ -41,18 +42,19 @@
 
 
 (defn watch-loop
+  "Keep polling for watch events."
   [watch-service opts]
   (async/go-loop []
     (let [k (.take watch-service)]
       (doseq [event (.pollEvents k)]
         (when-let [handler (get opts (.kind event))]
-          ;; fixme: call handler when file readable
           (handler event)))
       (when (.reset k) (recur)))))
 
 
 
 (defn watch
+  "Watch file with following opts."
   [f opts]
   (let [parent (or (-> f (.getParent)) ".")
         dir    (->  parent (file) (.toURI) (Paths/get))

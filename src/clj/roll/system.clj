@@ -1,7 +1,6 @@
 (ns roll.system
   (:require [taoensso.timbre :as timbre :refer [info]]
             [taoensso.timbre.appenders.core :as appenders]
-            [clojure.spec.alpha :as s]
             [integrant.core :as ig]
             [roll.handler]
             [roll.httpkit]
@@ -15,11 +14,6 @@
 
 (derive :adapter/httpkit :adapter/ring)
 (derive :adapter/nginx   :adapter/ring)
-
-
-(s/def ::port pos-int?)
-(s/def ::handler var?)
-
 
 
 (def default-appenders

@@ -3,7 +3,7 @@
             [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]))
 
 
-
+;; todo: make recursive
 (defn resolve-map-syms [m]
   (->> m (transform
           [MAP-VALS]

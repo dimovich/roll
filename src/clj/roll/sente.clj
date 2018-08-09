@@ -22,14 +22,9 @@
 
 
 
-#_(defn event-msg-handler
-  "Wraps `-event-msg-handler` with logging, error catching, etc."
-  [{:as ev-msg :keys [id ?data event]}]
-  (-event-msg-handler ev-msg))
-
-
-
+;; add new methods for custom events
 (defmulti event-msg-handler :id)
+
 
 (defmethod event-msg-handler
   :default         ; Default/fallback case (no other matching handler)
