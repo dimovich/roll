@@ -51,3 +51,48 @@
        (with-open [rdr# (io/reader file#)]
          (let [~name (slurp rdr#)]
            ~@body)))))
+
+
+
+
+(defn parse-int [s]
+  (try (Integer/parseInt (re-find #"\A-?\d+" s))
+       (catch Exception e nil)))
+
+
+
+(defn slurp-tsv
+  "Download and decode tsv."
+  [url & [columns]]
+  (some->>
+   ;; split into lines
+   (clojure.string/split (slurp url)  #"\r\n")
+   ;; each line split into columns
+   (map #(clojure.string/split % #"\t"))
+   ;; remove lines that don't have the first column
+   (remove #(-> % first empty?))
+   ;; remove header
+   rest
+   (#(cond->> %
+       ;; coerce
+       columns (map (fn [xs] (zipmap columns xs)))))))
+
+
+
+(defn coerce-map [coerce-fns m]
+  (loop [m m
+         ks (keys coerce-fns)]
+    (let [[k & rst] ks]
+      (if k
+        (recur (update m k (get coerce-fns k))
+               rst)
+        m))))
+
+
+
+(defn coll->pattern [coll]
+  (re-pattern
+   (str "(?i)\\b("
+        (->> (interpose "|" coll)
+             (apply str))
+        ")\\b")))
