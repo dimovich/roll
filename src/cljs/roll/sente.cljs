@@ -46,7 +46,8 @@
 (defn  stop-router! [] (when-let [stop-f @router_] (stop-f)))
 (defn start-router! [& [handler]]
   (stop-router!)
-  (let [{:keys [ch-chsk]} (->> (init-sente) (reset! sente-fns))]
+  (let [{:keys [ch-chsk]} (->> (init-sente)
+                               (reset! sente-fns))]
     
     (->> (or handler event-msg-handler)
          (sente/start-client-chsk-router! ch-chsk)
