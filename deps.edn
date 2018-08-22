@@ -4,7 +4,7 @@
         org.clojure/clojurescript {:mvn/version "1.10.339"}
         org.clojure/core.async    {:mvn/version "0.4.474"}
         org.clojure/tools.nrepl   {:mvn/version "0.2.13"}
-        cider/cider-nrepl         {:mvn/version "0.17.0"}
+        cider/cider-nrepl         {:mvn/version "0.18.0"}
         javax.servlet/servlet-api {:mvn/version "2.5"}
         integrant {:mvn/version "0.7.0-alpha2"}
         http-kit  {:mvn/version "2.3.0"}
@@ -15,7 +15,7 @@
         metosin/muuntaja     {:mvn/version "0.5.0"}
         ring/ring-core       {:mvn/version "1.6.3"}
         com.taoensso/timbre  {:mvn/version "4.10.0"}
-        com.taoensso/sente   {:mvn/version "1.12.0"}
+        com.taoensso/sente   {:mvn/version "1.13.0"}
         nginx-clojure        {:mvn/version "0.4.5"}
         nginx-clojure/nginx-clojure-embed {:mvn/version "0.4.5"}
         figwheel-sidecar {:mvn/version "0.5.16"
