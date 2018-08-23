@@ -18,7 +18,7 @@
 
 
 
-(defn figwheel [& [{:keys [extra-source-dirs] :as opts}]]
+(defn figwheel [& [{:keys [extra-source-dirs compiler-opts] :as opts}]]
   (-> {:figwheel-options {:css-dirs         css-dirs
                           :nrepl-port       3312
                           :nrepl-middleware ["cider.nrepl/cider-middleware"
@@ -27,7 +27,7 @@
        :all-builds [{:id           "dev"
                      :figwheel     (or (select-keys opts [:on-jsload]) true)
                      :source-paths (into (or extra-source-dirs []) source-dirs)
-                     :compiler     dev-config}]}
+                     :compiler     (merge dev-config compiler-opts)}]}
 
       (update :figwheel-options merge
               (some-> opts (select-keys
