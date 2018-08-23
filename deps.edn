@@ -4,7 +4,7 @@
         org.clojure/clojurescript {:mvn/version "1.10.339"}
         org.clojure/core.async    {:mvn/version "0.4.474"}
         org.clojure/tools.nrepl   {:mvn/version "0.2.13"}
-        cider/cider-nrepl         {:mvn/version "0.18.0"}
+        cider/cider-nrepl         {:mvn/version "0.17.0"}
         javax.servlet/servlet-api {:mvn/version "2.5"}
         integrant {:mvn/version "0.7.0-alpha2"}
         http-kit  {:mvn/version "2.3.0"}
