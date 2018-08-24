@@ -1,9 +1,9 @@
 ## Roll Micro-framework
 
 
->  roll  /ˈrōl/
+>  roll   /ˈrōl/
 >
->  Informal. to begin to move or operate; start; commence.
+>  _informal_. to begin to move or operate; start; commence.
 >  _Let's roll at sunrise._
 
 <br>
