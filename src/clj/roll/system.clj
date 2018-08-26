@@ -32,27 +32,28 @@
                                      (repeat nil))))})))
 
 
-(defn destroy []
+(defn halt! []
   (info "shutting down...")
   (some-> (:system @state)
           ig/halt!))
 
 
 
-(defn init [{:keys [config]}]
+(defn init [opts]
   (timbre/set-config!
    {:level :info
     :output-fn (fn [{:keys [timestamp_ level msg_]}] (force msg_))
     :appenders (select-keys default-appenders [:println])})
 
   
-  (let [ig-config (ig/read-string (slurp config))]
-    (.addShutdownHook (Runtime/getRuntime) (Thread. destroy))
+  (when-let [config (if (string? opts) opts (:config opts))]
+    (let [ig-config (ig/read-string (slurp config))]
+      (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
 
-    (swap! state assoc :config ig-config)
+      (swap! state assoc :config ig-config)
     
-    (->> ig-config (ig/init)
-         (swap! state assoc :system))))
+      (->> ig-config (ig/init)
+           (swap! state assoc :system)))))
 
 
 

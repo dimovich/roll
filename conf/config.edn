@@ -3,6 +3,7 @@
  
  :adapter/handler {:sente #ig/ref :adapter/sente
                    ;;:routes handler/routes
+                   ;;:handler roll.handler/default-handler
                    }
 
  :adapter/sente {;;:handler roll.sente/event-msg-handler

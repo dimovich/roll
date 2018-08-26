@@ -3,6 +3,6 @@
 
 
 (defn -main [& args]
-  (init {:config "conf/config.edn"}))
+  (init "conf/config.edn"))
 
 
