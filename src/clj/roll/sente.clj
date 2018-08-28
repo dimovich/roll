@@ -11,7 +11,7 @@
 
 ;; fixme: use tools.deps to dynamically load nginx / httpkit adapters?
 
-
+;; fixme: another way?
 (def sente-fns (atom nil))
 
 (defn send-evt [& args]
@@ -72,16 +72,12 @@
 
 
 
-(defmethod ig/init-key :adapter/sente
-  [_ opts]
+(defmethod ig/init-key :roll/sente [_ opts]
   (start-sente opts))
 
 
 
-
-(defmethod ig/halt-key! :adapter/sente
-  [_ {:keys [stop-fn]}]
-  
+(defmethod ig/halt-key! :roll/sente [_ {:keys [stop-fn]}]
   (when stop-fn
     (info "stopping sente...")
     (stop-fn)))

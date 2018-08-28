@@ -16,13 +16,12 @@
 
 
 
-(defmethod ig/init-key :repl/repl [_ opts]
+(defmethod ig/init-key :roll/repl [_ opts]
   (info "starting repl:" opts)
   (start opts))
 
 
 
-(defmethod ig/halt-key! :repl/repl [_ server]
+(defmethod ig/halt-key! :roll/repl [_ server]
   (info "stopping repl...")
-  (some-> server
-          stop))
+  (some-> server (stop)))

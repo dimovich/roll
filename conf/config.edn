@@ -1,11 +1,24 @@
-{:repl/repl {:port 3311}
- :adapter/nginx {:config "conf/nginx.conf"}
- 
- :adapter/handler {:sente #ig/ref :adapter/sente
-                   ;;:routes handler/routes
-                   ;;:handler roll.handler/default-handler
-                   }
+{:roll/repl {:port 3311}
 
- :adapter/sente {;;:handler roll.sente/event-msg-handler
-                 ;;:handshake-data-fn data/handshake-fn
-                 }}
+ :roll/nginx {:config "conf/nginx.conf"}
+ 
+ :roll/handler {:sente #ig/ref :roll/sente
+                ;; :routes <.. my.project/routes ..>
+                ;; :handler <.. my.project/handler ..>
+                ;; :sente true or #ig/ref
+                
+                ;; -- default --
+                ;; {:handler roll.handler/default-handler}
+                }
+
+ :roll/sente { ;; :handler <.. my.project/event-msg-handler ..>
+              ;; :handshake-data-fn <.. my.project/handshake-fn ..>
+
+              ;; -- default --
+              ;; {:handler roll.sente/event-msg-handler}
+              }
+
+ :roll/file { ;; :path <.. "some/file.path" ..>
+             ;; :init  <.. descryptors.data/init! ..>
+             ;; :watch true
+             }}

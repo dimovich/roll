@@ -6,7 +6,7 @@
 
 
 
-(defmethod ig/init-key :data/file [_ {:keys [path init watch] :as opts}]
+(defmethod ig/init-key :roll/file [_ {:keys [path init watch] :as opts}]
   (let [{:as opts :keys [init watch]} (resolve-map-syms opts)]
     (info "data file: " opts)
     
@@ -20,7 +20,7 @@
 
 
 
-(defmethod ig/halt-key! :data/file [_ stop-fn]
+(defmethod ig/halt-key! :roll/file [_ stop-fn]
   (when stop-fn
     (info "stopping data file watch...")
     (stop-fn)))

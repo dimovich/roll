@@ -6,14 +6,14 @@
 
 
 
-(defmethod ig/init-key :adapter/httpkit [_ {:as opts :keys [handler]}]
+(defmethod ig/init-key :roll/httpkit [_ {:as opts :keys [handler]}]
   (info "starting httpkit: " opts)
   (let [handler (or handler (get-default-handler))]
     (httpkit/run-server handler (select-keys opts [:port]))))
 
 
 
-(defmethod ig/halt-key! :adapter/httpkit [_ stop-fn]
+(defmethod ig/halt-key! :roll/httpkit [_ stop-fn]
   (when stop-fn
     (info "stopping httpkit...")
     (stop-fn)))

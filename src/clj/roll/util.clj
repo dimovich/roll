@@ -4,7 +4,9 @@
 
 
 ;; todo: make recursive
-(defn resolve-map-syms [m]
+(defn resolve-map-syms
+  "Find values that are symbols, and resolve them."
+  [m]
   (->> m (transform
           [MAP-VALS]
           (fn [v]

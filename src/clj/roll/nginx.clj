@@ -7,8 +7,7 @@
 
 
 
-(defmethod ig/init-key
-  :adapter/nginx [_ {:keys [config handler] :as opts}]
+(defmethod ig/init-key :roll/nginx [_ {:keys [config handler] :as opts}]
   (info "starting nginx: " opts)
   (let [handler (or handler (get-default-handler))]
     (if config
@@ -17,6 +16,6 @@
 
 
 
-(defmethod ig/halt-key! :adapter/nginx [_ _]
+(defmethod ig/halt-key! :roll/nginx [_ _]
   (info "stopping nginx...")
   (embed/stop-server))

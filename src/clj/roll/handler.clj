@@ -61,7 +61,7 @@
 
 
 
-(defmethod ig/init-key :adapter/handler [_ opts]
+(defmethod ig/init-key :roll/handler [_ opts]
   (info "initializing handler with" (keys opts))
 
   (let [{:as opts :keys [handler]}
