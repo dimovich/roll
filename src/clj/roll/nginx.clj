@@ -7,12 +7,18 @@
 
 
 
-(defmethod ig/init-key :roll/nginx [_ {:keys [config handler] :as opts}]
-  (info "starting nginx: " opts)
-  (let [handler (or handler (get-default-handler))]
-    (if config
-      (embed/run-server config)
-      (embed/run-server handler (select-keys opts [:port])))))
+(defmethod ig/init-key :roll/nginx [_ opts]
+  (when-let [opts (cond (map? opts) opts
+                        (true? opts) {}
+                        :default nil)]
+
+    (info "starting nginx: " opts)
+    
+    (let [{:as opts :keys [config handler]} opts
+          handler (or handler (get-default-handler))]
+      (if config
+        (embed/run-server config)
+        (embed/run-server handler (select-keys opts [:port]))))))
 
 
 

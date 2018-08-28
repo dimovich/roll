@@ -6,10 +6,17 @@
 
 
 
-(defmethod ig/init-key :roll/httpkit [_ {:as opts :keys [handler]}]
-  (info "starting httpkit: " opts)
-  (let [handler (or handler (get-default-handler))]
-    (httpkit/run-server handler (select-keys opts [:port]))))
+(defmethod ig/init-key :roll/httpkit [_ opts]
+  (when-let [opts (cond (map? opts) opts
+                        (true? opts) {}
+                        :default nil)]
+
+    (info "starting httpkit: " opts)
+
+    (let [{:as opts :keys [handler port]
+           :or {port    5000
+                handler (get-default-handler)}} opts]
+      (httpkit/run-server handler {:port port}))))
 
 
 

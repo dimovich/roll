@@ -1,6 +1,9 @@
 {:roll/repl {:port 3311}
-
+ 
  :roll/nginx {:config "conf/nginx.conf"}
+ 
+ ;; - or -
+ ;; :roll/httpkit true
  
  :roll/handler {:sente #ig/ref :roll/sente
                 ;; :routes <.. my.project/routes ..>
