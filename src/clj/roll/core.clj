@@ -47,7 +47,7 @@
   
   (when-let [ig-config (cond (string? config) (ig/read-string (slurp config))
                              (map? config)    config
-                             nil)]
+                             :default nil)]
     
     (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
 
@@ -58,15 +58,15 @@
 
 
 
-;; (restart k1 k2 ...)
-(defn restart [k]
-  (ig/halt! (:roll @state) [k])
-  (->> (ig/init (:config @state) [k])
+(defn restart [& ks]
+  (ig/halt! (:roll @state) ks)
+  (->> (ig/init (:config @state) ks)
        (swap! state update :roll merge)))
 
 
 
 
+;; move to deps.edn?
 (defn -main [& args]
   (init "conf/config.edn"))
 
