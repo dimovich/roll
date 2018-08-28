@@ -22,6 +22,6 @@
               }
 
  :roll/file { ;; :path <.. "some/file.path" ..>
-             ;; :init  <.. descryptors.data/init! ..>
+             ;; :init  <.. my.project/file-init! ..>
              ;; :watch true
              }}
