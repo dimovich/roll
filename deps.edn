@@ -5,8 +5,7 @@
         org.clojure/core.async    {:mvn/version "0.4.474"}
         nrepl/nrepl {:mvn/version "0.4.5"}
         cider/cider-nrepl {:mvn/version "0.18.0"}
-        cider/piggieback {:mvn/version "0.3.9"}
-        javax.servlet/servlet-api {:mvn/version "2.5"}
+        javax.servlet/javax.servlet-api {:mvn/version "3.1.0"}
         integrant {:mvn/version "0.7.0-alpha2"}
         http-kit  {:mvn/version "2.3.0"}
         cheshire  {:mvn/version "5.8.0"}
