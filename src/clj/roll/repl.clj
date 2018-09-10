@@ -1,18 +1,18 @@
 (ns roll.repl
   (:require [taoensso.timbre :refer [info]]
-            [clojure.tools.nrepl.server :as nrepl-server]
+            [nrepl.server :as nrepl]
             [cider.nrepl :refer [cider-nrepl-handler]]
             [integrant.core :as ig]))
 
 
 
 (defn start [{port :port}]
-  (nrepl-server/start-server :handler cider-nrepl-handler
-                             :port port))
+  (nrepl/start-server :handler cider-nrepl-handler
+                      :port port))
 
 
 (defn stop [server]
-  (nrepl-server/stop-server server))
+  (nrepl/stop-server server))
 
 
 
