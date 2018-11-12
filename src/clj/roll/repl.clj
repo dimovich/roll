@@ -1,13 +1,18 @@
 (ns roll.repl
   (:require [taoensso.timbre :refer [info]]
             [nrepl.server :as nrepl]
-            [cider.nrepl :refer [cider-nrepl-handler]]
+            [cider.piggieback :as pback]
             [integrant.core :as ig]))
 
 
+(defn nrepl-handler []
+  (require 'cider.nrepl)
+  (ns-resolve 'cider.nrepl 'cider-nrepl-handler))
+
 
 (defn start [{port :port}]
-  (nrepl/start-server :handler cider-nrepl-handler
+  (nrepl/start-server :handler (nrepl-handler)
+                      :middleware [pback/wrap-cljs-repl]
                       :port port))
 
 

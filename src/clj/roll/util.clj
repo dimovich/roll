@@ -65,7 +65,7 @@
 
 (defn slurp-tsv
   "Download and decode tsv."
-  [url & [columns]]
+  [url & [fields]]
   (some->>
    ;; split into lines
    (clojure.string/split (slurp url)  #"\r\n")
@@ -76,8 +76,8 @@
    ;; remove header
    rest
    (#(cond->> %
-       ;; coerce
-       columns (map (fn [xs] (zipmap columns xs)))))))
+       ;; extract only given fields
+       fields (map (fn [xs] (zipmap fields xs)))))))
 
 
 
