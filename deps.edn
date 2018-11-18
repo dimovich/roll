@@ -1,20 +1,20 @@
 {:paths ["src/clj" "src/cljs" "src/cljc"]
 
- :deps {org.clojure/clojure       {:mvn/version "1.10.0-alpha5"}
-        org.clojure/clojurescript {:mvn/version "1.10.339"}
+ :deps {org.clojure/clojure       {:mvn/version "1.10.0-beta6"}
+        org.clojure/clojurescript {:mvn/version "1.10.439"}
         org.clojure/core.async    {:mvn/version "0.4.474"}
         nrepl/nrepl {:mvn/version "0.4.5"}
         cider/piggieback {:mvn/version "0.3.10"}
         cider/cider-nrepl {:mvn/version "0.18.0"}
         javax.servlet/javax.servlet-api {:mvn/version "3.1.0"}
-        integrant {:mvn/version "0.7.0-alpha2"}
+        integrant {:mvn/version "0.7.0"}
         http-kit  {:mvn/version "2.3.0"}
-        cheshire  {:mvn/version "5.8.0"}
-        com.rpl/specter      {:mvn/version "1.1.1"}
-        metosin/reitit-core  {:mvn/version "0.2.1"}
-        metosin/reitit-ring  {:mvn/version "0.2.1"}
-        metosin/muuntaja     {:mvn/version "0.6.0"}
-        ring/ring-core       {:mvn/version "1.7.0-RC2"}
+        cheshire  {:mvn/version "5.8.1"}
+        com.rpl/specter      {:mvn/version "1.1.2"}
+        metosin/reitit-core  {:mvn/version "0.2.7"}
+        metosin/reitit-ring  {:mvn/version "0.2.7"}
+        metosin/muuntaja     {:mvn/version "0.6.1"}
+        ring/ring-core       {:mvn/version "1.7.1"}
         com.taoensso/timbre  {:mvn/version "4.10.0"}
         com.taoensso/sente   {:mvn/version "1.13.1"}
         nginx-clojure        {:mvn/version "0.4.5"}
