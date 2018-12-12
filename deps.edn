@@ -1,6 +1,6 @@
 {:paths ["src/clj" "src/cljs" "src/cljc"]
 
- :deps {org.clojure/clojure       {:mvn/version "1.10.0-beta6"}
+ :deps {org.clojure/clojure       {:mvn/version "1.10.0-RC4"}
         org.clojure/clojurescript {:mvn/version "1.10.439"}
         org.clojure/core.async    {:mvn/version "0.4.474"}
         nrepl/nrepl {:mvn/version "0.4.5"}

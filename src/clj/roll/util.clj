@@ -15,11 +15,31 @@
               v)))))
 
 
+
+
+(defn read-edn [path]
+  (with-open [r (java.io.PushbackReader.
+                 (clojure.java.io/reader path))]
+    (binding [*read-eval* false]
+      (read r))))
+
+
+
+
+(defn write-edn [path data]
+  (with-open [w (clojure.java.io/writer path)]
+    (binding [*out* w
+              *print-length* nil]
+      (pr data))))
+
+
+
+
 (defmacro load-edn [file]
   (slurp file))
 
 
-
+;; todo: use read-edn
 (defmacro with-in-> [in & body]
   `(-> ~in
        slurp
@@ -27,7 +47,7 @@
        ~@body))
 
 
-
+;; todo: use write-edn
 (defmacro with-out-> [out & body]
   `(binding [*print-length* nil]
      (-> ~@body
@@ -98,3 +118,4 @@
         (->> (interpose "|" coll)
              (apply str))
         ")\\b")))
+
