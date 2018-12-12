@@ -20,8 +20,7 @@
 (defn read-edn [path]
   (with-open [r (java.io.PushbackReader.
                  (clojure.java.io/reader path))]
-    (binding [*read-eval* false]
-      (read r))))
+    (clojure.edn/read r)))
 
 
 
