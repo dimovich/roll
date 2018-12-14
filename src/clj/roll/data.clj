@@ -7,8 +7,8 @@
 
 
 (defmethod ig/init-key :roll/file [_ {:keys [path init watch] :as opts}]
+  (info "data file: " opts)
   (let [{:as opts :keys [init watch]} (resolve-map-syms opts)]
-    (info "data file: " opts)
     
     (when init
       (init path))
