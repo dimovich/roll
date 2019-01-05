@@ -1,7 +1,8 @@
 (ns roll.sente
   (:require [taoensso.timbre :refer [info]]
             [taoensso.sente  :as sente :refer [cb-success?]]
-            [taoensso.sente.packers.transit :as sente-transit]))
+            [taoensso.sente.packers.transit :as sente-transit]
+            [datascript.transit :as dt]))
 
 
 
@@ -31,7 +32,9 @@
   (let [{:keys [chsk ch-recv send-fn state]}
         (sente/make-channel-socket-client!
          "/chsk"
-         (-> {:packer (sente-transit/get-transit-packer)}
+         ;;(sente-transit/get-transit-packer)
+         (-> {:packer (sente-transit/->TransitPacker
+                       :json dt/write-handlers dt/read-handlers)}
              (merge opts)))]
     {:chsk       chsk
      :ch-chsk    ch-recv

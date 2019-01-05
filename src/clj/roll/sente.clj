@@ -2,6 +2,7 @@
   (:require [taoensso.timbre :refer [info]]
             [taoensso.sente  :as sente]
             [integrant.core  :as ig]
+            [datascript.transit :as dt]
             [taoensso.sente.server-adapters.nginx-clojure :refer [get-sch-adapter]]
             ;;[taoensso.sente.server-adapters.http-kit :refer [get-sch-adapter]]
             [taoensso.sente.packers.transit :as sente-transit]
@@ -43,7 +44,9 @@
         
         (sente/make-channel-socket!
          (get-sch-adapter)
-         (-> {:packer (sente-transit/get-transit-packer)
+         ;;(sente-transit/get-transit-packer)
+         (-> {:packer (sente-transit/->TransitPacker
+                       :json dt/write-handlers dt/read-handlers)
               :user-id-fn #(:client-id %)}
              (merge opts)))]
 
