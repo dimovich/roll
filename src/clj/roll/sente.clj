@@ -46,7 +46,9 @@
          (get-sch-adapter)
          ;;(sente-transit/get-transit-packer)
          (-> {:packer (sente-transit/->TransitPacker
-                       :json dt/write-handlers dt/read-handlers)
+                       :json
+                       {:handlers dt/write-handlers}
+                       {:handlers dt/read-handlers})
               :user-id-fn #(:client-id %)}
              (merge opts)))]
 

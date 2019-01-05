@@ -34,7 +34,9 @@
          "/chsk"
          ;;(sente-transit/get-transit-packer)
          (-> {:packer (sente-transit/->TransitPacker
-                       :json dt/write-handlers dt/read-handlers)}
+                       :json
+                       {:handlers dt/write-handlers}
+                       {:handlers dt/read-handlers})}
              (merge opts)))]
     {:chsk       chsk
      :ch-chsk    ch-recv
