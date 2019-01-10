@@ -11,7 +11,7 @@
 
 
 
-(def default-middlewares
+(def default-middleware
   [wrap-params
    wrap-keyword-params
    wrap-format])
@@ -19,8 +19,8 @@
 
 
 (defn init-router
-  "Create router with default middleware and optional extra routes."
-  [& [{:keys [sente routes]}]]
+  "Create router with default middleware and optional extra routes and middleware."
+  [& [{:keys [sente routes middleware]}]]
   (let [new-routes
         (cond-> []
           routes (into routes)
@@ -29,7 +29,7 @@
 
     (ring/router
      new-routes
-     {:data {:middleware default-middlewares}})))
+     {:data {:middleware (into default-middleware middleware)}})))
 
 
 

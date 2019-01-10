@@ -3,16 +3,25 @@
             [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]))
 
 
-;; todo: make recursive
+
+(defn sym->var [s]
+  (if (symbol? s)
+    @(resolve s)
+    s))
+
+
+
 (defn resolve-map-syms
   "Find values that are symbols, and resolve them."
   [m]
   (->> m (transform
           [MAP-VALS]
           (fn [v]
-            (if (symbol? v)
-              @(resolve v)
-              v)))))
+            (if (coll? v)
+              (into (empty v) (map sym->var v))
+              (if (map? v)
+                (resolve-map-syms v)
+                (sym->var v)))))))
 
 
 
@@ -65,6 +74,9 @@
          (#(spit ~out %)))))
 
 
+;; use this instead?
+#_(with-open [r (java.io.PushbackReader.
+               (clojure.java.io/reader path))])
 
 (defmacro when-read [[name fname] & body]
   `(let [file# (io/file ~fname)]
