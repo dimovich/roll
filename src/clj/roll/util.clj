@@ -1,6 +1,7 @@
 (ns roll.util
   (:require [clojure.java.io :as io]
-            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]))
+            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]])
+  (:import [java.io PushbackReader]))
 
 
 
@@ -25,19 +26,22 @@
 
 
 
+(defn get-path [path]
+  (or (io/resource path) path))
+
+
 
 (defn read-edn [path]
-  (with-open [r (java.io.PushbackReader.
-                 (clojure.java.io/reader path))]
+  (with-open [r (PushbackReader. (io/reader (get-path path)))]
     (clojure.edn/read r)))
 
 
 
 
 (defn write-edn [path data]
-  (with-open [w (clojure.java.io/writer path)]
-    (binding [*out* w
-              *print-length* nil]
+  (with-open [w (io/writer path)]
+    (binding [*print-length* nil
+              *out* w]
       (pr data))))
 
 
@@ -47,12 +51,14 @@
   (slurp file))
 
 
+
 ;; todo: use read-edn
 (defmacro with-in-> [in & body]
   `(-> ~in
        slurp
        clojure.edn/read-string
        ~@body))
+
 
 
 ;; todo: use write-edn
@@ -74,9 +80,7 @@
          (#(spit ~out %)))))
 
 
-;; use this instead?
-#_(with-open [r (java.io.PushbackReader.
-               (clojure.java.io/reader path))])
+
 
 (defmacro when-read [[name fname] & body]
   `(let [file# (io/file ~fname)]
@@ -85,6 +89,16 @@
          (let [~name (slurp rdr#)]
            ~@body)))))
 
+
+
+
+(defmacro when-read-edn [[name path] & body]
+  `(let [file# (io/file (get-path ~path))]
+     (when (.exists file#)
+       (with-open [rdr# (java.io.PushbackReader.
+                         (clojure.java.io/reader file#))]
+         (when-let [~name (clojure.edn/read rdr#)]
+           ~@body)))))
 
 
 

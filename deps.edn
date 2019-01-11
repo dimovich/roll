@@ -5,15 +5,16 @@
         org.clojure/core.async    {:mvn/version "0.4.490"}
         nrepl/nrepl {:mvn/version "0.5.3"}
         cider/piggieback {:mvn/version "0.3.10"}
-        cider/cider-nrepl {:mvn/version "0.18.0"}
+        cider/cider-nrepl {:mvn/version "0.19.0"}
         javax.servlet/javax.servlet-api {:mvn/version "3.1.0"}
         integrant {:mvn/version "0.7.0"}
         http-kit  {:mvn/version "2.3.0"}
         cheshire  {:mvn/version "5.8.1"}
         com.rpl/specter      {:mvn/version "1.1.2"}
-        metosin/reitit-core  {:mvn/version "0.2.9"}
-        metosin/reitit-ring  {:mvn/version "0.2.9"}
-        metosin/muuntaja     {:mvn/version "0.6.3"}
+        metosin/reitit-core {:mvn/version "0.2.10"}
+        metosin/reitit-ring {:mvn/version "0.2.10"}
+        metosin/reitit-middleware {:mvn/version "0.2.10"}
+        ;;metosin/muuntaja {:mvn/version "0.6.3"}
         ring/ring-core       {:mvn/version "1.7.1"}
         com.taoensso/timbre  {:mvn/version "4.10.0"}
         com.taoensso/sente   {:mvn/version "1.13.1"}

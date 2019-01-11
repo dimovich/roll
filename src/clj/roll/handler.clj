@@ -1,20 +1,22 @@
 (ns roll.handler
   (:require [taoensso.timbre :refer [info]]
-            [ring.middleware.params         :refer [wrap-params]]
+            [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
-            [muuntaja.middleware            :refer [wrap-format]]
             [integrant.core :as ig]
             [reitit.core :as r]
             [reitit.ring :as ring]
-            [roll.sente  :as sente]
-            [roll.util   :refer [resolve-map-syms]]))
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            [muuntaja.core :as m]
+            [roll.sente :as sente]
+            [roll.util :refer [resolve-map-syms]]))
+
 
 
 
 (def default-middleware
   [wrap-params
    wrap-keyword-params
-   wrap-format])
+   muuntaja/format-middleware])
 
 
 
@@ -29,7 +31,8 @@
 
     (ring/router
      new-routes
-     {:data {:middleware (into default-middleware middleware)}})))
+     {:data {:muuntaja m/instance
+             :middleware (into default-middleware middleware)}})))
 
 
 
