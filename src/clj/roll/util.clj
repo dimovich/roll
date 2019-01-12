@@ -10,19 +10,22 @@
     @(resolve s)
     s))
 
+(declare resolve-map-syms)
+(declare resolve-coll-syms)
+
+(defn resolve-sym [v]
+  (cond
+    (coll? v) (resolve-coll-syms v)
+    (map? v) (resolve-map-syms v)
+    :else (sym->var v)))
 
 
-(defn resolve-map-syms
-  "Find values that are symbols, and resolve them."
-  [m]
-  (->> m (transform
-          [MAP-VALS]
-          (fn [v]
-            (if (coll? v)
-              (into (empty v) (map sym->var v))
-              (if (map? v)
-                (resolve-map-syms v)
-                (sym->var v)))))))
+(defn resolve-map-syms [m]
+  (transform [MAP-VALS] resolve-sym m))
+
+
+(defn resolve-coll-syms [coll]
+  (transform [ALL] resolve-sym coll))
 
 
 

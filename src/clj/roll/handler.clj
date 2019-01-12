@@ -6,6 +6,7 @@
             [reitit.core :as r]
             [reitit.ring :as ring]
             [reitit.ring.middleware.muuntaja :as muuntaja]
+            ;;[reitit.ring.middleware.dev :as rdev]
             [muuntaja.core :as m]
             [roll.sente :as sente]
             [roll.util :refer [resolve-map-syms]]))
@@ -31,7 +32,8 @@
 
     (ring/router
      new-routes
-     {:data {:muuntaja m/instance
+     {;;:reitit.middleware/transform rdev/print-request-diffs
+      :data {:muuntaja m/instance
              :middleware (into default-middleware middleware)}})))
 
 

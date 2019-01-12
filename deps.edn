@@ -14,6 +14,7 @@
         metosin/reitit-core {:mvn/version "0.2.10"}
         metosin/reitit-ring {:mvn/version "0.2.10"}
         metosin/reitit-middleware {:mvn/version "0.2.10"}
+        metosin/spec-tools {:mvn/version "0.8.2"}
         ;;metosin/muuntaja {:mvn/version "0.6.3"}
         ring/ring-core       {:mvn/version "1.7.1"}
         com.taoensso/timbre  {:mvn/version "4.10.0"}
