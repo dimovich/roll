@@ -21,12 +21,15 @@
         com.taoensso/sente   {:mvn/version "1.13.1"}
         nginx-clojure        {:mvn/version "0.4.5"}
         nginx-clojure/nginx-clojure-embed {:mvn/version "0.4.5"}
-        com.cognitect/transit-clj   {:mvn/version "0.8.313"}
-        com.cognitect/transit-cljs  {:mvn/version "0.8.256"}
-        datascript   {:mvn/version "0.18.1"}
-        datascript-transit {:mvn/version "0.2.2"
-                            :exclusions [com.cognitect/transit-clj
-                                         com.cognitect/transit-cljs]}}
+        ;;com.cognitect/transit-clj {:mvn/version "0.8.313"}
+        ;;com.cognitect/transit-cljs {:mvn/version "0.8.256"}
+        datascript {:mvn/version "0.18.1"}
+        datascript-transit {:git/url "https://github.com/dimovich/datascript-transit.git"
+                            :sha "a53363cd82e2819488d868f4586eff1052bb721a"}
+        ;;datascript-transit
+        #_{:mvn/version "0.2.2"
+           :exclusions [com.cognitect/transit-clj
+                        com.cognitect/transit-cljs]}}
  
  :aliases
  {:run
