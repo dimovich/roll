@@ -25,7 +25,8 @@
         ;;com.cognitect/transit-cljs {:mvn/version "0.8.256"}
         datascript {:mvn/version "0.18.1"}
         datascript-transit {:git/url "https://github.com/dimovich/datascript-transit.git"
-                            :sha "a53363cd82e2819488d868f4586eff1052bb721a"}
+                            :sha "6fef6bfb4bbaa4a117019c63a3a1ea0bd46effe9"}
+        
         ;;datascript-transit
         #_{:mvn/version "0.2.2"
            :exclusions [com.cognitect/transit-clj
