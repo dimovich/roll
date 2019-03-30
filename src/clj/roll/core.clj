@@ -1,14 +1,8 @@
 (ns roll.core
   (:require [taoensso.timbre :as timbre :refer [info]]
             [taoensso.timbre.appenders.core :as appenders]
-            [integrant.core :as ig]
-            ;;[roll.handler]
-            ;;[roll.httpkit]
-            ;;[roll.sente]
-            ;;[roll.nginx]
-            ;;[roll.file]
-            ;;[roll.repl]
-            ))
+            [integrant.core :as ig]))
+
 
 
 (defonce state (atom nil))

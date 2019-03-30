@@ -38,15 +38,22 @@
 
 
 (defn get-sch-adapter []
-  (when-let [sym (cond
+  (when-let
+      [sym (symbol
+            (str "taoensso.sente.server-adapters."
+                 (cond
                    (resolve 'org.httpkit.server/run-server)
-                   'taoensso.sente.server-adapters.http-kit
+                   'http-kit
 
                    (resolve 'nginx.clojure.embed/run-server)
-                   'taoensso.sente.server-adapters.nginx-clojure)]
-  
-    (require sym)
-    ((resolve (symbol (str sym "/get-sch-adapter"))))))
+                   'nginx-clojure
+
+                   (resolve 'aleph.http/start-server)
+                   'aleph)))]
+    
+      (require sym)
+      ((resolve (symbol (str sym "/get-sch-adapter"))))))
+
 
 
 

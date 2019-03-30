@@ -3,7 +3,9 @@
  ;;:roll/nginx {:config "conf/nginx.conf"}
  
  ;; - or -
- :roll/httpkit {}
+ ;;:roll/httpkit {}
+
+ :roll/aleph {}
  
  :roll/handler {:sente #ig/ref :roll/sente
                 ;; :routes <.. my.project/routes ..>
