@@ -3,14 +3,13 @@
             [taoensso.sente  :as sente]
             [integrant.core  :as ig]
             [datascript.transit :as dt]
-            [taoensso.sente.server-adapters.nginx-clojure :refer [get-sch-adapter]]
+            ;;[taoensso.sente.server-adapters.nginx-clojure :refer [get-sch-adapter]]
             ;;[taoensso.sente.server-adapters.http-kit :refer [get-sch-adapter]]
             [taoensso.sente.packers.transit :as sente-transit]
             [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
             [roll.util :refer [resolve-map-syms]]))
 
 
-;; fixme: use tools.deps to dynamically load nginx / httpkit adapters?
 
 ;; fixme: another way?
 (def sente-fns (atom nil))
@@ -35,6 +34,19 @@
     (when ?reply-fn
       (?reply-fn {:umatched-event event}))))
 
+
+
+
+(defn get-sch-adapter []
+  (when-let [sym (cond
+                   (resolve 'org.httpkit.server/run-server)
+                   'taoensso.sente.server-adapters.http-kit
+
+                   (resolve 'nginx.clojure.embed/run-server)
+                   'taoensso.sente.server-adapters.nginx-clojure)]
+  
+    (require sym)
+    ((resolve (symbol (str sym "/get-sch-adapter"))))))
 
 
 

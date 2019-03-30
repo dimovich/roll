@@ -1,4 +1,4 @@
-(ns roll.data
+(ns roll.file
   (:require [taoensso.timbre :refer [info]]
             [integrant.core  :as ig]
             [roll.filewatch :as fw]

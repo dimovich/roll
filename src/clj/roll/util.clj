@@ -10,8 +10,10 @@
     @(resolve s)
     s))
 
+
 (declare resolve-map-syms)
 (declare resolve-coll-syms)
+
 
 (defn resolve-sym [v]
   (cond
@@ -40,12 +42,28 @@
 
 
 
+(defn- read-one [r]
+  (try
+    (clojure.edn/read r)
+    (catch java.lang.RuntimeException e
+      (if (= "EOF while reading" (.getMessage e))
+        ::EOF
+        (throw e)))))
 
-(defn write-edn [path data]
-  (with-open [w (io/writer path)]
+
+
+(defn read-edn-seq [path]
+  (with-open [r (PushbackReader. (io/reader (get-path path)))]
+    (doall (take-while #(not= ::EOF %) (repeatedly #(read-one r))))))
+
+
+
+
+(defn write-edn [path data & opts]
+  (with-open [w (apply io/writer path opts)]
     (binding [*print-length* nil
               *out* w]
-      (pr data))))
+      (prn data))))
 
 
 

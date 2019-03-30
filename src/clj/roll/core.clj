@@ -2,12 +2,13 @@
   (:require [taoensso.timbre :as timbre :refer [info]]
             [taoensso.timbre.appenders.core :as appenders]
             [integrant.core :as ig]
-            [roll.handler]
-            [roll.httpkit]
-            [roll.sente]
-            [roll.nginx]
-            [roll.data]
-            [roll.repl]))
+            ;;[roll.handler]
+            ;;[roll.httpkit]
+            ;;[roll.sente]
+            ;;[roll.nginx]
+            ;;[roll.file]
+            ;;[roll.repl]
+            ))
 
 
 (defonce state (atom nil))
@@ -51,10 +52,12 @@
     
     (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
 
+    (ig/load-namespaces ig-config)
     (swap! state assoc :config ig-config)
     
     (->> (ig/init ig-config)
          (swap! state assoc :roll))))
+
 
 
 
