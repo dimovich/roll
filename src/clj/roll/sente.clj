@@ -3,8 +3,6 @@
             [taoensso.sente  :as sente]
             [integrant.core  :as ig]
             [datascript.transit :as dt]
-            ;;[taoensso.sente.server-adapters.nginx-clojure :refer [get-sch-adapter]]
-            ;;[taoensso.sente.server-adapters.http-kit :refer [get-sch-adapter]]
             [taoensso.sente.packers.transit :as sente-transit]
             [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
             [roll.util :refer [resolve-map-syms]]))
