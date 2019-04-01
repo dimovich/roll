@@ -5,6 +5,17 @@
 
 
 
+#_(defn- try-resolve
+  "Tries to require and resolve the given namespace-qualified symbol, returning nil if not found."
+  [sym]
+  (try
+    (require (symbol (namespace sym)))
+    (resolve sym)
+    (catch java.io.FileNotFoundException _)
+    (catch RuntimeException _)))
+
+
+
 (defn sym->var [s]
   (if (symbol? s)
     @(resolve s)

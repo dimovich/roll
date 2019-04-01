@@ -59,15 +59,17 @@
 (defn get-default-handler
   "Make sure we have an initialized handler and return it."
   []
-  (when-not (realized? @ring-handler)
+  (when-not (or (realized? @ring-handler)
+                (delay? @ring-handler))
     (deliver @ring-handler (init-handler)))
+  
   default-handler)
 
 
 
 
 (defmethod ig/init-key :roll/handler [_ opts]
-  (info "initializing handler with" (keys opts))
+  (info "initializing handler with:" opts)
 
   (let [{:as opts :keys [handler]}
         (cond-> (resolve-map-syms opts)
@@ -75,7 +77,15 @@
           (assoc :sente (sente/start-sente)))]
 
     (->> (or handler (init-handler opts))
-         (deliver @ring-handler))
+         (delay)
+         (reset! ring-handler))
     
     default-handler))
 
+
+
+
+(defmethod ig/halt-key! :roll/handler [_ handler]
+  (when handler
+    (info "reseting handler...")
+    (reset! ring-handler (promise))))
