@@ -81,9 +81,10 @@
 
 
 
-(defn read-edn-seq [path]
+(defn read-edn-seq [path & [f]]
   (with-open [r (PushbackReader. (io/reader (get-path path)))]
-    (doall (take-while #(not= ::EOF %) (repeatedly #(read-one r))))))
+    (doall (cond->> (take-while #(not= ::EOF %) (repeatedly #(read-one r)))
+             f (map f)))))
 
 
 
