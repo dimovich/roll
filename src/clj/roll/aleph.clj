@@ -2,7 +2,8 @@
   (:require [taoensso.timbre :refer [info]]
             [integrant.core :as ig]
             [aleph.http :as http]
-            [roll.handler :refer [get-default-handler]]))
+            [roll.handler :refer [get-default-handler]]
+            [roll.util :as u]))
 
 
 
@@ -11,7 +12,8 @@
                         (true? opts) {}
                         :default nil)]
 
-    (info "starting aleph: " opts)
+    (info "starting aleph with:")
+    (info (u/spp opts))
 
     (let [{:as opts :keys [handler port]
            :or {port    5000

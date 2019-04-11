@@ -5,7 +5,7 @@
             [datascript.transit :as dt]
             [taoensso.sente.packers.transit :as sente-transit]
             [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
-            [roll.util :refer [resolve-map-syms]]))
+            [roll.util :as u :refer [resolve-map-syms]]))
 
 
 
@@ -78,7 +78,8 @@
 
 
 (defn start-sente [& [opts]]
-  (info "starting sente: " opts)
+  (info "starting sente with:")
+  (info (u/spp opts))
   
   (let [{:as opts :keys [handler]
          :or {handler event-msg-handler}} (resolve-map-syms opts)

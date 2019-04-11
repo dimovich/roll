@@ -9,7 +9,7 @@
             ;;[reitit.ring.middleware.dev :as rdev]
             [muuntaja.core :as m]
             [roll.sente :as sente]
-            [roll.util :refer [resolve-map-syms]]))
+            [roll.util :refer [resolve-map-syms spp]]))
 
 
 
@@ -69,7 +69,8 @@
 
 
 (defmethod ig/init-key :roll/handler [_ opts]
-  (info "initializing handler with:" opts)
+  (info "initializing handler with:")
+  (info (spp opts))
 
   (let [{:as opts :keys [handler]}
         (cond-> (resolve-map-syms opts)

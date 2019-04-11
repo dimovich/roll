@@ -1,8 +1,9 @@
 (ns roll.httpkit
   (:require [taoensso.timbre :refer [info]]
-            [integrant.core     :as ig]
+            [integrant.core :as ig]
             [org.httpkit.server :as httpkit]
-            [roll.handler       :refer [get-default-handler]]))
+            [roll.handler :refer [get-default-handler]]
+            [roll.util :as u]))
 
 
 
@@ -11,7 +12,8 @@
                         (true? opts) {}
                         :default nil)]
 
-    (info "starting httpkit: " opts)
+    (info "starting httpkit:")
+    (info (u/spp opts))
 
     (let [{:as opts :keys [handler port]
            :or {port    5000

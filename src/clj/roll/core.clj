@@ -28,9 +28,9 @@
 
 
 (defn halt! []
-  (info "shutting down...")
-  (some-> (:roll @state)
-          ig/halt!))
+  (when-let [roll-state (:roll @state)]
+    (info "shutting down...")
+    (ig/halt! roll-state)))
 
 
 
@@ -48,6 +48,8 @@
 
     (ig/load-namespaces ig-config)
     (swap! state assoc :config ig-config)
+
+    (halt!) ;;stop current services
     
     (->> (ig/init ig-config)
          (swap! state assoc :roll))))

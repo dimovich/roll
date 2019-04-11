@@ -176,3 +176,7 @@
              (apply str))
         ")\\b")))
 
+
+
+(defn spp [& args]
+  (with-out-str (apply clojure.pprint/pprint args)))

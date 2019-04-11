@@ -2,7 +2,8 @@
   (:require [taoensso.timbre :refer [info]]
             [nginx.clojure.embed :as embed]
             [integrant.core :as ig]
-            [roll.handler :refer [get-default-handler]]))
+            [roll.handler :refer [get-default-handler]]
+            [roll.util :as u]))
 
 
 
@@ -12,7 +13,8 @@
                         (true? opts) {}
                         :default nil)]
 
-    (info "starting nginx: " opts)
+    (info "starting nginx:")
+    (info (u/spp opts))
     
     (let [{:as opts :keys [config handler]} opts
           handler (or handler (get-default-handler))]
