@@ -36,8 +36,10 @@
     :else (sym->var v)))
 
 
+
 (defn resolve-map-syms [m]
   (transform [MAP-VALS] resolve-sym m))
+
 
 
 (defn resolve-coll-syms [coll]
@@ -63,6 +65,7 @@
       (if (= "EOF while reading" (.getMessage e))
         ::EOF
         (throw e)))))
+
 
 
 
@@ -96,12 +99,14 @@
 
 
 
+
 ;; todo: use write-edn
 (defmacro with-out-> [out & body]
   `(binding [*print-length* nil]
      (-> ~@body
          pr-str
          (#(spit ~out %)))))
+
 
 
 
@@ -137,13 +142,15 @@
 
 
 
+
 (defn parse-int [s]
   (try (Integer/parseInt (re-find #"\A-?\d+" s))
        (catch Exception e nil)))
 
 
 
-(defn get-body
+
+(defn get-html
   "Try downloading url with configurable failover."
   [url & [opts]]
   (let [resp (looper/get url opts)]
@@ -163,21 +170,13 @@
 
 
 
-(defn slurp-tsv
-  "Download and decode tsv."
-  [url & [fields]]
+(defn read-tsv [tsv]
   (some->>
-   ;; split into lines
-   (clojure.string/split (get-body url)  #"\r\n")
-   ;; each line split into columns
+   (clojure.string/split tsv #"[\r\n]")
    (map #(clojure.string/split % #"\t"))
-   ;; remove lines that don't have the first column
-   (remove #(-> % first empty?))
-   ;; remove header
-   rest
-   (#(cond->> %
-       ;; extract only given fields
-       fields (map (fn [xs] (zipmap fields xs)))))))
+   ((juxt (comp cycle list first) rest))
+   (apply map zipmap)))
+
 
 
 
@@ -189,6 +188,7 @@
         (recur (update m k (get coerce-fns k))
                rst)
         m))))
+
 
 
 
