@@ -1,5 +1,7 @@
 (ns roll.util
   (:require [clojure.java.io :as io]
+            [looper.client :as looper]
+            [cheshire.core :as cheshire]
             [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]])
   (:import [java.io PushbackReader]))
 
@@ -16,6 +18,7 @@
 
 
 
+;; todo: better errors when symbol can't be resolved ^
 (defn sym->var [s]
   (if (symbol? s)
     @(resolve s)
@@ -180,3 +183,24 @@
 
 (defn spp [& args]
   (with-out-str (apply clojure.pprint/pprint args)))
+
+
+
+
+(defn get-body
+  "Try downloading url with configurable failover."
+  [url & [opts]]
+  (let [resp (looper/get url opts)]
+    (when (= 200 (:status resp))
+      (:body resp))))
+
+
+
+
+(defn get-json
+  "Try downloading url and decode json, with configurable failover."
+  [url & [opts]]
+  (let [resp (looper/get url opts)]
+    (when (= 200 (:status resp))
+      (cheshire/decode (:body resp)))))
+
