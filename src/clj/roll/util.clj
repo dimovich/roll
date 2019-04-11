@@ -2,6 +2,7 @@
   (:require [clojure.java.io :as io]
             [looper.client :as looper]
             [cheshire.core :as cheshire]
+            [clojure.java.io :as jio]
             [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]])
   (:import [java.io PushbackReader]))
 
@@ -19,6 +20,7 @@
 
 
 ;; todo: better errors when symbol can't be resolved ^
+;; but errors are good to pay attention to
 (defn sym->var [s]
   (if (symbol? s)
     @(resolve s)
@@ -36,14 +38,24 @@
     :else (sym->var v)))
 
 
-
 (defn resolve-map-syms [m]
   (transform [MAP-VALS] resolve-sym m))
 
 
-
 (defn resolve-coll-syms [coll]
   (transform [ALL] resolve-sym coll))
+
+
+
+
+(defn exists? [path]
+  (.exists (io/file path)))
+
+
+
+(defn url? [s]
+  (try (boolean (jio/as-url s))
+       (catch Exception ex false)))
 
 
 
