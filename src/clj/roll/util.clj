@@ -143,12 +143,32 @@
 
 
 
+(defn get-body
+  "Try downloading url with configurable failover."
+  [url & [opts]]
+  (let [resp (looper/get url opts)]
+    (when (= 200 (:status resp))
+      (:body resp))))
+
+
+
+
+(defn get-json
+  "Try downloading url and decode json, with configurable failover."
+  [url & [opts]]
+  (let [resp (looper/get url opts)]
+    (when (= 200 (:status resp))
+      (cheshire/decode (:body resp)))))
+
+
+
+
 (defn slurp-tsv
   "Download and decode tsv."
   [url & [fields]]
   (some->>
    ;; split into lines
-   (clojure.string/split (slurp url)  #"\r\n")
+   (clojure.string/split (get-body url)  #"\r\n")
    ;; each line split into columns
    (map #(clojure.string/split % #"\t"))
    ;; remove lines that don't have the first column
@@ -184,23 +204,4 @@
 (defn spp [& args]
   (with-out-str (apply clojure.pprint/pprint args)))
 
-
-
-
-(defn get-body
-  "Try downloading url with configurable failover."
-  [url & [opts]]
-  (let [resp (looper/get url opts)]
-    (when (= 200 (:status resp))
-      (:body resp))))
-
-
-
-
-(defn get-json
-  "Try downloading url and decode json, with configurable failover."
-  [url & [opts]]
-  (let [resp (looper/get url opts)]
-    (when (= 200 (:status resp))
-      (cheshire/decode (:body resp)))))
 
