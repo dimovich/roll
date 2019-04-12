@@ -182,11 +182,20 @@
 
 
 
+(defn decode-json [s]
+  (or
+   (some-> s (clojure.string/replace  #"'" "\"")
+           (cheshire/decode))
+   ""))
+
+
+
 
 (defn read-tsv [tsv]
   (some->>
-   (clojure.string/split tsv #"[\r\n]")
+   (clojure.string/split tsv  #"[\r\n]+")
    (map #(clojure.string/split % #"\t"))
+   (remove (comp empty? first))
    ((juxt (comp cycle list first) rest))
    (apply map zipmap)))
 
@@ -198,7 +207,8 @@
          ks (keys coerce-fns)]
     (let [[k & rst] ks]
       (if k
-        (recur (update m k (get coerce-fns k))
+        (recur (update m k (or (get coerce-fns k)
+                               identity))
                rst)
         m))))
 
