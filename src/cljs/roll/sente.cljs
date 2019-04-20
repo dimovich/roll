@@ -32,7 +32,7 @@
   (let [{:keys [chsk ch-recv send-fn state]}
         (sente/make-channel-socket-client!
          "/chsk"
-         ;;(sente-transit/get-transit-packer)
+         ;;or (sente-transit/get-transit-packer)
          (-> {:packer (sente-transit/->TransitPacker
                        :json
                        {:handlers dt/write-handlers}
@@ -58,3 +58,6 @@
          (sente/start-client-chsk-router! ch-chsk)
          (reset! router_))))
 
+
+(def start! start-router!)
+(def stop!  stop-router!)

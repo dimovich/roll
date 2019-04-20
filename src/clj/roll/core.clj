@@ -7,8 +7,9 @@
 
 (defonce state (atom nil))
 
-(derive :roll/httpkit :roll/ring)
-(derive :roll/nginx   :roll/ring)
+(derive :roll/httpkit :roll/server)
+(derive :roll/nginx   :roll/server)
+(derive :roll/aleph   :roll/server)
 
 
 (def default-appenders
@@ -41,18 +42,25 @@
     :appenders (select-keys default-appenders [:println])})
   
   (when-let [ig-config (cond (string? config) (ig/read-string (slurp config))
+                             ;; fixme
                              (map? config)    config
                              :default nil)]
-    
-    (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
 
-    (ig/load-namespaces ig-config)
-    (swap! state assoc :config ig-config)
+    ;; ensure we have sente when reloading
+    (let [ig-config (cond-> ig-config
+                      (:roll/reload ig-config)
+                      (update-in [:roll/handler :sente]
+                                 (fnil identity true)))]
+      
+      (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
 
-    (halt!) ;;stop current services
+      (ig/load-namespaces ig-config)
+      (swap! state assoc :config ig-config)
+
+      (halt!) ;;stop current services
     
-    (->> (ig/init ig-config)
-         (swap! state assoc :roll))))
+      (->> (ig/init ig-config)
+           (swap! state assoc :roll)))))
 
 
 

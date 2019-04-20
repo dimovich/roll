@@ -9,8 +9,7 @@
 
 
 
-;; fixme: another way?
-(def sente-fns (atom nil))
+(defonce sente-fns (atom nil))
 
 (defn send-evt [& args]
   (some-> @sente-fns :chsk-send! (apply args)))
@@ -32,6 +31,13 @@
     (when ?reply-fn
       (?reply-fn {:umatched-event event}))))
 
+
+
+(defn broadcast [event]
+  (when-let [uids (:any @(connected-uids))]
+    ;;(info "broadcasting data to" (count uids) "clients...")
+    (doseq [uid uids]
+      (send-evt uid event))))
 
 
 
