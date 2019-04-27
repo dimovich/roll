@@ -196,7 +196,7 @@
    (clojure.string/split tsv  #"[\r\n]+")
    (map #(clojure.string/split % #"\t"))
    ((juxt (comp cycle list first)
-          (comp (remove (comp empty? first)) rest)))
+          (comp (partial remove (comp empty? first)) rest)))
    (apply map zipmap)))
 
 
