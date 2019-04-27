@@ -82,7 +82,7 @@
 
 
 (defn start-sente [& [opts]]
-  (info "starting sente with:")
+  (info "starting roll/sente:")
   (info (u/spp opts))
   
   (let [{:as opts :keys [handler]
@@ -105,6 +105,6 @@
 
 (defmethod ig/halt-key! :roll/sente [_ {:keys [stop-fn]}]
   (when stop-fn
-    (info "stopping sente...")
+    (info "stopping roll/sente...")
     (stop-fn)))
 

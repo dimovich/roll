@@ -69,7 +69,7 @@
 
 
 (defmethod ig/init-key :roll/handler [_ opts]
-  (info "initializing handler with:")
+  (info "initializing roll/handler:")
   (info (spp opts))
 
   (let [{:as opts :keys [handler]}
@@ -88,5 +88,5 @@
 
 (defmethod ig/halt-key! :roll/handler [_ handler]
   (when handler
-    (info "reseting handler...")
+    (info "reseting roll/handler...")
     (reset! ring-handler (promise))))

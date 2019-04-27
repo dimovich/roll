@@ -12,7 +12,7 @@
                         (true? opts) {}
                         :default nil)]
 
-    (info "starting httpkit:")
+    (info "starting roll/httpkit:")
     (info (u/spp opts))
 
     (let [{:as opts :keys [handler port]
@@ -24,6 +24,6 @@
 
 (defmethod ig/halt-key! :roll/httpkit [_ stop-fn]
   (when stop-fn
-    (info "stopping httpkit...")
+    (info "stopping roll/httpkit...")
     (stop-fn)))
 

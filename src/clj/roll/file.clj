@@ -7,7 +7,7 @@
 
 
 (defmethod ig/init-key :roll/file [_ {:keys [path init watch] :as opts}]
-  (info "starting file watch with:")
+  (info "starting roll/file:")
   (info (u/spp opts))
   
   (let [{:as opts :keys [init watch]} (resolve-map-syms opts)]
@@ -24,6 +24,6 @@
 
 (defmethod ig/halt-key! :roll/file [_ stop-fn]
   (when stop-fn
-    (info "stopping data file watch...")
+    (info "stopping roll/file...")
     (stop-fn)))
 

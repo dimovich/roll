@@ -46,7 +46,7 @@
 
 
 (defmethod ig/init-key :roll/paths [_ opts]
-  (info "starting roll/paths with:")
+  (info "starting roll/paths:")
   (info (u/spp opts))
   
   (->> opts

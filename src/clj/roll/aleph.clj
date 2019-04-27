@@ -12,7 +12,7 @@
                         (true? opts) {}
                         :default nil)]
 
-    (info "starting aleph with:")
+    (info "starting roll/aleph:")
     (info (u/spp opts))
 
     (let [{:as opts :keys [handler port]
@@ -24,6 +24,6 @@
 
 (defmethod ig/halt-key! :roll/aleph [_ stop-fn]
   (when stop-fn
-    (info "stopping aleph...")
+    (info "stopping roll/aleph...")
     (.close stop-fn)))
 

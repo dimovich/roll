@@ -13,7 +13,7 @@
                         (true? opts) {}
                         :default nil)]
 
-    (info "starting nginx:")
+    (info "starting roll/nginx:")
     (info (u/spp opts))
     
     (let [{:as opts :keys [config handler]} opts
@@ -25,5 +25,5 @@
 
 
 (defmethod ig/halt-key! :roll/nginx [_ _]
-  (info "stopping nginx...")
+  (info "stopping roll/nginx...")
   (embed/stop-server))
