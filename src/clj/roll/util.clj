@@ -31,7 +31,7 @@
 (declare resolve-coll-syms)
 
 
-(defn resolve-sym [v]
+(defn resolve-syms [v]
   (cond
     (coll? v) (resolve-coll-syms v)
     (map? v) (resolve-map-syms v)
@@ -39,11 +39,11 @@
 
 
 (defn resolve-map-syms [m]
-  (transform [MAP-VALS] resolve-sym m))
+  (transform [MAP-VALS] resolve-syms m))
 
 
 (defn resolve-coll-syms [coll]
-  (transform [ALL] resolve-sym coll))
+  (transform [ALL] resolve-syms coll))
 
 
 

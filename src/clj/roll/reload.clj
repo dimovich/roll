@@ -53,7 +53,7 @@
 
 
 (defmethod ig/init-key :roll/reload [_ {:as opts :keys [css page]}]
-  (info "starting reload with:")
+  (info "starting roll/reload with:")
   (info (u/spp opts))
 
   (cond-> []
@@ -62,5 +62,5 @@
 
 
 (defmethod ig/halt-key! :roll/reload [_ _]
-  (info "stopping reload...")
+  (info "stopping roll/reload...")
   (w/stop!))
