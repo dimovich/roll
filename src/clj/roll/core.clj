@@ -29,8 +29,8 @@
 
 
 (defn halt! []
-  (info "shutting down...")
   (when-let [roll-state (:roll @state)]
+    (info "shutting down...")
     (ig/halt! roll-state)))
 
 
