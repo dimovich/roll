@@ -30,5 +30,8 @@
  :aliases
  {:run
   {:extra-paths ["resources"]
-   :main-opts ["-m" "roll.core"]}}}
+   :main-opts ["-m" "roll.core"]}
+
+  :cider
+  {:extra-paths ["resources"]}}}
 

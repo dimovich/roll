@@ -45,7 +45,8 @@
    (init-router opts)
    (ring/routes
     (ring/create-resource-handler {:path "/"})
-    (ring/create-default-handler))))
+    (ring/create-default-handler
+     (select-keys opts [:not-found])))))
 
 
 
@@ -90,3 +91,5 @@
   (when handler
     (info "reseting roll/handler...")
     (reset! ring-handler (promise))))
+
+

@@ -1,35 +1,42 @@
-{ ;;:roll/paths
- #_[["src/clj/roll"
-     {:init clojure.core/prn
-      :watch true}]]
- 
- ;;:roll/nginx {:config "conf/nginx.conf"}
- 
- ;; - or -
- :roll/httpkit {:port 5000}
+{
+ #_(
 
- ;;:roll/aleph {}
+    ;;:roll/paths
+    #_[["src/clj/roll"
+        {:init clojure.core/prn
+         :watch true}]]
  
- ;;:roll/handler
- #_{:sente #ig/ref :roll/sente
-    ;; :routes <.. my.project/routes ..>
-    ;; :handler <.. my.project/handler ..>
-    ;; :sente true or #ig/ref
+    ;;:roll/nginx {:config "conf/nginx.conf"}
+ 
+    ;; - or -
+    :roll/httpkit {:port 5000}
+
+    ;;:roll/aleph {}
+ 
+    ;;:roll/handler
+    #_{:sente #ig/ref :roll/sente
+       ;; :routes <.. my.project/routes ..>
+       ;; :handler <.. my.project/handler ..>
+       ;; :sente true or #ig/ref
     
-    ;; -- default --
-    ;; {:handler roll.handler/default-handler}
-    }
+       ;; -- default --
+       ;; {:handler roll.handler/default-handler}
+       }
 
- ;;:roll/sente
- #_{ ;; :handler <.. my.project/event-msg-handler ..>
-    ;; :handshake-data-fn <.. my.project/handshake-fn ..>
+    ;;:roll/sente
+    #_{ ;; :handler <.. my.project/event-msg-handler ..>
+       ;; :handshake-data-fn <.. my.project/handshake-fn ..>
 
-    ;; -- default --
-    ;; {:handler roll.sente/event-msg-handler}
-    }
+       ;; -- default --
+       ;; {:handler roll.sente/event-msg-handler}
+       }
 
- ;;:roll/file
- #_{ ;; :path <.. "some/file.path" ..>
-    ;; :init  <.. my.project/file-init! ..>
-    ;; :watch true
-    }}
+    ;;:roll/file
+    #_{ ;; :path <.. "some/file.path" ..>
+       ;; :init  <.. my.project/file-init! ..>
+       ;; :watch true
+       }
+    )
+
+
+ }
