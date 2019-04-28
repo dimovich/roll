@@ -24,7 +24,8 @@
         com.taoensso/sente   {:mvn/version "1.13.1"}
         datascript {:mvn/version "0.18.1"}
         datascript-transit {:mvn/version "0.3.0"}
-        com.farmlogs/looper {:local/root "../gits/looper"}
+        com.farmlogs/looper {:git/url "https://github.com/dimovich/looper"
+                             :sha "44f8e29eebe166f24dbcfbf6a528b7a0c1464d0c"}
         hawk {:mvn/version "0.2.11"}}
  
  :aliases
