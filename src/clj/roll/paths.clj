@@ -60,7 +60,7 @@
 
 (defmethod ig/halt-key! :roll/paths [_ opts]
   (info "stopping roll/paths...")
-  (w/stop!))
+  (w/reset-watch!))
 
 
 

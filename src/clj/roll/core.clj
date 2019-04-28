@@ -29,9 +29,9 @@
 
 
 (defn halt! []
+  (info "shutting down...")
   (when-let [roll-state (:roll @state)]
-    (ig/halt! roll-state)
-    (info "shutting down...")))
+    (ig/halt! roll-state)))
 
 
 
@@ -41,26 +41,28 @@
     :output-fn (fn [{:keys [timestamp_ level msg_]}] (force msg_))
     :appenders (select-keys default-appenders [:println])})
   
-  (when-let [ig-config (cond (string? config) (ig/read-string (slurp config))
-                             ;; fixme
-                             (map? config)    config
-                             :default nil)]
+  (let [config (cond-> config
+                 (sequential? config) first)]
+    (when-let [ig-config (cond (string? config) (ig/read-string (slurp config))
+                               ;; fixme
+                               (map? config) config
+                               :default nil)]
 
-    ;; ensure we have sente when reloading
-    (let [ig-config (cond-> ig-config
-                      (:roll/reload ig-config)
-                      (update-in [:roll/handler :sente]
-                                 (fnil identity true)))]
+      ;; ensure we have sente when reloading
+      (let [ig-config (cond-> ig-config
+                        (:roll/reload ig-config)
+                        (update-in [:roll/handler :sente]
+                                   (fnil identity true)))]
       
-      (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
+        (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
 
-      (ig/load-namespaces ig-config)
-      (swap! state assoc :config ig-config)
+        (ig/load-namespaces ig-config)
+        (swap! state assoc :config ig-config)
 
-      (halt!) ;;stop current services
+        (halt!) ;;stop current services
     
-      (->> (ig/init ig-config)
-           (swap! state assoc :roll)))))
+        (->> (ig/init ig-config)
+             (swap! state assoc :roll))))))
 
 
 

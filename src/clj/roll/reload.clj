@@ -32,6 +32,9 @@
   (w/remove-watch! [::css-watcher paths]))
 
 
+(defn reload-page [paths]
+  (sente/broadcast [:reload/page]))
+
 
 (defn start-page [paths]
   (w/add-watch!
