@@ -1,42 +1,40 @@
 {
- #_(
+ ;; reload system when this config changes
+ :roll/paths ["conf/config.edn"
+              {:watch roll.core/init}]
 
-    ;;:roll/paths
-    #_[["src/clj/roll"
-        {:init clojure.core/prn
-         :watch true}]]
- 
-    ;;:roll/nginx {:config "conf/nginx.conf"}
- 
-    ;; - or -
-    :roll/httpkit {:port 5000}
+ ;; web server
+ :roll/httpkit {:port 5000}
 
-    ;;:roll/aleph {}
+ ;; - or - (make sure to add nginx-clojure dependency)
+ ;;:roll/nginx {:config "conf/nginx.conf"}
  
-    ;;:roll/handler
-    #_{:sente #ig/ref :roll/sente
-       ;; :routes <.. my.project/routes ..>
-       ;; :handler <.. my.project/handler ..>
-       ;; :sente true or #ig/ref
+ ;; - or - (make sure to add aleph dependecy)
+ ;;:roll/aleph {}
+
+ 
+ :roll/handler
+ {:sente #ig/ref :roll/sente
+  ;; :routes [["/some/route" my.project/handler]]
+  ;; - or -
+  ;; :handler my.project/handler
+
+  ;; :sente true or #ig/ref
     
-       ;; -- default --
-       ;; {:handler roll.handler/default-handler}
-       }
+  ;; -- default --
+  ;; :handler roll.handler/default-handler
+  }
 
-    ;;:roll/sente
-    #_{ ;; :handler <.. my.project/event-msg-handler ..>
-       ;; :handshake-data-fn <.. my.project/handshake-fn ..>
+ :roll/sente
+ { ;; :handler my.project/event-msg-handler
+  ;; :handshake-data-fn my.project/handshake-fn
 
-       ;; -- default --
-       ;; {:handler roll.sente/event-msg-handler}
-       }
+  ;; -- default --
+  ;; :handler roll.sente/event-msg-handler
+  }
 
-    ;;:roll/file
-    #_{ ;; :path <.. "some/file.path" ..>
-       ;; :init  <.. my.project/file-init! ..>
-       ;; :watch true
-       }
-    )
+ ;; :roll/run ["<some shell command to run>" ...]
 
-
+ ;; make sure to add reload.js to your page
+ ;; :roll/reload {:css ["resources/public/css"]}
  }

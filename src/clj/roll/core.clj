@@ -34,12 +34,15 @@
     (ig/halt! roll-state)))
 
 
+(.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
+
 
 (defn init [config]
   (timbre/set-config!
    {:level :info
     :output-fn (fn [{:keys [timestamp_ level msg_]}] (force msg_))
     :appenders (select-keys default-appenders [:println])})
+
   
   (let [config (cond-> config
                  (sequential? config) first)]
@@ -54,7 +57,7 @@
                         (update-in [:roll/handler :sente]
                                    (fnil identity true)))]
       
-        (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
+        
 
         (ig/load-namespaces ig-config)
         (swap! state assoc :config ig-config)

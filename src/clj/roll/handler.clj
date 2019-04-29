@@ -46,7 +46,9 @@
    (ring/routes
     (ring/create-resource-handler {:path "/"})
     (ring/create-default-handler
-     (select-keys opts [:not-found])))))
+     (merge
+      {:not-found (constantly {:status 404 :body ""})}
+      (select-keys opts [:not-found]))))))
 
 
 
@@ -71,7 +73,8 @@
 
 (defmethod ig/init-key :roll/handler [_ opts]
   (info "initializing roll/handler:")
-  (info (spp opts))
+  (info (spp (cond-> opts
+               (:sente opts) (assoc :sente true))))
 
   (let [{:as opts :keys [handler]}
         (cond-> (resolve-map-syms opts)

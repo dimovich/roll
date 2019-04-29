@@ -14,34 +14,39 @@
 
   ;; watch paths
   :roll/paths ["config.edn"
-               {:watch roll.core/init}] ; reload when config changes
+               {:watch roll.core/init}] ;; reload system when this file changes
+
+  ;; start server
+  :roll/httpkit {:port 5000}
+
+  ;; - or - (make sure to add nginx-clojure dependency)
+  ;;:roll/nginx {:config "conf/nginx.conf"}
  
-  :roll/httpkit {:port 5000
-                 :handler #ig/ref :roll/handler}
+  ;; - or - (make sure to add aleph dependecy)
+  ;;:roll/aleph {:port 5000}
  
   :roll/handler {
-                 ;; :routes <.. my.project/routes ..>
-                 ;; :handler <.. my.project/handler ..>
-                 ;; :sente true or #ig/ref :roll/sente
-                 ;; :not-found <page-not-found.handler>
+                 ;; :routes [["/some/route" my.project/handler]]
+                 ;; - or -
+                 ;; :handler my.project/handler
+                 ;; :not-found my.project/not-found-handler
+
+                 ;; :sente true -or- #ig/ref :roll/sente
     
                  ;; -- default --
-                 ;; {:handler roll.handler/default-handler}
+                 ;; :handler roll.handler/default-handler
                  }
 
+
   :roll/sente {
-               ;; :handler <.. my.project/event-msg-handler ..>
-               ;; :handshake-data-fn <.. my.project/handshake-fn ..>
+               ;; :handler my.project/event-msg-handler
+               ;; :handshake-data-fn my.project/handshake-fn
 
                ;; -- default --
-               ;; {:handler roll.sente/event-msg-handler}
+               ;; :handler roll.sente/event-msg-handler
                }
 
 
-
-  :roll/reload {
-                ;; :css  ["resources/public/css"]
-                ;; :page ["resources/public/js"]
-                }
-
+  ;; make sure to add reload.js to your page
+  ;; :roll/reload {:css ["resources/public/css"]}
   )

@@ -19,10 +19,7 @@ __config.edn__
 ```clojure
 {:roll/httpkit {:port 5000}
 
- :roll/handler {:routes [["/" example.core/handler]]}
- 
- ;; reload system when config.edn changes
- :roll/paths ["config.edn" {:watch roll.core/init}]}
+ :roll/handler {:routes [["/" example.core/handler]]}}
 ```
 
 
