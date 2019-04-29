@@ -1,4 +1,4 @@
-<img height="100px" src="/resources/roll.png">
+<img height="80px" src="/resources/roll.png">
 
 # Roll metaframework
 
