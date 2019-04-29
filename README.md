@@ -1,7 +1,6 @@
-<img width="100px" src="/resources/roll.png">
+<img height="80px" src="/resources/roll.png">
 
-# Roll Metaframework
-
+# Roll metaframework
 
 >  roll   /ˈrōl/
 >
