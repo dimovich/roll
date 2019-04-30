@@ -8,14 +8,21 @@
 
 
 
-#_(defn- try-resolve
-  "Tries to require and resolve the given namespace-qualified symbol, returning nil if not found."
+(defn try-require
+  "Tries to require the given namespace symbol, returning nil if not found."
   [sym]
   (try
-    (require (symbol (namespace sym)))
-    (resolve sym)
+    (require sym)
+    true
     (catch java.io.FileNotFoundException _)
     (catch RuntimeException _)))
+
+
+(defn try-resolve
+  "Tries to resolve the given namespace-qualified symbol, returning nil if not found."
+  [sym]
+  (when (try-require (symbol (namespace sym)))
+    (resolve sym)))
 
 
 
@@ -38,6 +45,7 @@
     (map? v) (resolve-map-syms v)
     :else (sym->var v)))
 
+;; try clojure.walk
 
 (defn resolve-map-syms [m]
   (transform [MAP-VALS] resolve-syms m))

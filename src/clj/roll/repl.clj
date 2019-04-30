@@ -1,8 +1,8 @@
 (ns roll.repl
   (:require [taoensso.timbre :refer [info]]
             [nrepl.server :as nrepl]
-            [cider.piggieback :as pback]
-            [integrant.core :as ig]))
+            [integrant.core :as ig]
+            [roll.util :as u]))
 
 
 (defn nrepl-handler []
@@ -10,9 +10,17 @@
   (ns-resolve 'cider.nrepl 'cider-nrepl-handler))
 
 
+(defn middleware []
+  (vec
+   (when (and (u/try-require 'cljs.core)
+              (u/try-require 'cider.piggieback))
+     [(ns-resolve 'cider.piggieback 'wrap-cljs-repl)])))
+
+
+
 (defn start [{port :port}]
   (nrepl/start-server :handler (nrepl-handler)
-                      :middleware [pback/wrap-cljs-repl]
+                      :middleware (middleware)
                       :port port))
 
 

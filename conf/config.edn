@@ -1,13 +1,17 @@
 {
+ :roll/repl {:port 3311}
+ 
  ;; reload system when this config changes
  :roll/paths ["conf/config.edn"
               {:watch roll.core/init
                :throttle 1000}]
 
  ;; web server
- :roll/httpkit {:port 5000
-                ;; :handler my.project/handler -or- #ig/ref :roll/handler
-                }
+ :roll/httpkit
+ {
+  :port 5000
+  ;; :handler my.project/handler -or- #ig/ref :roll/handler
+  }
 
  ;; - or - (make sure to add nginx-clojure dependency)
  ;; :roll/nginx {:config "conf/nginx.conf"}
@@ -21,11 +25,11 @@
   ;; :middleware  my.project/middleware -or- [ring-middleware ...]
   ;;  :not-found  my.project/not-found-handler
   ;;     :routes  [["/some/route" my.project/handler]]
+  ;;      :sente  true -or- #ig/ref :roll/sente
   ;; - or -
   ;;    :handler  my.project/handler
 
-  ;; :sente true -or- #ig/ref :roll/sente
-    
+  
   ;; -- default --
   ;; :handler roll.handler/default-handler
   }

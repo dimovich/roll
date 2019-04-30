@@ -2,10 +2,9 @@
   (:require [taoensso.timbre :refer [info]]
             [taoensso.sente  :as sente]
             [integrant.core  :as ig]
-            [datascript.transit :as dt]
-            [taoensso.sente.packers.transit :as sente-transit]
-            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
-            [roll.util :as u :refer [resolve-map-syms]]))
+            ;;[datascript.transit :as dt]
+            [taoensso.sente.packers.transit :as st]
+            [roll.util :as u]))
 
 
 
@@ -42,19 +41,31 @@
 
 
 (defn get-sch-adapter []
-  (when-let [server-name (cond
-                           (resolve 'org.httpkit.server/run-server)
-                           'http-kit
+  (when-let [server-name
+             (cond
+               (resolve 'org.httpkit.server/run-server)
+               'http-kit
 
-                           (resolve 'nginx.clojure.embed/run-server)
-                           'nginx-clojure
+               (resolve 'nginx.clojure.embed/run-server)
+               'nginx-clojure
 
-                           (resolve 'aleph.http/start-server)
-                           'aleph)]
+               (resolve 'aleph.http/start-server)
+               'aleph)]
+    
     (let [sym (->> server-name (str "taoensso.sente.server-adapters.") symbol)]
       (require sym)
       ((resolve (symbol (str sym "/get-sch-adapter")))))))
 
+
+
+(defn get-packer []
+  (if (u/try-require 'datascript.transit)
+    (st/->TransitPacker
+     :json
+     {:handlers (ns-resolve 'datascript.transit 'write-handlers)}
+     {:handlers (ns-resolve 'datascript.transit 'read-handlers)})
+
+    (st/get-transit-packer)))
 
 
 
@@ -65,11 +76,7 @@
         
           (sente/make-channel-socket!
            sch-adapter
-           ;;(sente-transit/get-transit-packer)
-           (-> {:packer (sente-transit/->TransitPacker
-                         :json
-                         {:handlers dt/write-handlers}
-                         {:handlers dt/read-handlers})
+           (-> {:packer (get-packer)
                 :user-id-fn #(:client-id %)}
                (merge opts)))]
 
@@ -86,7 +93,7 @@
   (info (u/spp opts))
   
   (let [{:as opts :keys [handler]
-         :or {handler event-msg-handler}} (resolve-map-syms opts)]
+         :or {handler event-msg-handler}} (u/resolve-syms opts)]
     
     (when-let [fns (-> opts (dissoc :handler)
                        (init-sente))]
