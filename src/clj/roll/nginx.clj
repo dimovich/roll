@@ -9,7 +9,7 @@
 
 
 (defmethod ig/init-key :roll/nginx [_ opts]
-  (when-let [opts (cond (map? opts) opts
+  (when-let [opts (cond (map? opts) (u/resolve-syms opts)
                         (true? opts) {}
                         :default nil)]
 

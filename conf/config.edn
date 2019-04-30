@@ -1,25 +1,28 @@
 {
  ;; reload system when this config changes
  :roll/paths ["conf/config.edn"
-              {:watch roll.core/init}]
+              {:watch roll.core/init
+               :throttle 1000}]
 
  ;; web server
- :roll/httpkit {:port 5000}
+ :roll/httpkit {:port 5000
+                ;; :handler my.project/handler -or- #ig/ref :roll/handler
+                }
 
  ;; - or - (make sure to add nginx-clojure dependency)
- ;;:roll/nginx {:config "conf/nginx.conf"}
+ ;; :roll/nginx {:config "conf/nginx.conf"}
  
  ;; - or - (make sure to add aleph dependecy)
- ;;:roll/aleph {}
+ ;; :roll/aleph {}
 
  
  :roll/handler
  {
-  ;; :middleware my.project/middleware -or- [ring-middleware ...]
-  ;; :not-found my.project/not-found-handler
-  ;; :routes [["/some/route" my.project/handler]]
+  ;; :middleware  my.project/middleware -or- [ring-middleware ...]
+  ;;  :not-found  my.project/not-found-handler
+  ;;     :routes  [["/some/route" my.project/handler]]
   ;; - or -
-  ;; :handler my.project/handler
+  ;;    :handler  my.project/handler
 
   ;; :sente true -or- #ig/ref :roll/sente
     
@@ -28,8 +31,9 @@
   }
 
  :roll/sente
- { ;; :handler my.project/event-msg-handler
-  ;; :handshake-data-fn my.project/handshake-fn
+ {
+  ;;           :handler  my.project/event-msg-handler
+  ;; :handshake-data-fn  my.project/handshake-fn
 
   ;; -- default --
   ;; :handler roll.sente/event-msg-handler

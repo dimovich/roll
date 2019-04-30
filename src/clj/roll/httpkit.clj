@@ -8,7 +8,7 @@
 
 
 (defmethod ig/init-key :roll/httpkit [_ opts]
-  (when-let [opts (cond (map? opts) opts
+  (when-let [opts (cond (map? opts) (u/resolve-syms opts)
                         (true? opts) {}
                         :default nil)]
 

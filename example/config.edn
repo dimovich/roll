@@ -17,7 +17,9 @@
                {:watch roll.core/init}] ;; reload system when this file changes
 
   ;; webserver
-  :roll/httpkit {:port 5000}
+  :roll/httpkit {:port 5000
+                 :handler #ig/ref :roll/handler ;; -or-  my.project/handler
+                 }
 
   ;; - or - (make sure to add nginx-clojure dependency)
   :roll/nginx {:config "conf/nginx.conf"}
@@ -26,27 +28,27 @@
   :roll/aleph {:port 5000}
 
 
-  ;; Ring handler
+  ;; Ring
   :roll/handler {
-                 ;; :middleware my.project/middleware -or- [ring-middleware ...]
-                 ;; :routes [["/some/route" my.project/handler]]
+                 ;; :middleware  my.project/middleware -or- [ring-middleware ...]
+                 ;;  :not-found  my.project/not-found-handler
+                 ;;     :routes  [["/some/route" my.project/handler]]
                  ;; - or -
-                 ;; :handler my.project/handler
-                 ;; :not-found my.project/not-found-handler
-
+                 ;;    :handler  my.project/handler
+                 
                  ;; :sente true -or- #ig/ref :roll/sente
-    
+                 
                  ;; -- default --
                  ;; :handler roll.handler/default-handler
                  }
 
   ;; Websockets
   :roll/sente {
-               ;; :handler my.project/event-msg-handler
-               ;; :handshake-data-fn my.project/handshake-fn
+               ;;           :handler  my.project/event-msg-handler
+               ;; :handshake-data-fn  my.project/handshake-fn
 
                ;; -- default --
-               ;; :handler roll.sente/event-msg-handler
+               ;; :handler  roll.sente/event-msg-handler
                }
 
 
