@@ -22,8 +22,6 @@ __config.edn__
  :roll/handler {:routes [["/" example.core/handler]]}}
 ```
 
-For all possible options see [example/config.edn](/example/config.edn).
-
 
 __deps.edn__
 
@@ -55,3 +53,6 @@ __src/example/core.clj__
 clj -m example.core
 ```
 
+
+<br>
+For all possible options see [example/config.edn](/example/config.edn).
