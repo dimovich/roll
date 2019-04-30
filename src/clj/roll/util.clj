@@ -11,11 +11,9 @@
 (defn try-require
   "Tries to require the given namespace symbol, returning nil if not found."
   [sym]
-  (try
-    (require sym)
-    true
-    (catch java.io.FileNotFoundException _)
-    (catch RuntimeException _)))
+  (try (do (require sym) sym)
+       (catch java.io.FileNotFoundException _)
+       #_(catch RuntimeException _)))
 
 
 (defn try-resolve

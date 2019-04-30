@@ -12,6 +12,7 @@
 (derive :roll/aleph   :roll/server)
 
 
+
 (def default-appenders
   {:println (timbre/println-appender {:stream :auto})
    :spit    (appenders/spit-appender {:fname  "timbre.log"})})
@@ -34,9 +35,6 @@
     (ig/halt! roll-state)))
 
 
-(.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
-
-
 (defn init [config]
   (timbre/set-config!
    {:level :info
@@ -50,6 +48,14 @@
                                ;; fixme
                                (map? config) config
                                :default nil)]
+
+      
+      (swap! state update :shutdown-hook
+             (fn [sh]
+               (when-not sh
+                 (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
+                 true)))
+      
 
       ;; ensure we have sente when reloading
       (let [ig-config (cond-> ig-config

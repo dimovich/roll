@@ -6,6 +6,9 @@
             [roll.util :as u]))
 
 
+(defn load-clj-files [paths]
+  (doall (map load-file paths)))
+
 
 (defn proc-item [coll]
   (->> coll

@@ -1,10 +1,16 @@
 {
  :roll/repl {:port 3311}
  
- ;; reload system when this config changes
- :roll/paths ["conf/config.edn"
-              {:watch roll.core/init
-               :throttle 1000}]
+ ;; watch files and paths
+ :roll/paths [;; reload clojure code
+              ["src/clj"
+               {:watch roll.paths/load-clj-files
+                :throttle 1000}]
+
+              ;; reload system when this config file changes
+              ["conf/config.edn"
+               {:watch roll.core/init
+                :throttle 1000}]]
 
  ;; web server
  :roll/httpkit
