@@ -14,12 +14,14 @@
 
  
  :roll/handler
- {:sente #ig/ref :roll/sente
+ {
+  ;; :middleware my.project/middleware -or- [ring-middleware ...]
+  ;; :not-found my.project/not-found-handler
   ;; :routes [["/some/route" my.project/handler]]
   ;; - or -
   ;; :handler my.project/handler
 
-  ;; :sente true or #ig/ref
+  ;; :sente true -or- #ig/ref :roll/sente
     
   ;; -- default --
   ;; :handler roll.handler/default-handler
@@ -36,5 +38,5 @@
  ;; :roll/run ["<some shell command to run>" ...]
 
  ;; make sure to add reload.js to your page
- ;; :roll/reload {:css ["resources/public/css"]}
+ ;; :roll/reload {:css ["resources/public/css" ...]}
  }

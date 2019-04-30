@@ -16,16 +16,19 @@
   :roll/paths ["config.edn"
                {:watch roll.core/init}] ;; reload system when this file changes
 
-  ;; start server
+  ;; webserver
   :roll/httpkit {:port 5000}
 
   ;; - or - (make sure to add nginx-clojure dependency)
-  ;;:roll/nginx {:config "conf/nginx.conf"}
+  :roll/nginx {:config "conf/nginx.conf"}
  
   ;; - or - (make sure to add aleph dependecy)
-  ;;:roll/aleph {:port 5000}
- 
+  :roll/aleph {:port 5000}
+
+
+  ;; Ring handler
   :roll/handler {
+                 ;; :middleware my.project/middleware -or- [ring-middleware ...]
                  ;; :routes [["/some/route" my.project/handler]]
                  ;; - or -
                  ;; :handler my.project/handler
@@ -37,7 +40,7 @@
                  ;; :handler roll.handler/default-handler
                  }
 
-
+  ;; Websockets
   :roll/sente {
                ;; :handler my.project/event-msg-handler
                ;; :handshake-data-fn my.project/handshake-fn
@@ -48,5 +51,5 @@
 
 
   ;; make sure to add reload.js to your page
-  ;; :roll/reload {:css ["resources/public/css"]}
+  :roll/reload {:css ["resources/public/css"]}
   )
