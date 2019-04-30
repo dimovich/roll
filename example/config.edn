@@ -33,10 +33,10 @@
                  ;; :middleware  my.project/middleware -or- [ring-middleware ...]
                  ;;  :not-found  my.project/not-found-handler
                  ;;     :routes  [["/some/route" my.project/handler]]
+                 ;;      :sente  true -or- #ig/ref :roll/sente
                  ;; - or -
                  ;;    :handler  my.project/handler
                  
-                 ;; :sente true -or- #ig/ref :roll/sente
                  
                  ;; -- default --
                  ;; :handler roll.handler/default-handler
