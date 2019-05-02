@@ -62,9 +62,9 @@
   (if (u/try-require 'datascript.transit)
     (st/->TransitPacker
      :json
-     {:handlers (ns-resolve 'datascript.transit 'write-handlers)}
-     {:handlers (ns-resolve 'datascript.transit 'read-handlers)})
-
+     {:handlers @(ns-resolve 'datascript.transit 'write-handlers)}
+     {:handlers @(ns-resolve 'datascript.transit 'read-handlers)})
+    
     (st/get-transit-packer)))
 
 

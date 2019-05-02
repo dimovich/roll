@@ -46,9 +46,10 @@
    (ring/routes
     (ring/create-resource-handler {:path "/"})
     (ring/create-default-handler
-     (merge
-      {:not-found (constantly {:status 404 :body ""})}
-      (select-keys opts [:not-found]))))))
+     (select-keys opts [:not-found])
+     #_(merge
+        {:not-found (constantly {:status 404 :body ""})}
+        (select-keys opts [:not-found]))))))
 
 
 

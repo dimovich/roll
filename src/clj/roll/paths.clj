@@ -85,5 +85,6 @@
                  "resources/public/js/index.js"
                  {:init clojure.core/prn
                   :watch roll.util/read-edn
-                  :throttle 1000}]]}
-)
+                  :throttle 1000
+                  :close clojure.core/prn}]]}
+  )
