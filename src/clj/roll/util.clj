@@ -28,7 +28,7 @@
 ;; but errors are good to pay attention to
 (defn sym->var [s]
   (if (symbol? s)
-    (or (some-> (resolve s) deref)
+    (or (some-> (try-resolve s) deref)
         (throw (Exception. (format "Error: Could not resolve %s" s))))
     s))
 
