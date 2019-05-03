@@ -9,7 +9,7 @@
 
 <br>
 
-__Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit](http://www.http-kit.org/)), ___Websockets___ ([Sente](https://github.com/ptaoussanis/sente)), ___REPL___ ([nREPL](https://github.com/clojure-emacs/cider-nrepl)), ___Routing___ ([Reitit](https://github.com/metosin/reitit)) and ___File Watching___ ([Hawk](https://github.com/wkf/hawk)). Configure and manage them using a simple config file ([Integrant](https://github.com/weavejester/integrant)). You can safely reload any component at runtime.
+__Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit](http://www.http-kit.org/)), ___Websockets___ ([Sente](https://github.com/ptaoussanis/sente)), ___REPL___ ([nREPL](https://github.com/clojure-emacs/cider-nrepl)), ___Routing___ ([Reitit](https://github.com/metosin/reitit)) and ___File Watching___ ([Hawk](https://github.com/wkf/hawk)). Configure and manage them using a simple config file ([Integrant](https://github.com/weavejester/integrant)). You can reload any component at runtime with (Ex: `(roll.core/restart :roll/handler :roll/paths)`).
 
 <br>
 
@@ -29,7 +29,7 @@ __deps.edn__
 {:paths ["src"]
 
  :deps {roll {:git/url "https://github.com/dimovich/roll"
-              :sha "361936e03dc2aa1e9e1213150567e44d106cde52"}}}
+              :sha "c2b6262b74eadd13118f70608cb997123d8220d1"}}}
 ```
 
 
