@@ -29,7 +29,7 @@ __deps.edn__
 {:paths ["src"]
 
  :deps {roll {:git/url "https://github.com/dimovich/roll"
-              :sha "de99d00ae1e94effb8e0211ffa8b15430a344cd4"}}}
+              :sha "409b7d15dcb91f6561938f3627b124317e5bd3e4"}}}
 ```
 
 
