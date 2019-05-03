@@ -10,7 +10,7 @@
 
 (defonce sente-fns (atom nil))
 
-(defn send-evt [& args]
+(defn send-msg [& args]
   (some-> @sente-fns :chsk-send! (apply args)))
 
 (defn connected-uids []
@@ -36,7 +36,7 @@
   (when-let [uids (:any @(connected-uids))]
     ;;(info "broadcasting data to" (count uids) "clients...")
     (doseq [uid uids]
-      (send-evt uid event))))
+      (send-msg uid event))))
 
 
 

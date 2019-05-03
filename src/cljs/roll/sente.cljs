@@ -9,7 +9,7 @@
 (def sente-fns (atom nil))
 
 
-(defn send-evt [& args]
+(defn send-msg [& args]
   (apply (:chsk-send! @sente-fns) args))
 
 
