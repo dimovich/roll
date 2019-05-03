@@ -39,13 +39,13 @@ __src/example/core.clj__
 
 ``` clojure
 (ns example.core
-  (:require [roll.core :as roll]))
+  (:require [roll.core]))
 
 (defn handler [req]
   {:status 200 :body "Hello World!"})
 
 (defn -main []
-  (roll/init "config.edn"))
+  (roll.core/init "config.edn"))
 ```
 
 
