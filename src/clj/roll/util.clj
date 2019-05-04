@@ -235,3 +235,36 @@
   (with-out-str (apply clojure.pprint/pprint args)))
 
 
+
+(defn str->map-list [s ks]
+  (or
+   (some->> s (clojure.string/trim)
+            (#(clojure.string/split % #"\n\n+"))
+            (map #(clojure.string/split % #"\n"))
+            (map cycle)
+            (mapv (partial zipmap ks)))
+   []))
+
+
+
+
+(defn imagelist [s]
+  (or (some-> (not-empty s)
+              (str->map-list ["desktop" "mobile"]))
+      []))
+
+
+
+(defn taglist [s]
+  (let [coll (some->
+              s (clojure.string/split #"\n\n")
+              (->>
+               (map #(clojure.string/split % #",|\n"))
+               (map (partial map clojure.string/trim))
+               (remove empty?)
+               (mapv (comp vec (partial remove empty?)))))]
+    
+    (cond
+      (= 1 (count coll)) (first coll)
+      :default (or coll []))))
+
