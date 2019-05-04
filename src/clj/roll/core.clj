@@ -52,9 +52,9 @@
       
       (swap! state update :shutdown-hook
              (fn [sh]
-               (when-not sh
-                 (.addShutdownHook (Runtime/getRuntime) (Thread. halt!))
-                 true)))
+               (or sh (do (.addShutdownHook
+                           (Runtime/getRuntime) (Thread. halt!))
+                          true))))
       
 
       ;; ensure we have sente when reloading
