@@ -65,10 +65,11 @@
       
         
 
+        (halt!) ;;stop current services
+        
         (ig/load-namespaces ig-config)
         (swap! state assoc :config ig-config)
 
-        (halt!) ;;stop current services
     
         (->> (ig/init ig-config)
              (swap! state assoc :roll))))))
@@ -88,3 +89,8 @@
 (defn -main [& args]
   (init "conf/config.edn"))
 
+
+
+
+;; handle better unresolved symbols
+;; investigate duplicate shutdown hooks
