@@ -1,4 +1,4 @@
 {:paths ["src"]
 
  :deps {roll {:git/url "https://github.com/dimovich/roll"
-              :sha "a6c65ac4c843b5acafd41b842bae2b88beeb24c0"}}}
+              :sha "fcda3efd82a3c9afb5966338a40c01a6d406ca2e"}}}
