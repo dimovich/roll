@@ -57,7 +57,7 @@
                           true))))
       
 
-      ;; ensure we have sente when reloading
+      ;; ensure we have Sente when reloading
       (let [ig-config (cond-> ig-config
                         (:roll/reload ig-config)
                         (update-in [:roll/handler :sente]
@@ -82,15 +82,3 @@
   (->> (ig/init (:config @state) ks)
        (swap! state update :roll merge)))
 
-
-
-
-;; move to deps.edn?
-(defn -main [& args]
-  (init "conf/config.edn"))
-
-
-
-
-;; handle better unresolved symbols
-;; investigate duplicate shutdown hooks

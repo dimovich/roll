@@ -4,6 +4,8 @@
             [hawk.core :as hawk]))
 
 
+;; taken from figwheel-main
+
 
 (def ^:dynamic *watcher* (atom {:watcher nil :watches {}}))
 
