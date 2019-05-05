@@ -1,22 +1,10 @@
 (ns roll.sente
   (:require [taoensso.timbre :refer [info]]
             [taoensso.sente  :as sente :refer [cb-success?]]
-            [taoensso.sente.packers.transit :as sente-transit]
-            [datascript.transit :as dt]))
+            [taoensso.sente.packers.transit :as st]
+            [roll.util :as u]))
 
 
-
-(def sente-fns (atom nil))
-
-
-(defn send-msg [& args]
-  (apply (:chsk-send! @sente-fns) args))
-
-
-#_(defn event-msg-handler
-  "Wraps `-event-msg-handler` with logging, error catching, etc."
-  [{:as ev-msg :keys [id ?data event]}]
-  (-event-msg-handler ev-msg))
 
 
 (defmulti event-msg-handler :id)
@@ -27,22 +15,46 @@
 
 
 
+(def sente-fns (atom nil))
+
+(defn send-msg [& args]
+  (apply (:chsk-send! @sente-fns) args))
+
+
+
+
+(defn get-packer []
+  (let [transit-handlers
+        {:write-handlers
+         (merge
+          (u/resolve-cljs 'linked.transit     'write-handlers)
+          (u/resolve-cljs 'datascript.transit 'write-handlers))
+
+         :read-handlers
+         (merge 
+          (u/resolve-cljs 'linked.transit     'read-handlers)
+          (u/resolve-cljs 'datascript.transit 'read-handlers))}]
+    
+    (info "making transit-packer with" transit-handlers)
+    
+    (->> transit-handlers
+         ((juxt :write-handlers :read-handlers))
+         (map (partial hash-map :handlers))
+         (apply st/->TransitPacker :json))))
+
+
+
 
 (defn init-sente [& [opts]]
   (let [{:keys [chsk ch-recv send-fn state]}
         (sente/make-channel-socket-client!
          "/chsk"
-         ;;or (sente-transit/get-transit-packer)
-         (-> {:packer (sente-transit/->TransitPacker
-                       :json
-                       {:handlers dt/write-handlers}
-                       {:handlers dt/read-handlers})}
+         (-> {:packer (get-packer)}
              (merge opts)))]
     {:chsk       chsk
      :ch-chsk    ch-recv
      :chsk-send! send-fn
      :chsk-state state}))
-
 
 
 

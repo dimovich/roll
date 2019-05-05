@@ -1,23 +1,23 @@
 {:paths ["src/clj" "src/cljs" "src/cljc"]
 
- :deps {org.clojure/clojure       {:mvn/version "1.10.0"}
-        org.clojure/clojurescript {:mvn/version "1.10.520"}
-        org.clojure/core.async    {:mvn/version "0.4.490"}
-        nrepl/nrepl {:mvn/version "0.6.0"}
-        cider/piggieback {:mvn/version "0.4.0"}
-        cider/cider-nrepl {:mvn/version "0.21.1"}
-        integrant {:mvn/version "0.7.0"}
-        cheshire  {:mvn/version "5.8.1"}
-        com.rpl/specter      {:mvn/version "1.1.2"}
-        metosin/reitit-core {:mvn/version "0.3.1"}
-        metosin/reitit-ring {:mvn/version "0.3.1"}
-        metosin/reitit-middleware {:mvn/version "0.3.1"}
-        metosin/spec-tools {:mvn/version "0.9.1"}
-        ring/ring-core       {:mvn/version "1.7.1"}
+ :deps {org.clojure/clojure        {:mvn/version "1.10.0"}
+        org.clojure/clojurescript  {:mvn/version "1.10.520"}
+        org.clojure/core.async     {:mvn/version "0.4.490"}
         com.taoensso/timbre  {:mvn/version "4.10.0"}
         com.taoensso/sente   {:mvn/version "1.13.1"}
+        com.rpl/specter      {:mvn/version "1.1.2"}
+        ring/ring-core       {:mvn/version "1.7.1"}
+        metosin/reitit-core  {:mvn/version "0.3.1"}
+        metosin/reitit-ring  {:mvn/version "0.3.1"}
+        metosin/reitit-middleware {:mvn/version "0.3.1"}
+        metosin/spec-tools {:mvn/version "0.9.1"}
+        cider/piggieback   {:mvn/version "0.4.0"}
+        cider/cider-nrepl  {:mvn/version "0.21.1"}
+        nrepl/nrepl {:mvn/version "0.6.0"}
+        integrant   {:mvn/version "0.7.0"}
+        cheshire    {:mvn/version "5.8.1"}
+        http-kit    {:mvn/version "2.3.0"}
         hawk {:mvn/version "0.2.11"}
-        http-kit {:mvn/version "2.3.0"}
         com.farmlogs/looper
         {:git/url "https://github.com/dimovich/looper"
          :sha "44f8e29eebe166f24dbcfbf6a528b7a0c1464d0c"}

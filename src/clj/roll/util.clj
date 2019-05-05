@@ -8,12 +8,15 @@
 
 
 
+
+
 (defn try-require
   "Tries to require the given namespace symbol, returning nil if not found."
   [sym]
   (try (do (require sym) sym)
        (catch java.io.FileNotFoundException _)
        #_(catch RuntimeException _)))
+
 
 
 (defn try-resolve
@@ -24,8 +27,22 @@
 
 
 
-;; todo: better errors when symbol can't be resolved ^
-;; but errors are good to pay attention to
+
+(defmacro resolve-cljs [ns-sym var-sym]
+  `(some-> ((ns-publics ~ns-sym) ~var-sym)
+           deref))
+
+
+
+(defmacro try-require-cljs [ns-sym]
+  `(try
+     (require ~ns-sym)
+     (catch :default ex#)))
+
+
+
+
+
 (defn sym->var [s]
   (if (symbol? s)
     (or (some-> (try-resolve s) deref)

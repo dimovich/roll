@@ -2,7 +2,6 @@
   (:require [taoensso.timbre :refer [info]]
             [taoensso.sente  :as sente]
             [integrant.core  :as ig]
-            ;;[datascript.transit :as dt]
             [taoensso.sente.packers.transit :as st]
             [roll.util :as u]))
 
@@ -58,14 +57,28 @@
 
 
 
+(def transit-handler-libs
+  '[datascript.transit
+    linked.transit])
+
+
 (defn get-packer []
-  (if (u/try-require 'datascript.transit)
-    (st/->TransitPacker
-     :json
-     {:handlers @(ns-resolve 'datascript.transit 'write-handlers)}
-     {:handlers @(ns-resolve 'datascript.transit 'read-handlers)})
-    
-    (st/get-transit-packer)))
+  (->> transit-handler-libs
+       (reduce
+        (fn [handlers lib]
+          (if-not (u/try-require lib)
+            handlers
+            (-> handlers
+                (update :write-handlers merge
+                        @(ns-resolve lib 'write-handlers))
+                (update :read-handlers merge
+                        @(ns-resolve lib 'read-handlers)))))
+        {})
+
+       ((juxt :write-handlers :read-handlers))
+       (map (partial hash-map :handlers))
+       (apply st/->TransitPacker :json)))
+
 
 
 
