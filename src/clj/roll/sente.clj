@@ -57,47 +57,34 @@
 
 
 
-(def transit-handler-libs
-  '[datascript.transit
-    linked.transit])
 
-
-(defn get-packer []
-  (->> transit-handler-libs
-       (reduce
-        (fn [handlers lib]
-          (if-not (u/try-require lib)
-            handlers
-            (-> handlers
-                (update :write-handlers merge
-                        @(ns-resolve lib 'write-handlers))
-                (update :read-handlers merge
-                        @(ns-resolve lib 'read-handlers)))))
-        {})
-
-       ((juxt :write-handlers :read-handlers))
-       (map (partial hash-map :handlers))
-       (apply st/->TransitPacker :json)))
+(defn get-packer [& [{:keys [write-handlers read-handlers]}]]
+  (st/->TransitPacker
+   :json
+   {:handlers (into {} (apply merge write-handlers))}
+   {:handlers (into {} (apply merge read-handlers))}))
 
 
 
 
-(defn init-sente [& [opts]]
+(defn init-sente [& [{:as opts :keys [packer]}]]
   (when-let [sch-adapter (get-sch-adapter)]
     (let [{:keys [ch-recv send-fn connected-uids
                   ajax-post-fn ajax-get-or-ws-handshake-fn]}
         
           (sente/make-channel-socket!
            sch-adapter
-           (-> {:packer (get-packer)
-                :user-id-fn #(:client-id %)}
-               (merge opts)))]
+           (merge
+            {:packer (get-packer packer)
+             :user-id-fn #(:client-id %)}
+            (select-keys opts [:handshake-data-fn])))]
 
-      (->> {:ring-ajax-post                ajax-post-fn
-            :ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn
-            :ch-chsk                       ch-recv
-            :chsk-send!                    send-fn
-            :connected-uids                connected-uids}))))
+      {:ring-ajax-post                ajax-post-fn
+       :ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn
+       :ch-chsk                       ch-recv
+       :chsk-send!                    send-fn
+       :connected-uids                connected-uids})))
+
 
 
 

@@ -51,6 +51,8 @@
 (defmethod ig/init-key :roll/paths [_ opts]
   (info "starting roll/paths:")
   (info (u/spp opts))
+
+  (w/reset-watch!)
   
   (->> opts
        u/resolve-syms

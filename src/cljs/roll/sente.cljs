@@ -9,8 +9,9 @@
 
 (defmulti event-msg-handler :id)
 
+; Default/fallback case (no other matching handler)
 (defmethod event-msg-handler
-  :default         ; Default/fallback case (no other matching handler)
+  :default
   [{:as ev-msg :keys [event id]}])
 
 
@@ -18,39 +19,25 @@
 (def sente-fns (atom nil))
 
 (defn send-msg [& args]
-  (apply (:chsk-send! @sente-fns) args))
+  (some-> (:chsk-send! @sente-fns)
+          (apply args)))
+
+
+
+(defn get-packer [& [{:keys [write-handlers read-handlers]}]]
+  (st/->TransitPacker
+   :json
+   {:handlers (into {} (apply merge write-handlers))}
+   {:handlers (into {} (apply merge read-handlers))}))
 
 
 
 
-(defn get-packer []
-  (let [transit-handlers
-        {:write-handlers
-         (merge
-          (u/resolve-cljs 'linked.transit     'write-handlers)
-          (u/resolve-cljs 'datascript.transit 'write-handlers))
-
-         :read-handlers
-         (merge 
-          (u/resolve-cljs 'linked.transit     'read-handlers)
-          (u/resolve-cljs 'datascript.transit 'read-handlers))}]
-    
-    (info "making transit-packer with" transit-handlers)
-    
-    (->> transit-handlers
-         ((juxt :write-handlers :read-handlers))
-         (map (partial hash-map :handlers))
-         (apply st/->TransitPacker :json))))
-
-
-
-
-(defn init-sente [& [opts]]
+(defn init-sente [& [{:as opts :keys [packer]}]]
   (let [{:keys [chsk ch-recv send-fn state]}
         (sente/make-channel-socket-client!
          "/chsk"
-         (-> {:packer (get-packer)}
-             (merge opts)))]
+         {:packer (get-packer packer)})]
     {:chsk       chsk
      :ch-chsk    ch-recv
      :chsk-send! send-fn
@@ -60,10 +47,13 @@
 
 
 (defonce router_ (atom nil))
+
 (defn  stop-router! [] (when-let [stop-f @router_] (stop-f)))
-(defn start-router! [& [handler]]
+
+(defn start-router! [& [{:as opts :keys [handler]}]]
   (stop-router!)
-  (let [{:keys [ch-chsk]} (->> (init-sente)
+  (let [{:keys [ch-chsk]} (->> (dissoc opts :handler)
+                               (init-sente)
                                (reset! sente-fns))]
     
     (->> (or handler event-msg-handler)
@@ -73,3 +63,19 @@
 
 (def start! start-router!)
 (def stop!  stop-router!)
+
+
+
+
+
+(comment
+  
+  {:write-handlers 
+   (merge
+    (u/resolve-cljs 'linked.transit     'write-handlers)
+    (u/resolve-cljs 'datascript.transit 'write-handlers))
+         
+   :read-handlers
+   (merge 
+    (u/resolve-cljs 'linked.transit     'read-handlers)
+    (u/resolve-cljs 'datascript.transit 'read-handlers))})

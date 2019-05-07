@@ -2,7 +2,7 @@
  :roll/repl {:port 3311}
  
  ;; watch files and paths
- :roll/paths [;; reload clojure code
+ :roll/paths [ ;; reload clojure code
               ["src/clj"
                {:watch roll.paths/load-clj-files
                 :throttle 1000}]
@@ -44,6 +44,7 @@
  {
   ;;           :handler  my.project/event-msg-handler
   ;; :handshake-data-fn  my.project/handshake-fn
+  ;;
 
   ;; -- default --
   ;; :handler roll.sente/event-msg-handler
