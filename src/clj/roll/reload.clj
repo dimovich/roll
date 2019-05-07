@@ -40,7 +40,7 @@
   (w/add-watch!
    [::page-watcher paths]
    {:paths paths
-    :filter (w/file-filter)
+    :filter w/file-filter
     :handler (w/throttle
               200
               (fn [evts]

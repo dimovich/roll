@@ -74,9 +74,8 @@
        (not (#{\. \#} (first (.getName file))))))
 
 
-(defn file-filter []
-  (fn [_ {:keys [file]}]
-    (real-file? file)))
+(defn file-filter [_ {:keys [file]}]
+  (real-file? file))
 
 
 (defn suffix-filter [suffixes]

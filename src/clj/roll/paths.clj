@@ -7,6 +7,7 @@
 
 
 (defn load-clj-files [paths]
+  ;; -or- clojure.tools.namespace.repl/refresh
   (doall (map load-file paths)))
 
 
@@ -34,7 +35,7 @@
               (w/add-watch!
                paths
                {:paths paths
-                :filter (w/file-filter)
+                :filter w/file-filter
                 :handler
                 (w/throttle
                  (or (:throttle opts) 50)
@@ -54,8 +55,7 @@
 
   (w/reset-watch!)
   
-  (->> opts
-       u/resolve-syms
+  (->> (u/resolve-syms opts)
        (#(cond-> %
            (->> % (filter map?) not-empty)
            (vector)))
@@ -65,7 +65,7 @@
 
 (defmethod ig/halt-key! :roll/paths [_ opts]
   (info "stopping roll/paths...")
-  (w/reset-watch!))
+  (w/reset-watch!)) ;;fixme: use w/remove-watch!
 
 
 
@@ -88,5 +88,6 @@
                  {:init clojure.core/prn
                   :watch roll.util/read-edn
                   :throttle 1000
+                  :filter ["clj" "cljs"]
                   :close clojure.core/prn}]]}
   )
