@@ -7,7 +7,7 @@
             [roll.util :as u]))
 
 
-(defn load-clj-files [paths]
+(defn reload-clj [paths]
   ;; -or- (doall (map load-file paths))
   (clojure.tools.namespace.repl/refresh))
 
