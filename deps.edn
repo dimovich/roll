@@ -1,4 +1,4 @@
-{:paths ["src/clj" "src/cljs" "src/cljc"]
+{:paths ["src/clj" "src/cljs"]
 
  :deps {org.clojure/clojure        {:mvn/version "1.10.0"}
         org.clojure/clojurescript  {:mvn/version "1.10.520"}
@@ -30,8 +30,7 @@
  :aliases
  {:run
   {:extra-paths ["resources"]
-   :main-opts
-   ["-e" "(require 'roll.core) (roll.core/init \"conf/config.edn\""]}
+   :main-opts   ["-e" "(require 'roll.core) (roll.core/init \"config.edn\""]}
 
   :cider
   {:extra-paths ["resources"]}}}

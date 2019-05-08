@@ -1,5 +1,6 @@
 (ns roll.paths
   (:require [taoensso.timbre :refer [info]]
+            [clojure.tools.namespace.repl]
             [clojure.java.io :as io]
             [integrant.core :as ig]
             [roll.watch :as w]
@@ -7,8 +8,8 @@
 
 
 (defn load-clj-files [paths]
-  ;; -or- clojure.tools.namespace.repl/refresh
-  (doall (map load-file paths)))
+  ;; -or- (doall (map load-file paths))
+  (clojure.tools.namespace.repl/refresh))
 
 
 (defn proc-item [coll]
@@ -66,9 +67,6 @@
 (defmethod ig/halt-key! :roll/paths [_ opts]
   (info "stopping roll/paths...")
   (w/reset-watch!)) ;;fixme: use w/remove-watch!
-
-
-
 
 
 
