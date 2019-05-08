@@ -8,7 +8,7 @@
                 :throttle 1000}]
 
               ;; reload system when this config file changes
-              ["conf/config.edn"
+              ["config.edn"
                {:watch roll.core/init
                 :throttle 1000}]]
 

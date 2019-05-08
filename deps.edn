@@ -30,7 +30,7 @@
  :aliases
  {:run
   {:extra-paths ["resources"]
-   :main-opts   ["-e" "(require 'roll.core) (roll.core/init \"config.edn\""]}
+   :main-opts  ["-i init.clj"]}
 
   :cider
   {:extra-paths ["resources"]}}}
