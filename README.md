@@ -19,19 +19,23 @@ You can restart any component with `roll.core/restart`
 __config.edn__
 
 ```clojure
-{:roll/httpkit {:port 5000}
+{
+ :roll/httpkit {:port 5000}
 
- :roll/handler {:routes [["/" example.core/handler]]}}
+ :roll/handler {:routes [["/" example.core/handler]]}
+}
 ```
 
 
 __deps.edn__
 
 ``` clojure
-{:paths ["src"]
+{
+ :paths ["src"]
 
  :deps {roll {:git/url "https://github.com/dimovich/roll"
-              :sha "94354b21d25f5e6692c39a142417c0b38dc82805"}}}
+              :sha "94354b21d25f5e6692c39a142417c0b38dc82805"}}
+}
 ```
 
 
@@ -41,8 +45,10 @@ __src/example/core.clj__
 (ns example.core
   (:require [roll.core]))
 
+
 (defn handler [req]
   {:status 200 :body "Hello World!"})
+
 
 (defn -main []
   (roll.core/init "config.edn"))

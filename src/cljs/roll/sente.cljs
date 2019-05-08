@@ -64,18 +64,3 @@
 (def start! start-router!)
 (def stop!  stop-router!)
 
-
-
-
-
-(comment
-  
-  {:write-handlers 
-   (merge
-    (u/resolve-cljs 'linked.transit     'write-handlers)
-    (u/resolve-cljs 'datascript.transit 'write-handlers))
-         
-   :read-handlers
-   (merge 
-    (u/resolve-cljs 'linked.transit     'read-handlers)
-    (u/resolve-cljs 'datascript.transit 'read-handlers))})
