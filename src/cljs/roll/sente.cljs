@@ -7,11 +7,11 @@
 
 
 
+
 (defmulti event-msg-handler :id)
 
-; Default/fallback case (no other matching handler)
-(defmethod event-msg-handler
-  :default
+;; Default/fallback case (no other matching handler)
+(defmethod event-msg-handler :default
   [{:as ev-msg :keys [event id]}])
 
 
@@ -32,11 +32,17 @@
 
 
 
+(def ?csrf-token
+  (when-let [el (.getElementById js/document "sente-csrf-token")]
+    (.getAttribute el "data-csrf-token")))
+
+
 
 (defn init-sente [& [{:as opts :keys [packer]}]]
   (let [{:keys [chsk ch-recv send-fn state]}
         (sente/make-channel-socket-client!
          "/chsk"
+         ?csrf-token
          {:packer (get-packer packer)})]
     {:chsk       chsk
      :ch-chsk    ch-recv

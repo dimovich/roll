@@ -3,6 +3,7 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [integrant.core :as ig]
+            [linked.core :as linked]
             [reitit.core :as r]
             [reitit.ring :as ring]
             [reitit.ring.middleware.muuntaja :as muuntaja]
@@ -12,6 +13,9 @@
             [roll.util :refer [resolve-map-syms spp]]))
 
 
+
+;; todo: use *dynamic* vars
+(defonce _router (atom nil))
 
 
 (def default-middleware
@@ -25,16 +29,18 @@
   "Create router with default middleware and optional extra routes and middleware."
   [& [{:keys [sente routes middleware]}]]
   (let [new-routes
-        (cond-> []
-          routes (into routes)
+        (cond-> (vec routes)
           sente  (conj ["/chsk" {:get  (:ring-ajax-get-or-ws-handshake sente)
                                  :post (:ring-ajax-post sente)}]))]
 
-    (ring/router
-     new-routes
-     {;;:reitit.middleware/transform rdev/print-request-diffs
-      :data {:muuntaja m/instance
-             :middleware (into default-middleware middleware)}})))
+    (->> (ring/router
+          new-routes
+          { ;;:reitit.middleware/transform rdev/print-request-diffs
+           :data {:muuntaja m/instance
+                  :middleware (->> (concat default-middleware middleware)
+                                   (into (linked/set))
+                                   vec)}})
+         (reset! _router))))
 
 
 
@@ -95,5 +101,4 @@
   (when handler
     (info "reseting roll/handler...")
     (reset! ring-handler (promise))))
-
 

@@ -1,6 +1,5 @@
 (ns roll.paths
   (:require [taoensso.timbre :refer [info]]
-            [clojure.tools.namespace.repl]
             [clojure.java.io :as io]
             [integrant.core :as ig]
             [roll.watch :as w]
@@ -8,8 +7,8 @@
 
 
 (defn reload-clj [paths]
-  ;; -or- (doall (map load-file paths))
-  (clojure.tools.namespace.repl/refresh))
+  ;; -or- (clojure.tools.namespace.repl/refresh)
+  (doall (map load-file paths)))
 
 
 (defn proc-item [coll]
