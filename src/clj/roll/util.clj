@@ -44,6 +44,7 @@
 
 (defn sym->var [s]
   (if (symbol? s)
+    ;; for production better without wrapping
     ;; (some-> (try-resolve s) deref)
     (or (when-let [v (try-resolve s)]
           (if (fn? (deref v))
