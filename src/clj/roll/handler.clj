@@ -35,7 +35,7 @@
 
     (->> (ring/router
           new-routes
-          { ;;:reitit.middleware/transform rdev/print-request-diffs
+          {;;:reitit.middleware/transform rdev/print-request-diffs
            :data {:muuntaja m/instance
                   :middleware (->> (concat default-middleware middleware)
                                    (into (linked/set))

@@ -7,6 +7,7 @@
 
 
 (defn reload-clj [paths]
+  (info "reloading" paths)
   ;; -or- (clojure.tools.namespace.repl/refresh)
   (doall (map load-file paths)))
 
