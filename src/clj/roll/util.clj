@@ -42,10 +42,13 @@
 
 
 
-
 (defn sym->var [s]
   (if (symbol? s)
-    (or (some-> (try-resolve s) deref)
+    ;; (some-> (try-resolve s) deref)
+    (or (when-let [v (try-resolve s)]
+          (if (fn? (deref v))
+            #(-> (deref v) (apply %&))
+            (deref v)))
         (throw (Exception. (format "Error: Could not resolve %s" s))))
     s))
 

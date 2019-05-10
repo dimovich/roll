@@ -29,50 +29,63 @@
                                      (repeat nil))))})))
 
 
+
+
+(defn load-configs [configs]
+  (let [configs (cond-> configs
+                  (not (sequential? configs)) vector)]
+    (reduce
+     (fn [all config]
+       (if-let [ig-config
+                (cond
+                  (string? config) (ig/read-string (slurp config))
+                  (map? config)    config
+                  :default nil)]
+         (merge all ig-config)
+         all))
+     {}
+     configs)))
+
+
+
 (defn halt! []
   (when-let [roll-state (:roll @state)]
     (info "shutting down...")
     (ig/halt! roll-state)))
 
 
-(defn init [config]
+
+
+(defn init [configs]
   (timbre/set-config!
    {:level :info
     :output-fn (fn [{:keys [timestamp_ level msg_]}] (force msg_))
     :appenders (select-keys default-appenders [:println])})
 
   
-  (let [config (cond-> config
-                 (sequential? config) first)]
-    (when-let [ig-config (cond (string? config) (ig/read-string (slurp config))
-                               ;; fixme
-                               (map? config) config
-                               :default nil)]
-
-      
-      (swap! state update :shutdown-hook
-             (fn [sh]
-               (or sh (do (.addShutdownHook
-                           (Runtime/getRuntime) (Thread. halt!))
-                          true))))
-      
-
-      ;; ensure we have Sente when reloading
-      (let [ig-config (cond-> ig-config
-                        (:roll/reload ig-config)
-                        (update-in [:roll/handler :sente]
-                                   (fnil identity true)))]
-      
-        
-
-        (halt!) ;;stop current services
-        
-        (ig/load-namespaces ig-config)
-        (swap! state assoc :config ig-config)
-
+  (let [ig-config (load-configs configs)]
     
-        (->> (ig/init ig-config)
-             (swap! state assoc :roll))))))
+    (swap! state update :shutdown-hook
+           (fn [sh]
+             (or sh (do (.addShutdownHook
+                         (Runtime/getRuntime) (Thread. halt!))
+                        true))))
+    
+
+    ;; ensure we have Sente for :roll/reload
+    (let [ig-config (cond-> ig-config
+                      (:roll/reload ig-config)
+                      (update-in [:roll/handler :sente]
+                                 (fnil identity true)))]
+      
+
+      (halt!) ;;stop current services
+      
+      (ig/load-namespaces ig-config)
+      (swap! state assoc :config ig-config)
+      
+      (->> (ig/init ig-config)
+           (swap! state assoc :roll)))))
 
 
 
@@ -84,4 +97,25 @@
 
 
 
-;; reload (check official documentation example)
+
+(defn reload [paths]
+  (let [new-config (load-configs paths)
+        old-config (:config @state)
+        dependents (->> (ig/dependency-graph old-config)
+                        :dependents)
+        changed (->> new-config
+                     (reduce-kv
+                      (fn [changed k v]
+                        (cond-> changed
+                          (not= v (get old-config k))
+                          (assoc k v)))
+                      {}))
+        restart-keys (set (concat
+                           (keys changed)
+                           (->> (select-keys dependents (keys changed))
+                                (mapcat val))))]
+
+    (when (not-empty restart-keys)
+      (info "reloading" (vec restart-keys))
+      (swap! state update :config merge new-config)
+      (apply restart restart-keys))))
