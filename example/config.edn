@@ -3,9 +3,15 @@
  
  :roll/handler {:routes [["/" example.core/handler]]}
 
- :roll/paths ["config.edn"
-              {:watch roll.core/init}]
- }
+ :roll/paths [ ;; reload clojure code
+              ["src/clj"
+               {:watch roll.paths/reload-clj
+                :throttle 1000}]
+
+              ;; reload changed keys when this config file changes
+              ["config.edn"
+               {:watch roll.core/reload
+                :throttle 1000}]]}
 
 
 
@@ -63,4 +69,8 @@
 
   ;; make sure to add reload.js to your page
   :roll/reload {:css ["resources/public/css"]}
+
+  ;;
+  ;; You can easily add your own config keys.
+  ;;
   )
