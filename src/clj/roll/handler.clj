@@ -14,8 +14,8 @@
 
 
 
-;; todo: use *dynamic* vars
 (defonce _router (atom nil))
+(def ^:dynamic *router*)
 
 
 (def default-middleware
@@ -62,7 +62,8 @@
 (def ring-handler (atom (promise)))
 
 (defn default-handler [req]
-  (@@ring-handler req))
+  (binding [*router* @_router]
+    (@@ring-handler req)))
 
 
 
