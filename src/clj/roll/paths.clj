@@ -7,9 +7,21 @@
 
 
 (defn reload-clj [paths]
-  (info "reloading" paths)
+  (->> paths
+       ;; format "parent/fname"
+       (reduce
+        (fn [all p]
+          (let [file (->> (clojure.java.io/file p))
+                fname (.getName file)
+                parent (->> (.getParent file) (re-find #"\w*$"))]
+            (conj all (str (some-> (not-empty parent) (str "/"))
+                           fname))))
+        [])
+       (info "reloading"))
+  
   ;; -or- (clojure.tools.namespace.repl/refresh)
   (doall (map load-file paths)))
+
 
 
 (defn proc-item [coll]
@@ -67,6 +79,9 @@
 (defmethod ig/halt-key! :roll/paths [_ opts]
   (info "stopping roll/paths...")
   (w/reset-watch!)) ;;fixme: use w/remove-watch!
+
+
+
 
 
 
