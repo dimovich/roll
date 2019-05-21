@@ -11,11 +11,25 @@
 
 __Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit](http://www.http-kit.org/)), ___Websockets___ ([Sente](https://github.com/ptaoussanis/sente)), ___REPL___ ([nREPL](https://github.com/clojure-emacs/cider-nrepl)), ___Routing___ ([Reitit](https://github.com/metosin/reitit)) and ___File Watching___ ([Hawk](https://github.com/wkf/hawk)). Configure and manage them using a simple config file ([Integrant](https://github.com/weavejester/integrant)).
 
-__Roll__ allows for a completely auto-reloaded workflow. Both the backend and the frontend will react to the changes you make.
+__Roll__ allows for a completely auto-reloaded workflow. Both the backend and the frontend can react to the changes you make.
 
 <br>
 
 ## Example
+
+__deps.edn__
+
+``` clojure
+{
+ :paths ["src"]
+
+ :deps {roll {:git/url "https://github.com/dimovich/roll"
+              :sha "121a7803fbec64b192c9d4e42c65dfdd9d7f3ccd"}}
+}
+```
+
+
+
 __config.edn__
 
 ```clojure
@@ -26,17 +40,6 @@ __config.edn__
 }
 ```
 
-
-__deps.edn__
-
-``` clojure
-{
- :paths ["src"]
-
- :deps {roll {:git/url "https://github.com/dimovich/roll"
-              :sha "bf0d82ec296dfb526b57ca1c03dcf4f973201e2b"}}
-}
-```
 
 
 __src/example/core.clj__
