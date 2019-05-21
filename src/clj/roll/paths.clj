@@ -1,26 +1,41 @@
 (ns roll.paths
   (:require [taoensso.timbre :refer [info]]
+            [clojure.tools.reader :as redr]
             [clojure.java.io :as io]
             [integrant.core :as ig]
             [roll.watch :as w]
-            [roll.util :as u]))
+            [roll.util :as u])
+  (:import [java.io PushbackReader]))
+
+
+
+(defn format-parent [file]
+  (let [fname (.getName file)
+        parent (->> (.getParent file) (re-find #"\w*$"))]
+    (str (some-> (not-empty parent) (str "/"))
+         fname)))
+
+
+
+(defn require-reload [file]
+  (info "reloading" [(format-parent file)])
+  (with-open [r (PushbackReader. (io/reader file))]
+    (-> {:read-cond :allow :features #{:clj}}
+        (redr/read r)
+        second
+        (require :reload))))
+
 
 
 (defn reload-clj [paths]
-  (->> paths
-       ;; format "parent/fname"
-       (reduce
-        (fn [all p]
-          (let [file (->> (clojure.java.io/file p))
-                fname (.getName file)
-                parent (->> (.getParent file) (re-find #"\w*$"))]
-            (conj all (str (some-> (not-empty parent) (str "/"))
-                           fname))))
-        [])
-       (info "reloading"))
-  
-  ;; -or- (clojure.tools.namespace.repl/refresh)
-  (doall (map load-file paths)))
+  (->> (map io/file paths)
+       (filter (comp #{"clj" "cljc"} w/file-suffix))
+       ;; -or- (clojure.tools.namespace.repl/refresh)
+       ;; -or- (doall (map load-file paths))
+       (map require-reload)
+       doall))
+
+
 
 
 
@@ -86,7 +101,19 @@
 
 
 
+
+
+
 (comment
+
+  '[clojure.tools.reader :as redr]
+  '[clojure.tools.reader.edn :as redn]
+  '[clojure.tools.reader.reader-types :as rtypes]
+
+  '(-> (n/read-file-ns-decl (clojure.java.io/file path))
+       second
+       (require :reload))
+
   
   (proc-item
    ["src/clj/roll/reload.clj"
