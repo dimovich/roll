@@ -27,7 +27,7 @@
 
 (defn init-router
   "Create router with default middleware and optional extra routes and middleware."
-  [& [{:keys [sente routes middleware]}]]
+  [& [{:keys [sente routes middleware conflicts]}]]
   (let [new-routes
         (cond-> (vec routes)
           sente  (conj ["/chsk" {:get  (:ring-ajax-get-or-ws-handshake sente)
@@ -35,11 +35,14 @@
 
     (->> (ring/router
           new-routes
-          {;;:reitit.middleware/transform rdev/print-request-diffs
-           :data {:muuntaja m/instance
-                  :middleware (->> (concat default-middleware middleware)
-                                   (into (linked/set))
-                                   vec)}})
+          (cond-> { ;;:reitit.middleware/transform rdev/print-request-diffs
+                   :data {:muuntaja m/instance
+                          :middleware (->> (concat default-middleware middleware)
+                                           (into (linked/set))
+                                           vec)}}
+
+            (not (true? conflicts))
+            (assoc :conflicts conflicts)))
          (reset! _router))))
 
 

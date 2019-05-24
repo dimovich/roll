@@ -4,7 +4,8 @@
  :roll/handler {:routes [["/" example.core/handler]]}
 
  :roll/paths [ ;; reload clojure code
-              ["src/clj"
+              ["src"
+               "../src/clj"
                {:watch roll.paths/reload-clj
                 :throttle 1000}]
 
