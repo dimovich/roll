@@ -29,9 +29,8 @@
   "Create router with default middleware and optional extra routes and middleware."
   [& [{:keys [sente routes middleware conflicts]}]]
   (let [new-routes
-        (cond-> (vec routes)
-          sente  (conj ["/chsk" {:get  (:ring-ajax-get-or-ws-handshake sente)
-                                 :post (:ring-ajax-post sente)}]))]
+        (cond->> routes
+          sente  (into [(:routes sente)]))]
 
     (->> (ring/router
           new-routes

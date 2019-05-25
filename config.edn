@@ -43,10 +43,13 @@
  {
   ;;           :handler  my.project/event-msg-handler
   ;; :handshake-data-fn  my.project/handshake-fn
-  ;; 
+  ;;              :path "/chsk"
+  ;;
+  ;; Transit read/write handlers
   ;; :packer
   ;;  {:write-handlers [datascript.transit/write-handlers ...]
   ;;   :read-handlers  [datascript.transit/read-handlers ...] }
+  ;;
 
   
   ;; -- default --

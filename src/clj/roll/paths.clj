@@ -18,7 +18,6 @@
 
 
 (defn require-reload [file]
-  (info "reloading" [(format-parent file)])
   (with-open [r (PushbackReader. (io/reader file))]
     (-> {:read-cond :allow :features #{:clj}}
         (redr/read r)
@@ -28,13 +27,14 @@
 
 
 (defn reload-clj [paths]
-  (->> (map io/file paths)
-       (filter (comp #{"clj" "cljc"} w/file-suffix))
-       ;; -or- (clojure.tools.namespace.repl/refresh)
-       ;; -or- (doall (map load-file paths))
-       ;; -or- (map require-reload)
-       (map load-file paths)
-       doall))
+  (let [files (map io/file paths)]
+    (info "reloading" (mapv format-parent files))
+    (->> files
+         (filter (comp #{"clj" "cljc"} w/file-suffix))
+         ;; -or- (clojure.tools.namespace.repl/refresh)
+         ;; -or- (map load-file paths)
+         (map require-reload)
+         doall)))
 
 
 

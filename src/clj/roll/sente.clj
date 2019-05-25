@@ -95,12 +95,18 @@
   (let [{:as opts :keys [handler]
          :or {handler event-msg-handler}} (u/resolve-syms opts)]
     
-    (when-let [fns (-> opts (dissoc :handler)
+    (when-let [fns (-> opts (select-keys [:handshake-data-fn
+                                          :packer])
                        (init-sente))]
-      (->> handler
-           (sente/start-server-chsk-router! (:ch-chsk fns))
-           (assoc fns :stop-fn)
-           (reset! sente-fns)))))
+      (let [sente (->> handler
+                       (sente/start-server-chsk-router! (:ch-chsk fns))
+                       (assoc fns :stop-fn)
+                       (reset! sente-fns))]
+
+        (assoc sente :routes
+               [(or (:path opts) "/chsk")
+                {:get  (:ring-ajax-get-or-ws-handshake sente)
+                 :post (:ring-ajax-post sente)}])))))
 
 
 
