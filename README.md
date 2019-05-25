@@ -24,7 +24,7 @@ __deps.edn__
  :paths ["src"]
 
  :deps {roll {:git/url "https://github.com/dimovich/roll"
-              :sha "2043eecda4d4def84fbe600cc8038b9778c7fc12"}}
+              :sha "aa2a912f13f8d78faeb0b5a5221afa99c48cf39b"}}
 }
 ```
 
@@ -56,6 +56,7 @@ __src/example/core.clj__
 (defn -main []
   (roll.core/init "config.edn"))
 ```
+
 
 
 ### Start
