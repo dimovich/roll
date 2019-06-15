@@ -32,8 +32,8 @@
     (->> files
          (filter (comp #{"clj" "cljc"} w/file-suffix))
          ;; -or- (clojure.tools.namespace.repl/refresh)
-         ;; -or- (map load-file paths)
-         (map require-reload)
+         ;; -or- (map require-reload) ;; works with local deps
+         (map load-file paths)
          doall)))
 
 
