@@ -71,7 +71,10 @@
                }
 
 
-  ;; make sure to add reload.js to your page
+  ;; Frontend Reloading
+  ;; make sure to include reload.js in your html page
+  ;; https://raw.githubusercontent.com/dimovich/reload/master/release/reload.js
+  
   :roll/reload {:css ["resources/public/css"]
                 :page ["resources/public/jade"]}
 
