@@ -32,6 +32,9 @@
   ;; webserver
   :roll/httpkit {:port 5000
                  :handler #ig/ref :roll/handler ;; -or-  my.project/handler
+
+                 ;; -- default --
+                 ;; :handler roll.handler/default-handler
                  }
 
   ;; - or - (make sure to add nginx-clojure dependency)
@@ -52,7 +55,8 @@
                  
                  
                  ;; -- default --
-                 ;; :handler roll.handler/default-handler
+                 ;;    :handler roll.handler/default-handler
+                 ;; :middleware roll.handler/default-middleware
                  }
 
   ;; Websockets

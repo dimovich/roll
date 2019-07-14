@@ -1,7 +1,7 @@
 {
  :roll/repl {:port 3311}
  
- :roll/paths [;; reload clojure code
+ :roll/paths [ ;; reload clojure code
               ["src/clj"
                {:watch roll.paths/reload-clj
                 :throttle 1000}]
@@ -15,7 +15,10 @@
  :roll/httpkit
  {
   :port 5000
-  ;; :handler my.project/handler -or- #ig/ref :roll/handler
+  ;; :handler  my.project/handler -or- #ig/ref :roll/handler
+
+  ;; -- default --
+  ;; :handler  roll.handler/default-handler
   }
 
  ;; - or - (make sure to add nginx-clojure dependency)
@@ -36,7 +39,8 @@
 
   
   ;; -- default --
-  ;; :handler roll.handler/default-handler
+  ;;    :handler  roll.handler/default-handler
+  ;; :middleware  roll.handler/default-middleware
   }
 
  :roll/sente
