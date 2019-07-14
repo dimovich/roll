@@ -26,19 +26,17 @@
 
 
 (defn init-router
-  "Create router with default middleware and optional extra routes and middleware."
+  "Create router with default middleware or optional middleware and extra routes."
   [& [{:keys [sente routes middleware conflicts]}]]
-  (let [new-routes
-        (cond->> routes
-          sente  (into [(:routes sente)]))]
+  (let [new-routes (cond->> routes
+                     sente  (into [(:routes sente)]))
+        new-middleware (or middleware default-middleware)]
 
     (->> (ring/router
           new-routes
           (cond-> { ;;:reitit.middleware/transform rdev/print-request-diffs
                    :data {:muuntaja m/instance
-                          :middleware (->> (concat default-middleware middleware)
-                                           (into (linked/set))
-                                           vec)}}
+                          :middleware new-middleware}}
 
             (not (true? conflicts))
             (assoc :conflicts conflicts)))
