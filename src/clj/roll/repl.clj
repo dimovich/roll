@@ -36,5 +36,6 @@
 
 
 (defmethod ig/halt-key! :roll/repl [_ server]
-  (info "stopping roll/repl...")
-  (some-> server (stop)))
+  (when server
+    (info "stopping roll/repl...")
+    (stop server)))

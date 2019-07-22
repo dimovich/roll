@@ -98,24 +98,64 @@
 
 
 
-(defn reload [paths]
+(defn get-dependents
+  "Recursively get dependents."
+  [deps changed-keys]
+  (when (not-empty changed-keys)
+    (let [deps-keys (->> (select-keys (:dependents deps) changed-keys)
+                         (mapcat val))]
+      (->> (get-dependents deps deps-keys)
+           (concat deps-keys)
+           (distinct)))))
+
+
+(defn get-dependencies [deps changed-keys]
+  (->> changed-keys
+       (select-keys (:dependencies deps))
+       (mapcat val)
+       (distinct)))
+
+
+
+(defn reload
+  "Check changed keys and restart dependecies."
+  [paths]
   (let [new-config (load-configs paths)
         old-config (:config @state)
-        dependents (->> (ig/dependency-graph old-config)
-                        :dependents)
-        changed (->> new-config
-                     (reduce-kv
-                      (fn [changed k v]
-                        (cond-> changed
-                          (not= v (get old-config k))
-                          (assoc k v)))
-                      {}))
-        restart-keys (set (concat
-                           (keys changed)
-                           (->> (select-keys dependents (keys changed))
-                                (mapcat val))))]
+        deps (ig/dependency-graph new-config)
+        
+        missing-keys (clojure.set/difference (set (keys old-config))
+                                             (set (keys new-config)))
+        changed-keys (->> new-config
+                          (reduce-kv
+                           (fn [changed k v]
+                             (cond-> changed
+                               (not= v (get old-config k))
+                               (conj k)))
+                           []))
 
+        ;; also add dependencies
+        changed-keys (concat changed-keys
+                             (get-dependencies deps changed-keys))
+
+        ;; also add dependecies' dependents
+        changed-keys (concat changed-keys
+                             (get-dependents deps changed-keys))
+
+        ;; also add dependents' dependencies
+        changed-keys (concat changed-keys
+                             (get-dependencies deps changed-keys))
+        
+        restart-keys (distinct changed-keys)]
+
+
+    (swap! state assoc :config new-config)
+    
+    (when (not-empty missing-keys)
+      (info "halting" (vec missing-keys))
+      (ig/halt! (:roll @state) missing-keys))
+    
     (when (not-empty restart-keys)
       (info "reloading" (vec restart-keys))
-      (swap! state update :config merge new-config)
       (apply restart restart-keys))))
+
