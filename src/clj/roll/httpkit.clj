@@ -26,4 +26,3 @@
   (when stop-fn
     (info "stopping roll/httpkit...")
     (stop-fn)))
-
