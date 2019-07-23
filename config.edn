@@ -15,7 +15,10 @@
  :roll/httpkit
  {
   :port 5000
-  ;; :handler  my.project/handler -or- #ig/ref :roll/handler
+  :handler #ig/ref :roll/handler
+
+  ;; -or-
+  ;; :handler  my.project/handler
 
   ;; -- default --
   ;; :handler  roll.handler/default-handler
