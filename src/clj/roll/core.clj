@@ -36,18 +36,30 @@
   "Load Integrant configs. Either file path(s) or map(s)."
   [configs]
   (let [configs (cond-> configs
-                  (not (sequential? configs)) vector)]
-    (reduce
-     (fn [all config]
-       (if-let [ig-config
-                (cond
-                  (string? config) (ig/read-string (slurp config))
-                  (map? config)    config
-                  :default nil)]
-         (merge all ig-config)
-         all))
-     {}
-     configs)))
+                  (not (sequential? configs)) vector)
+        
+        ig-config (reduce
+                   (fn [all config]
+                     (if-let [ig-config
+                              (cond
+                                (string? config) (ig/read-string (slurp config))
+                                (map? config)    config
+                                :default nil)]
+                       (merge all ig-config)
+                       all))
+                   {}
+                   configs)
+
+        ig-config (cond-> ig-config
+                    ;; ensure we start Sente for :roll/reload
+                    (:roll/reload ig-config)
+                    (update-in [:roll/handler :sente]
+                               (fnil identity true)))]
+    
+    ;; make sure registered component namespaces are loaded
+    (ig/load-namespaces ig-config)
+    
+    ig-config))
 
 
 
@@ -113,23 +125,15 @@
   
   (let [ig-config (load-configs configs)]
 
+    ;; make sure we gracefuly shutdown on program exit
     (swap! state add-shutdown-hook)
     
-    ;; ensure we have Sente for :roll/reload
-    (let [ig-config (cond-> ig-config
-                      (:roll/reload ig-config)
-                      (update-in [:roll/handler :sente]
-                                 (fnil identity true)))]
-      
-      ;;stop current services
-      (halt!) 
+    ;;stop current services
+    (halt!)
 
-      ;; make sure registered component namespaces are loaded
-      (ig/load-namespaces ig-config)
-
-      ;; start Integrant
-      (swap! state #(-> (assoc % :config ig-config)
-                        (assoc   :roll   (start ig-config)))))))
+    ;; start Integrant
+    (swap! state #(-> (assoc % :config ig-config)
+                      (assoc   :roll   (start ig-config))))))
 
 
 
