@@ -90,8 +90,12 @@
           (assoc :sente (sente/start-sente)))]
 
     (->> (or handler (init-handler opts))
+         ;; (future) might not be realized before next call to
+         ;; (get-default-handler) => (init-handler)
          (delay)
-         (reset! ring-handler))
+         (reset! ring-handler)
+         ;; force delay
+         deref)
     
     default-handler))
 

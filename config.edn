@@ -6,7 +6,7 @@
                {:watch roll.paths/reload-clj
                 :throttle 1000}]
 
-              ;; reload changed keys when this config file changes
+              ;; reload changed config keys when this file changes
               ["config.edn"
                {:watch roll.core/reload
                 :throttle 1000}]]

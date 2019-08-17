@@ -252,6 +252,15 @@
 
 
 
+(defn fn->name [f]
+  (-> (str f)
+      clojure.main/demunge
+      (clojure.string/split #"@")
+      first
+      symbol))
+
+
+
 (defn spp [& args]
   (with-out-str (apply clojure.pprint/pprint args)))
 
