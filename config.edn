@@ -1,7 +1,7 @@
 {
  :roll/repl {:port 3311}
  
- :roll/paths [ ;; reload clojure code
+ :roll/paths [;; reload clojure code
               ["src/clj" ,,, ;; add more paths as needed
                {:watch roll.paths/reload-clj
                 :throttle 500}]
@@ -12,8 +12,7 @@
                 :throttle 500}]]
 
  
- ;; Web Server
- 
+ ;; Webserver (for alternatives see below)
  :roll/httpkit
  {
   :port 5000
@@ -31,8 +30,7 @@
 ;;
 (comment
 
-  ;; Ring handler
-  
+  ;; Ring handler  
   :roll/handler
   {
    ;; :middleware  my.project/middleware -or- [ring-middleware ...]
@@ -51,7 +49,6 @@
 
   
   ;; Nginx Webserver (make sure to add nginx-clojure dependency)
-
   :roll/nginx
   {
    :config "my-nginx.conf"
@@ -64,10 +61,12 @@
    ;; :handler  roll.handler/default-handler
    }
   
-  
-  
+
+  ;; Aleph Webserver (make sure to add aleph & manifold dependency)
+  :roll/aleph {:port 5000}
+
+
   ;; Websockets
-  
   :roll/sente
   {
    ;;           :handler  my.project/event-msg-handler
@@ -97,4 +96,10 @@
   :roll/reload {:css ["resources/public/css" ,,,]
                 :page ["resources/public/jade" ,,,]}
 
+  
+  ;;
+  ;; You can easily add your own config keys.  Check Integrant docs at
+  ;; https://github.com/weavejester/integrant
+  ;;
+  
   )
