@@ -18,8 +18,8 @@
         integrant   {:mvn/version "0.7.0"}
         cheshire    {:mvn/version "5.8.1"}
         manifold    {:mvn/version "0.1.8"}
-        aleph {:mvn/version "0.4.6"}
-        hawk {:mvn/version "0.2.11"}
+        aleph       {:mvn/version "0.4.6"}
+        hawk        {:mvn/version "0.2.11"}
         com.farmlogs/looper
         {:git/url "https://github.com/dimovich/looper"
          :sha "44f8e29eebe166f24dbcfbf6a528b7a0c1464d0c"}
@@ -36,4 +36,3 @@
 
   :cider
   {:extra-paths ["resources"]}}}
-
