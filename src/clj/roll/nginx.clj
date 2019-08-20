@@ -7,6 +7,11 @@
 
 
 
+(defmethod ig/prep-key :roll/nginx [_ config]
+  ;; make sure we have a handler
+  (merge {:handler (ig/ref :roll/handler)} config))
+
+
 
 (defmethod ig/init-key :roll/nginx [_ opts]
   (when-let [opts (cond (map? opts) (u/resolve-syms opts)

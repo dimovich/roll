@@ -2,73 +2,99 @@
  :roll/repl {:port 3311}
  
  :roll/paths [ ;; reload clojure code
-              ["src/clj"
+              ["src/clj" ,,, ;; add more paths as needed
                {:watch roll.paths/reload-clj
-                :throttle 1000}]
+                :throttle 500}]
 
               ;; reload changed config keys when this file changes
               ["config.edn"
                {:watch roll.core/reload
-                :throttle 1000}]]
+                :throttle 500}]]
 
- ;; web server
+ 
+ ;; Web Server
+ 
  :roll/httpkit
  {
   :port 5000
-  :handler #ig/ref :roll/handler
-
-  ;; -or-
   ;; :handler  my.project/handler
-
-  ;; -- default --
-  ;; :handler  roll.handler/default-handler
-  }
-
- ;; - or - (make sure to add nginx-clojure dependency)
- ;; :roll/nginx {:config "conf/nginx.conf"}
- 
- ;; - or - (make sure to add aleph dependecy)
- ;; :roll/aleph {}
-
- 
- :roll/handler
- {
-  ;; :middleware  my.project/middleware -or- [ring-middleware ...]
-  ;;  :not-found  my.project/not-found-handler
-  ;;     :routes  [["/some/route" my.project/handler]]
-  ;;      :sente  true -or- #ig/ref :roll/sente
-  ;; - or -
-  ;;    :handler  my.project/handler
-
   
   ;; -- default --
-  ;;    :handler  roll.handler/default-handler
-  ;; :middleware  roll.handler/default-middleware
+  ;;    :port  5000
+  ;; :handler  #ig/ref :roll/handler
   }
-
- :roll/sente
- {
-  ;;           :handler  my.project/event-msg-handler
-  ;; :handshake-data-fn  my.project/handshake-fn
-  ;;              :path "/chsk"
-  ;;
-  ;; Transit read/write handlers
-  ;; :packer
-  ;;  {:write-handlers [datascript.transit/write-handlers ...]
-  ;;   :read-handlers  [datascript.transit/read-handlers ...] }
-  ;;
-
-  
-  ;; -- default --
-  ;; :handler roll.sente/event-msg-handler
-  }
-
- ;; :roll/run ["<some shell command to run>" ...]
-
-
- ;; Frontend Reloading
- ;; make sure to include reload.js in your html page
- ;; https://raw.githubusercontent.com/dimovich/reload/master/release/reload.js
- 
- ;; :roll/reload {:css ["resources/public/css" ...]}
  }
+
+
+
+;; Other available components
+;;
+(comment
+
+  ;; Ring handler
+  
+  :roll/handler
+  {
+   ;; :middleware  my.project/middleware -or- [ring-middleware ...]
+   ;;  :not-found  my.project/not-found-handler
+   ;;     :routes  [["/some/route" my.project/handler]]
+   ;;      :sente  #ig/ref :roll/sente
+   ;; - or -
+   ;;    :handler  my.project/handler
+
+  
+   ;; -- default --
+   ;;    :handler  roll.handler/default-handler
+   ;; :middleware  roll.handler/default-middleware
+   }
+
+
+  
+  ;; Nginx Webserver (make sure to add nginx-clojure dependency)
+
+  :roll/nginx
+  {
+   :config "my-nginx.conf"
+   ;; -or-
+   ;;    :port  <port number>
+   ;; :handler  my.project/handler
+  
+   ;; -- default --
+   ;;    :port  5000
+   ;; :handler  roll.handler/default-handler
+   }
+  
+  
+  
+  ;; Websockets
+  
+  :roll/sente
+  {
+   ;;           :handler  my.project/event-msg-handler
+   ;; :handshake-data-fn  my.project/handshake-fn
+   ;;              :path "/chsk"
+   ;;
+   ;; Transit read/write handlers
+   ;; :packer
+   ;;  {:write-handlers [datascript.transit/write-handlers ...]
+   ;;   :read-handlers  [datascript.transit/read-handlers ...] }
+   ;;
+  
+   ;; -- default --
+   ;; :handler roll.sente/event-msg-handler
+   }
+
+
+  
+  :roll/run ["<some shell command to run>" ,,,]
+
+
+  
+  ;; Frontend Reloading
+  ;; make sure to include reload.js in your html page
+  ;; https://raw.githubusercontent.com/dimovich/reload/master/release/reload.js
+ 
+  :roll/reload {:css ["resources/public/css" ,,,]
+                :page ["resources/public/jade" ,,,]}
+
+  )

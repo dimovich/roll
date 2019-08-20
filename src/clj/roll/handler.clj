@@ -26,7 +26,8 @@
 
 
 (defn init-router
-  "Create router with default middleware or optional middleware and extra routes."
+  "Create router with optional extra routes and default or optional
+  middleware."
   [& [{:keys [sente routes middleware conflicts]}]]
   (let [new-routes (cond->> routes
                      sente  (into [(:routes sente)]))
@@ -82,19 +83,15 @@
 (defmethod ig/init-key :roll/handler [_ opts]
   (info "initializing roll/handler:")
   (info (spp (cond-> opts
-               (:sente opts) (assoc :sente true))))
+               (:sente opts) (assoc :sente "{...}"))))
 
-  (let [{:as opts :keys [handler]}
-        (cond-> (resolve-map-syms opts)
-          (true? (:sente opts))
-          (assoc :sente (sente/start-sente)))]
-
+  (let [{:as opts :keys [handler]} (resolve-map-syms opts)]
     (->> (or handler (init-handler opts))
          ;; (future) might not be realized before next call to
          ;; (get-default-handler) => (init-handler)
          (delay)
          (reset! ring-handler)
-         ;; force delay
+         ;; force delay to realize
          deref)
     
     default-handler))

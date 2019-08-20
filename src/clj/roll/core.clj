@@ -37,7 +37,7 @@
   [configs]
   (let [configs (cond-> configs
                   (not (sequential? configs)) vector)
-        
+        ;; merge all configs
         ig-config (reduce
                    (fn [all config]
                      (if-let [ig-config
@@ -50,13 +50,19 @@
                    {}
                    configs)
 
+        ;; prep global config
         ig-config (cond-> ig-config
-                    ;; ensure we start Sente for :roll/reload
+                    ;; ensure we have Sente for :roll/reload
                     (:roll/reload ig-config)
-                    (update-in [:roll/handler :sente]
-                               (fnil identity true)))]
+                    (-> (update :roll/sente (fnil identity {}))
+                        (update-in [:roll/handler :sente]
+                                   (fnil identity (ig/ref :roll/sente))))
+
+                    ;;ensure we have a handler for :roll/server
+                    (some #(isa? % :roll/server) (keys ig-config))
+                    (update :roll/handler (fnil identity {})))]
     
-    ;; make sure registered component namespaces are loaded
+    ;; make sure component namespaces are loaded
     (ig/load-namespaces ig-config)
     
     ig-config))
@@ -67,10 +73,10 @@
 (defn start
   "Start all components or only the specified keys."
   ([ig-config]
-   (ig/init ig-config))
+   (-> ig-config ig/prep ig/init))
   
   ([ig-config & ks]
-   (ig/init ig-config ks)))
+   (-> ig-config (ig/prep ks) (ig/init ks))))
 
 
 
@@ -124,13 +130,13 @@
 
   
   (let [ig-config (load-configs configs)]
-
+    
     ;; make sure we gracefuly shutdown on program exit
     (swap! state add-shutdown-hook)
     
     ;;stop current services
     (halt!)
-
+    
     ;; start Integrant
     (swap! state #(-> (assoc % :config ig-config)
                       (assoc   :roll   (start ig-config))))))

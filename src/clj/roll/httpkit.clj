@@ -7,6 +7,13 @@
 
 
 
+
+(defmethod ig/prep-key :roll/httpkit [_ config]
+  ;; make sure we have a handler
+  (merge {:handler (ig/ref :roll/handler)} config))
+
+
+
 (defmethod ig/init-key :roll/httpkit [_ opts]
   (when-let [opts (cond (map? opts) (u/resolve-syms opts)
                         (true? opts) {}
