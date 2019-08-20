@@ -66,6 +66,6 @@ clj -m example.core
 
 <br>
 
-For all possible options see [example/config.edn](/example/config.edn).
+For all possible options see [config.edn](/config.edn).
 
 For Aleph support see [this git branch](https://github.com/dimovich/roll/tree/aleph).
