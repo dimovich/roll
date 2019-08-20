@@ -22,7 +22,7 @@ __deps.edn__
  :paths ["src"]
 
  :deps {roll {:git/url "https://github.com/dimovich/roll"
-              :sha "4967421e2513e6548948283cb645adf9d5769703"}}
+              :sha "e7c79c488df47c74678836a449b3e2ad5e7c7cf1"}}
 }
 ```
 
@@ -32,7 +32,7 @@ __config.edn__
 
 ```clojure
 {
- :roll/httpkit {:port 5000}
+ :roll/aleph   {:port 5000}
 
  :roll/handler {:routes [["/" example.core/handler]]}
 }
@@ -67,5 +67,3 @@ clj -m example.core
 <br>
 
 For all possible options see [example/config.edn](/example/config.edn).
-
-For Aleph support see [this git branch](https://github.com/dimovich/roll/tree/aleph).
