@@ -1,4 +1,4 @@
-(ns ^{:clojure.tools.namespace.repl/unload false}
+(ns ^{:clojure.tools.namespace.repl/load false}
     roll.watch
     (:require [clojure.java.io :as io]
               [clojure.string :as string]

@@ -1,4 +1,4 @@
-(ns ^{:clojure.tools.namespace.repl/unload false}
+(ns ^{:clojure.tools.namespace.repl/load false}
     roll.core
     (:require [taoensso.timbre :as timbre :refer [info]]
               [taoensso.timbre.appenders.core :as appenders]

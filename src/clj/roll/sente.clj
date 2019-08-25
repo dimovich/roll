@@ -1,19 +1,22 @@
-(ns roll.sente
-  (:require [taoensso.timbre :refer [info]]
-            [taoensso.sente  :as sente]
-            [integrant.core  :as ig]
-            [taoensso.sente.packers.transit :as st]
-            [roll.util :as u]))
+(ns ^{:clojure.tools.namespace.repl/load false}
+    roll.sente
+    (:require [taoensso.timbre :refer [info]]
+              [taoensso.sente  :as sente]
+              [integrant.core  :as ig]
+              [taoensso.sente.packers.transit :as st]
+              [roll.util :as u]))
 
 
 
 (defonce sente-fns (atom nil))
+
 
 (defn send-msg [& args]
   (some-> @sente-fns :chsk-send! (apply args)))
 
 (defn connected-uids []
   (some-> @sente-fns :connected-uids))
+
 
 
 
