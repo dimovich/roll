@@ -15,11 +15,14 @@
                 :throttle 200}]]
 
  
- ;; Webserver (for alternatives see below)
- :roll/httpkit
+ ;; Nginx Webserver (for alternatives see below)
+ :roll/nginx
  {
   :port 5000
   ;; :handler  my.project/handler
+
+  ;; -or-
+  ;; :config "nginx.conf"
   
   ;; -- default --
   ;;    :port  5000
@@ -50,23 +53,25 @@
    }
 
 
-  
-  ;; Nginx Webserver (make sure to add nginx-clojure dependency)
-  :roll/nginx
+  ;; Http-kit Webserver (make sure to add httpkit dependency)
+  :roll/httpkit
   {
-   :config "my-nginx.conf"
-   ;; -or-
-   ;;    :port  <port number>
+   :port 5000
    ;; :handler  my.project/handler
   
    ;; -- default --
    ;;    :port  5000
-   ;; :handler  roll.handler/default-handler
+   ;; :handler  #ig/ref :roll/handler
    }
-  
 
+  
   ;; Aleph Webserver (make sure to add aleph & manifold dependency)
-  :roll/aleph {:port 5000}
+  :roll/aleph
+  {
+   :port 5000
+   ;; opts similar to roll/httpkit
+   ,,,
+   }
 
 
   ;; Websockets

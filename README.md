@@ -35,7 +35,7 @@ __config.edn__
 
 ```clojure
 {
- :roll/httpkit {:port 5000}
+ :roll/nginx {:port 5000}
 
  :roll/handler {:routes [["/" example.core/index]]}
 }
