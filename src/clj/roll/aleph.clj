@@ -62,7 +62,7 @@
                         :default nil)]
 
     (info "starting roll/aleph:")
-    (info (u/spp opts))
+    (info (u/spp (update opts :handler #(cond-> % (fn? %) u/fn->name))))
 
     (let [{:as opts :keys [handler port]
            :or {port 5000}} opts]
