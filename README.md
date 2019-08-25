@@ -37,7 +37,9 @@ __config.edn__
 {
  :roll/aleph   {:port 5000}
 
- :roll/handler {:routes [["/" example.core/handler]]}
+ :roll/handler {:routes [["/" example.core/index]]
+                :middleware [roll.aleph/wrap-ring-async
+                             roll.aleph/wrap-deferred]}
 }
 ```
 
@@ -50,7 +52,7 @@ __src/example/core.clj__
   (:require [roll.core]))
 
 
-(defn handler [req]
+(defn index [req]
   {:status 200 :body "Hello World!"})
 
 

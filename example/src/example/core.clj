@@ -2,7 +2,7 @@
   (:require [roll.core :as roll]))
 
 
-(defn handler [req]
+(defn index [req]
   {:status 200 :body "Hello World!"})
 
 

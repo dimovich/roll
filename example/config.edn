@@ -1,10 +1,10 @@
 {
  :roll/aleph {:port 5000}
  
- :roll/handler {:routes [["/" example.core/handler]]
+ :roll/handler {:routes [["/" example.core/index]]
                 :middleware [roll.aleph/wrap-ring-async
                              roll.aleph/wrap-deferred]}
-
+ 
  :roll/paths [ ;; reload clojure code
               ["src"
                "../src/clj"
