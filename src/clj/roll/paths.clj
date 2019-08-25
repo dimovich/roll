@@ -30,7 +30,8 @@
       (doseq [f files]
         (require-reload f))
 
-      (catch Exception e
+      ;;Exception
+      (catch Throwable e 
         (println (ex-message e) "\n"
                  (ex-message (ex-cause e)))))))
 
@@ -111,7 +112,7 @@
 
 (comment
 
-  (proc-item
+  (watch-item
    ["src/clj"
     "src/clj/roll/paths.clj"
     {:watch roll.paths/reload-clj}])
