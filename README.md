@@ -25,7 +25,7 @@ __deps.edn__
  :paths ["src"]
 
  :deps {roll {:git/url "https://github.com/dimovich/roll"
-              :sha "b68afb69f1f88e38e91e585c93ad06fcb1d66bbd"}}
+              :sha "791902edd8800ac85c36016007e3290fe6bf044c"}}
 }
 ```
 
@@ -37,7 +37,7 @@ __config.edn__
 {
  :roll/httpkit {:port 5000}
 
- :roll/handler {:routes [["/" example.core/handler]]}
+ :roll/handler {:routes [["/" example.core/index]]}
 }
 ```
 
@@ -50,7 +50,7 @@ __src/example/core.clj__
   (:require [roll.core]))
 
 
-(defn handler [req]
+(defn index [req]
   {:status 200 :body "Hello World!"})
 
 
