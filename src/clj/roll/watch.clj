@@ -1,13 +1,14 @@
-(ns roll.watch
-  (:require [clojure.java.io :as io]
-            [clojure.string :as string]
-            [hawk.core :as hawk]))
+(ns ^{:clojure.tools.namespace.repl/unload false}
+    roll.watch
+    (:require [clojure.java.io :as io]
+              [clojure.string :as string]
+              [hawk.core :as hawk]))
 
 
 ;; taken from figwheel-main
 
 
-(def ^:dynamic *watcher* (atom {:watcher nil :watches {}}))
+(defonce ^:dynamic *watcher* (atom {:watcher nil :watches {}}))
 
 
 (defn alter-watches [{:keys [watcher watches]} f]

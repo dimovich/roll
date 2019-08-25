@@ -1,80 +1,53 @@
 (ns roll.paths
   (:require [taoensso.timbre :refer [info]]
-            [clojure.tools.reader :as redr]
+            [clojure.tools.namespace.repl :as nr]
             [clojure.java.io :as io]
             [integrant.core :as ig]
             [roll.watch :as w]
-            [roll.util :as u])
-  (:import [java.io PushbackReader]))
-
-
-
-(defn format-parent [file]
-  (let [fname (.getName file)
-        parent (->> (.getParent file) (re-find #"\w*$"))]
-    (str (some-> (not-empty parent) (str "/"))
-         fname)))
-
-
-
-(defn require-reload [file]
-  (with-open [r (PushbackReader. (io/reader file))]
-    (-> {:read-cond :allow :features #{:clj}}
-        (redr/read r)
-        second
-        (require :reload))))
-
-
-
-(defn reload-clj [paths]
-  (let [files (map io/file paths)]
-    (info "reloading" (mapv format-parent files))
-    (->> files
-         (filter (comp #{"clj" "cljc"} w/file-suffix))
-         ;; -or- (clojure.tools.namespace.repl/refresh)
-         ;; -or- (map require-reload) ;; works with local deps
-         ;; (map load-file paths)
-         (map require-reload) ;; works with local deps
-         doall)))
+            [roll.util :as u]))
 
 
 
 
+(defn reload-clj [_ reload-config]
+  (apply nr/set-refresh-dirs (:paths reload-config))
+  (let [result (nr/refresh)]
+    (when (not= :ok result)
+      (println (ex-message result) "\n"
+               (ex-message (ex-cause result))))))
 
-(defn proc-item [coll]
-  (->> coll
+
+
+
+(defn proc-item [paths-config]
+  (->> paths-config
        ;; extract paths and opts
        ((juxt #(->> % (remove map?) flatten distinct (filter string?))
               #(->> % (filter map?) (apply merge))))
 
        ;; init paths with opts
        ((fn [[paths {:as opts :keys [init watch]}]]
-          (when-let [paths
-                     (->> paths
-                          (map #(-> (.replaceFirst % "^~" (System/getProperty "user.home"))
-                                    io/file
-                                    .getCanonicalPath))
-                          (filter #(if (u/exists? %) %
-                                       (info "Warning: Could not open" %)))
-                          vec
-                          (not-empty))]
+          (when-let [paths (->> (map u/normalize-path paths)
+                                (filter #(if (u/exists? %) %
+                                             (info "Warning: Could not open" %)))
+                                vec not-empty)]
             
-            (when init (init paths))
-            
-            (when-let [watch (if (true? watch) init watch)]
-              (w/add-watch!
-               paths
-               {:paths paths
-                :filter w/file-filter
-                :handler
-                (w/throttle
-                 (or (:throttle opts) 50)
-                 (fn [evts]
-                   (when-let [files
-                              (->> evts
-                                   (mapv (comp #(.getCanonicalPath %) :file))
-                                   set vec not-empty)]
-                     (watch files))))})))))))
+            (let [reload-config {:paths paths :opts opts}]
+              (when init (init reload-config))
+              
+              (when-let [watch-fn (if (true? watch) init watch)]
+                (w/add-watch!
+                 reload-config
+                 {:paths paths
+                  :filter w/file-filter
+                  :handler
+                  (w/throttle
+                   (or (:throttle opts) 50)
+                   (bound-fn [evts]
+                     (when-let [files (->> evts
+                                           (mapv (comp #(.getCanonicalPath %) :file))
+                                           set vec not-empty)]
+                       (watch-fn files reload-config))))}))))))))
 
 
 
@@ -83,20 +56,20 @@
   (info "starting roll/paths:")
   (info (u/spp opts))
 
-  (w/reset-watch!)
-  
   (->> (u/resolve-syms opts)
        (#(cond-> %
            (->> % (filter map?) not-empty)
            (vector)))
-       (mapv proc-item)))
+       (mapv proc-item)
+       last))
 
 
 
-(defmethod ig/halt-key! :roll/paths [_ opts]
+(defmethod ig/halt-key! :roll/paths [_ watcher]
   (info "stopping roll/paths...")
-  (w/reset-watch!)) ;;fixme: use w/remove-watch!
 
+  (doseq [watch-key (keys (:watches watcher))]
+    (w/remove-watch! watch-key)))
 
 
 
@@ -108,22 +81,17 @@
 
 (comment
 
-  '[clojure.tools.reader :as redr]
-  '[clojure.tools.reader.edn :as redn]
-  '[clojure.tools.reader.reader-types :as rtypes]
-
-  '(-> (n/read-file-ns-decl (clojure.java.io/file path))
-       second
-       (require :reload))
-
-  
   (proc-item
-   ["src/clj/roll/reload.clj"
-    {:init clojure.core/prn
-     :watch true}])
+   ["src/clj"
+    "src/clj/roll/paths.clj"
+    {:watch roll.paths/reload-clj}])
 
 
+  (w/remove-watch! ["src/clj"
+                    "src/clj/roll/paths.clj"])
+  
   (w/stop!)
+  
 
   {:roll/paths [["resources/public/css/main.css"
                  "resources/public/js/index.js"

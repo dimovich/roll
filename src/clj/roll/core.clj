@@ -1,7 +1,8 @@
-(ns roll.core
-  (:require [taoensso.timbre :as timbre :refer [info]]
-            [taoensso.timbre.appenders.core :as appenders]
-            [integrant.core :as ig]))
+(ns ^{:clojure.tools.namespace.repl/unload false}
+    roll.core
+    (:require [taoensso.timbre :as timbre :refer [info]]
+              [taoensso.timbre.appenders.core :as appenders]
+              [integrant.core :as ig]))
 
 
 
@@ -168,7 +169,7 @@
 
 (defn reload
   "Check config files and restart changed keys and their dependencies."
-  [paths]
+  [paths reload-config]
   (let [new-config (load-configs paths)
         old-config (:config @state)
         deps (ig/dependency-graph new-config)

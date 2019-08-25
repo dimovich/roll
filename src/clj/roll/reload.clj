@@ -21,7 +21,7 @@
     :filter (w/suffix-filter #{"css"})
     :handler (w/throttle
               50
-              (fn [evts]
+              (bound-fn [evts]
                 (when-let [files (->> evts
                                       (mapv (comp prep-css-file-path :file))
                                       set vec not-empty)]
@@ -43,7 +43,7 @@
     :filter w/file-filter
     :handler (w/throttle
               200
-              (fn [evts]
+              (bound-fn [evts]
                 (when-let [files (->> evts
                                       (mapv (comp #(.getCanonicalPath %) :file))
                                       set vec not-empty)]
