@@ -47,6 +47,15 @@
 ;; Integrant
 ;;
 
+
+
+(defmethod ig/prep-key :roll/aleph [_ config]
+  ;; make sure we have a handler
+  (merge {:handler (ig/ref :roll/handler)} config))
+
+
+
+
 (defmethod ig/init-key :roll/aleph [_ opts]
   (when-let [opts (cond (map? opts) (u/resolve-syms opts)
                         (true? opts) {}
@@ -56,8 +65,7 @@
     (info (u/spp opts))
 
     (let [{:as opts :keys [handler port]
-           :or {port    5000
-                handler (get-default-handler)}} opts]
+           :or {port 5000}} opts]
       (http/start-server handler {:port port}))))
 
 
