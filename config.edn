@@ -14,7 +14,7 @@
 
  
  ;; Webserver (for alternatives see below)
- :roll/httpkit
+ :roll/aleph
  {
   :port 5000
   ;; :handler  my.project/handler
@@ -63,8 +63,8 @@
    }
   
 
-  ;; Aleph Webserver (make sure to add aleph & manifold dependency)
-  :roll/aleph {:port 5000}
+  ;; Http-kit Webserver (make sure to add httpkit dependency)
+  :roll/httpkit {:port 5000}
 
 
   ;; Websockets
