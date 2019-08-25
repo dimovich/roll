@@ -1,6 +1,7 @@
 (ns roll.paths
   (:require [taoensso.timbre :refer [info]]
             [clojure.tools.namespace.repl :as nr]
+            [clojure.tools.namespace.file :as nf]
             [clojure.java.io :as io]
             [integrant.core :as ig]
             [roll.watch :as w]
@@ -9,7 +10,36 @@
 
 
 
-(defn reload-clj [_ reload-config]
+(defn require-reload [file]
+  (-> (nf/read-file-ns-decl file)
+      second
+      (require :reload)))
+
+
+
+(defn reload-clj
+  "Reload clojure files using (require ... :reload)."
+  [paths reload-config]
+  (let [files (->> (map io/file paths)
+                   (filter (comp #{"clj" "cljc"} w/file-suffix)))]
+    (info "reloading" (mapv u/format-parent files))
+    (try
+      ;; -or- clojure.tools.namespace.repl/refresh
+      ;; -or- require-reload
+      ;; -or- (load-file (.getPath f))
+      (doseq [f files]
+        (require-reload f))
+
+      (catch Exception e
+        (println (ex-message e) "\n"
+                 (ex-message (ex-cause e)))))))
+
+
+
+
+(defn refresh-clj
+  "Reload clojure paths using clojure.tools.namespace.repl/refresh"
+  [_ reload-config]
   (apply nr/set-refresh-dirs (:paths reload-config))
   (let [result (nr/refresh)]
     (when (not= :ok result)
@@ -19,7 +49,7 @@
 
 
 
-(defn proc-item [paths-config]
+(defn watch-item [paths-config]
   (->> paths-config
        ;; extract paths and opts
        ((juxt #(->> % (remove map?) flatten distinct (filter string?))
@@ -60,7 +90,7 @@
        (#(cond-> %
            (->> % (filter map?) not-empty)
            (vector)))
-       (mapv proc-item)
+       (mapv watch-item)
        last))
 
 
