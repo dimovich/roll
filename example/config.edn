@@ -1,7 +1,7 @@
 {
  :roll/httpkit {:port 5000}
  
- :roll/handler {:routes [["/" example.core/handler]]}
+ :roll/handler {:routes [["/" example.core/index]]}
 
  :roll/paths [ ;; reload clojure code
               ["src"
