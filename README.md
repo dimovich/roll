@@ -15,6 +15,9 @@ __Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit]
 
 ## Example
 
+(To run this you'll need to install [Clojure CLI tools](https://clojure.org/guides/getting_started).)
+<br><br>
+
 __deps.edn__
 
 ``` clojure
