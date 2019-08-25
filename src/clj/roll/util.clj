@@ -298,3 +298,9 @@
       (= 1 (count coll)) (first coll)
       :default (or coll []))))
 
+
+
+(defn normalize-path [path]
+  (-> (.replaceFirst path "^~" (System/getProperty "user.home"))
+      io/file
+      .getCanonicalPath))
