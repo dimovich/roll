@@ -21,8 +21,7 @@
     (info "starting roll/nginx:")
     (info (u/spp opts))
     
-    (let [{:as opts :keys [config handler]} opts
-          handler (or handler (get-default-handler))]
+    (let [{:as opts :keys [config handler]} opts]
       (if config
         (embed/run-server config)
         (embed/run-server handler (select-keys opts [:port]))))))

@@ -18,11 +18,11 @@
  ;; Nginx Webserver (for alternatives see below)
  :roll/nginx
  {
-  :port 5000
+  ;;    :port  5000
   ;; :handler  my.project/handler
 
   ;; -or-
-  ;; :config "nginx.conf"
+  :config "nginx/nginx.conf"
   
   ;; -- default --
   ;;    :port  5000
