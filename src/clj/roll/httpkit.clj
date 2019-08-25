@@ -23,8 +23,7 @@
     (info (u/spp (update opts :handler #(cond-> % (fn? %) u/fn->name))))
 
     (let [{:as opts :keys [handler port]
-           :or {port    5000
-                handler (get-default-handler)}} opts]
+           :or {port 5000}} opts]
       (httpkit/run-server handler {:port port}))))
 
 
