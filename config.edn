@@ -61,12 +61,16 @@
   
    ;; -- default --
    ;;    :port  5000
-   ;; :handler  roll.handler/default-handler
+   ;; :handler  #ig/ref :roll/handler
    }
   
 
   ;; Aleph Webserver (make sure to add aleph & manifold dependency)
-  :roll/aleph {:port 5000}
+  :roll/aleph
+  {
+   :port 5000
+   ;; other opts similar to :roll/httpkit
+   ,,,}
 
 
   ;; Websockets
