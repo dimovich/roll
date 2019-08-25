@@ -1,21 +1,24 @@
-(ns roll.handler
-  (:require [taoensso.timbre :refer [info]]
-            [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
-            [integrant.core :as ig]
-            [linked.core :as linked]
-            [reitit.core :as r]
-            [reitit.ring :as ring]
-            [reitit.ring.middleware.muuntaja :as muuntaja]
-            ;;[reitit.ring.middleware.dev :as rdev]
-            [muuntaja.core :as m]
-            [roll.sente :as sente]
-            [roll.util :refer [resolve-map-syms spp]]))
+(ns ^{:clojure.tools.namespace.repl/load false}
+    roll.handler
+    (:require [taoensso.timbre :refer [info]]
+              [ring.middleware.params :refer [wrap-params]]
+              [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+              [integrant.core :as ig]
+              [linked.core :as linked]
+              [reitit.core :as r]
+              [reitit.ring :as ring]
+              [reitit.ring.middleware.muuntaja :as muuntaja]
+              ;;[reitit.ring.middleware.dev :as rdev]
+              [muuntaja.core :as m]
+              [roll.sente :as sente]
+              [roll.util :refer [resolve-map-syms spp]]))
 
 
 
 (defonce _router (atom nil))
 (def ^:dynamic *router*)
+
+(defonce ring-handler (atom (promise)))
 
 
 (def default-middleware
@@ -60,7 +63,6 @@
 
 
 
-(def ring-handler (atom (promise)))
 
 (defn default-handler [req]
   (binding [*router* @_router]

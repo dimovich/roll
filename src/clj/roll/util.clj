@@ -304,3 +304,11 @@
   (-> (.replaceFirst path "^~" (System/getProperty "user.home"))
       io/file
       .getCanonicalPath))
+
+
+
+(defn format-parent [file]
+  (let [fname (.getName file)
+        parent (->> (.getParent file) (re-find #"\w*$"))]
+    (str (some-> (not-empty parent) (str "/"))
+         fname)))
