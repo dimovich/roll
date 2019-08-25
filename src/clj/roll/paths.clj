@@ -86,7 +86,7 @@
 (defmethod ig/init-key :roll/paths [_ opts]
   (info "starting roll/paths:")
   (info (u/spp opts))
-
+  
   (->> (u/resolve-syms opts)
        (#(cond-> %
            (->> % (filter map?) not-empty)

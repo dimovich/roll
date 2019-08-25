@@ -74,10 +74,16 @@
 (defn start
   "Start all components or only the specified keys."
   ([ig-config]
-   (-> ig-config ig/prep ig/init))
+   (apply start ig-config (keys ig-config)))
   
   ([ig-config & ks]
-   (-> ig-config (ig/prep ks) (ig/init ks))))
+   (try
+     (-> ig-config (ig/prep ks) (ig/init ks))
+     (catch Throwable t
+       (info (ex-message t))
+       (info (ex-message (ex-cause t)))
+       ;; return at least keys that started
+       (:system (ex-data t))))))
 
 
 
