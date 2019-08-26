@@ -22,7 +22,7 @@
   [paths reload-config]
   (let [files (->> (map io/file paths)
                    (filter (comp #{"clj" "cljc"} w/file-suffix)))]
-    (info "reloading" (mapv u/format-parent files))
+    (info "reloading" (pr-str (mapv u/format-parent files)))
     (try
       ;; -or- (require-reload f)
       ;; -or- (load-file (.getPath f))

@@ -61,15 +61,12 @@
 
                     ;; ensure we have a handler for :roll/server
                     (some #(isa? % :roll/server) (keys ig-config))
-                    (update :roll/handler (fnil identity {}))
-
-                    ;; run ig/prep-key
-                    :default ig/prep)]
+                    (update :roll/handler (fnil identity {})))]
     
     ;; make sure component namespaces are loaded
     (ig/load-namespaces ig-config)
     
-    ig-config))
+    (ig/prep ig-config)))
 
 
 
