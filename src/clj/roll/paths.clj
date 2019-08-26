@@ -24,8 +24,7 @@
                    (filter (comp #{"clj" "cljc"} w/file-suffix)))]
     (info "reloading" (mapv u/format-parent files))
     (try
-      ;; -or- clojure.tools.namespace.repl/refresh
-      ;; -or- require-reload
+      ;; -or- (require-reload f)
       ;; -or- (load-file (.getPath f))
       (doseq [f files]
         (require-reload f))
@@ -33,7 +32,7 @@
       ;;Exception
       (catch Throwable e 
         (println (ex-message e) "\n"
-                 (ex-message (ex-cause e)))))))
+                 (ex-message (ex-cause e)) "\n")))))
 
 
 
@@ -45,7 +44,7 @@
   (let [result (nr/refresh)]
     (when (not= :ok result)
       (println (ex-message result) "\n"
-               (ex-message (ex-cause result))))))
+               (ex-message (ex-cause result)) "\n"))))
 
 
 
@@ -86,7 +85,7 @@
 (defmethod ig/init-key :roll/paths [_ opts]
   (info "starting roll/paths:")
   (info (u/spp opts))
-
+  
   (->> (u/resolve-syms opts)
        (#(cond-> %
            (->> % (filter map?) not-empty)

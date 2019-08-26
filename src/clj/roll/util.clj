@@ -9,7 +9,6 @@
 
 
 
-
 (defn try-require
   "Tries to require the given namespace symbol, returning nil if not found."
   [sym]
@@ -44,13 +43,16 @@
 
 (defn sym->var [s]
   (if (symbol? s)
-    ;; for production better without wrapping
+    ;; for production better without fn wrapping
     ;; (some-> (try-resolve s) deref)
+    
+    ;; for development, wrap config fns with a deref on every call so
+    ;; autoreloading works
     (or (when-let [v (try-resolve s)]
           (if (fn? (deref v))
             #(-> (deref v) (apply %&))
             (deref v)))
-        (throw (Exception. (format "Error: Could not resolve %s" s))))
+        (throw (Exception. (str "Could not resolve" s))))
     s))
 
 

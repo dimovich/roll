@@ -59,9 +59,12 @@
                         (update-in [:roll/handler :sente]
                                    (fnil identity (ig/ref :roll/sente))))
 
-                    ;;ensure we have a handler for :roll/server
+                    ;; ensure we have a handler for :roll/server
                     (some #(isa? % :roll/server) (keys ig-config))
-                    (update :roll/handler (fnil identity {})))]
+                    (update :roll/handler (fnil identity {}))
+
+                    ;; run ig/prep-key
+                    :default ig/prep)]
     
     ;; make sure component namespaces are loaded
     (ig/load-namespaces ig-config)
@@ -74,10 +77,16 @@
 (defn start
   "Start all components or only the specified keys."
   ([ig-config]
-   (-> ig-config ig/prep ig/init))
+   (apply start ig-config (keys ig-config)))
   
   ([ig-config & ks]
-   (-> ig-config (ig/prep ks) (ig/init ks))))
+   (try
+     (ig/init ig-config ks)
+     (catch Throwable t
+       (info (ex-message t))
+       (info (ex-message (ex-cause t)) "\n")
+       ;; return at least keys that started
+       (:system (ex-data t))))))
 
 
 
@@ -85,8 +94,7 @@
 (defn stop
   "Stop all components or only the specified keys."
   ([roll]
-   (some-> roll not-empty ig/halt!)
-   (empty roll))
+   (some->> (keys roll) (apply stop roll)))
   
   ([roll & ks]
    (some-> roll not-empty (ig/halt! ks))
@@ -129,18 +137,13 @@
     :output-fn (fn [{:keys [timestamp_ level msg_]}] (force msg_))
     :appenders (select-keys default-appenders [:println])})
 
-  
+
+  ;; start Integrant
   (let [ig-config (load-configs configs)]
-    
-    ;; make sure we gracefuly shutdown on program exit
-    (swap! state add-shutdown-hook)
-    
-    ;;stop current services
-    (halt!)
-    
-    ;; start Integrant
-    (swap! state #(-> (assoc % :config ig-config)
-                      (assoc   :roll   (start ig-config))))))
+    (swap! state #(-> (add-shutdown-hook %)
+                      (update :roll stop)
+                      (assoc :config ig-config
+                             :roll (start ig-config))))))
 
 
 
