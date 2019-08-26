@@ -91,8 +91,7 @@
 (defn stop
   "Stop all components or only the specified keys."
   ([roll]
-   (some-> roll not-empty ig/halt!)
-   (empty roll))
+   (apply stop roll (keys roll)))
   
   ([roll & ks]
    (some-> roll not-empty (ig/halt! ks))
