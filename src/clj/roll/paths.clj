@@ -16,20 +16,34 @@
       (require :reload)))
 
 
-
 (defn reload-clj
-  "Reload clojure files using (require ... :reload)."
+  "Reload clojure files using (require ... :reload). Safe for
+  `defonce` declarations."
   [paths reload-config]
   (let [files (->> (map io/file paths)
                    (filter (comp #{"clj" "cljc"} w/file-suffix)))]
     (info "reloading" (pr-str (mapv u/format-parent files)))
     (try
-      ;; -or- (require-reload f)
-      ;; -or- (load-file (.getPath f))
       (doseq [f files]
         (require-reload f))
+      
+      (catch Throwable e 
+        (println (ex-message e) "\n"
+                 (ex-message (ex-cause e)) "\n")))))
 
-      ;;Exception
+
+
+
+(defn load-clj
+  "Load clojure files. Overwrites the definitions of lib on classpath."
+  [paths reload-config]
+  (let [files (->> (map io/file paths)
+                   (filter (comp #{"clj" "cljc"} w/file-suffix)))]
+    (info "loading" (pr-str (mapv u/format-parent files)))
+    (try
+      (doseq [p paths]
+        (load-file p))
+      
       (catch Throwable e 
         (println (ex-message e) "\n"
                  (ex-message (ex-cause e)) "\n")))))
@@ -38,7 +52,8 @@
 
 
 (defn refresh-clj
-  "Reload clojure paths using clojure.tools.namespace.repl/refresh"
+  "Reload clojure libs using `clojure.tools.namespace.repl/refresh`.
+  Not safe for `defonce` declarations."
   [_ reload-config]
   (apply nr/set-refresh-dirs (:paths reload-config))
   (let [result (nr/refresh)]

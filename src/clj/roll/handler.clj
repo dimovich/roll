@@ -1,4 +1,4 @@
-(ns ^{:clojure.tools.namespace.repl/load false}
+(ns ;;^{:clojure.tools.namespace.repl/load false}
     roll.handler
     (:require [taoensso.timbre :refer [info]]
               [ring.middleware.params :refer [wrap-params]]

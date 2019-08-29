@@ -1,4 +1,4 @@
-(ns ^{:clojure.tools.namespace.repl/load false}
+(ns ;;^{:clojure.tools.namespace.repl/load false}
     roll.core
     (:require [taoensso.timbre :as timbre :refer [info]]
               [taoensso.timbre.appenders.core :as appenders]
@@ -205,10 +205,10 @@
 
     ;; stop deleted keys
     (when (not-empty deleted-keys)
-      (info "halting" (vec deleted-keys))
+      (info "\nhalting" (vec deleted-keys))
       (swap! state update :roll (partial apply stop) deleted-keys))
 
     ;; restart changed keys
     (when (not-empty restart-keys)
-      (info "restarting" (vec restart-keys))
+      (info "\nrestarting" (vec restart-keys))
       (swap! state (partial apply restart) restart-keys))))

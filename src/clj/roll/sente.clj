@@ -1,4 +1,4 @@
-(ns ^{:clojure.tools.namespace.repl/load false}
+(ns ;;^{:clojure.tools.namespace.repl/load false}
     roll.sente
     (:require [taoensso.timbre :refer [info]]
               [taoensso.sente  :as sente]
