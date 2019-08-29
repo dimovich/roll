@@ -5,8 +5,10 @@
  :roll/paths [["src/clj" ;; reload clojure code
                ,,,       ;; add more paths as needed
                {:watch roll.paths/reload-clj
-                ;; -or- use a more aggresive but safer option
-                ;; :watch roll.paths/refresh-clj
+                ;; -or- a more aggresive reloading of REPL state
+                ;; :watch  roll.paths/refresh-clj
+                ;; -or- load clojure files directly
+                ;; :watch  roll.paths/load-clj
                 :throttle 200}]
 
               ;; reload changed config keys when this file changes
