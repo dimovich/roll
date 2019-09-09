@@ -38,12 +38,12 @@
 
 
 
-(defn init-sente [& [{:as opts :keys [packer path]}]]
+(defn init-sente [& [{:as init-opts :keys [packer path opts]}]]
   (let [{:keys [chsk ch-recv send-fn state]}
         (sente/make-channel-socket-client!
          (or path "/chsk")
          ?csrf-token
-         {:packer (get-packer packer)})]
+         (merge {:packer (get-packer packer)} opts))]
     {:chsk       chsk
      :ch-chsk    ch-recv
      :chsk-send! send-fn
