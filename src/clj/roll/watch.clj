@@ -1,8 +1,7 @@
-(ns ;;^{:clojure.tools.namespace.repl/load false}
-    roll.watch
-    (:require [clojure.java.io :as io]
-              [clojure.string :as string]
-              [hawk.core :as hawk]))
+(ns roll.watch
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string]
+            [hawk.core :as hawk]))
 
 
 ;; taken from figwheel-main

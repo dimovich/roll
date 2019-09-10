@@ -9,44 +9,54 @@
 
 
 
-(defn require-reload [file]
-  (-> (nf/read-file-ns-decl file)
-      second
-      (require :reload)))
+(defn ns-sym [file]
+  (second (nf/read-file-ns-decl file)))
+
+
+(defn loadable? [ns-sym]
+  (not (false? (-> (meta ns-sym) ::nr/load))))
+
 
 
 (defn reload-clj
-  "Reload clojure files using (require ... :reload). Safe for
-  `defonce` declarations."
+  "Reload clojure files using (require ... :reload). Safe for `defonce`
+  declarations."
   [paths reload-config]
-  (let [files (->> (map io/file paths)
-                   (filter (comp #{"clj" "cljc"} w/file-suffix)))]
-    (info "reloading" (pr-str (mapv u/format-parent files)))
+  (when-let [ns-syms
+             (->> (map io/file paths)
+                  (filter (comp #{"clj" "cljc"} w/file-suffix))
+                  (map ns-sym)
+                  (filter loadable?)
+                  not-empty)]
+    
+    (info "reloading" (pr-str ns-syms))
     (try
-      (doseq [f files]
-        (require-reload f))
+      (doseq [sym ns-syms]
+        (require sym :reload))
       
       (catch Throwable e 
         (println (ex-message e) "\n"
                  (ex-message (ex-cause e)) "\n")))))
-
 
 
 
 (defn load-clj
-  "Load clojure files. Overwrites the definitions of lib on classpath."
+  "Load clojure files. Overwrites the definitions of libs from
+  classpath."
   [paths reload-config]
-  (let [files (->> (map io/file paths)
-                   (filter (comp #{"clj" "cljc"} w/file-suffix)))]
-    (info "loading" (pr-str (mapv u/format-parent files)))
+  (when-let [files (->> (map io/file paths)
+                        (filter (comp #{"clj" "cljc"} w/file-suffix))
+                        (filter (comp loadable? ns-sym))
+                        not-empty)]
+    
+    (info "loading" (pr-str (map (comp symbol u/format-parent) files)))
     (try
-      (doseq [p paths]
-        (load-file p))
+      (doseq [f files]
+        (load-file (.getPath f)))
       
       (catch Throwable e 
         (println (ex-message e) "\n"
                  (ex-message (ex-cause e)) "\n")))))
-
 
 
 

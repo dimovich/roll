@@ -1,17 +1,16 @@
-(ns ;;^{:clojure.tools.namespace.repl/load false}
-    roll.handler
-    (:require [taoensso.timbre :refer [info]]
-              [ring.middleware.params :refer [wrap-params]]
-              [ring.middleware.keyword-params :refer [wrap-keyword-params]]
-              [integrant.core :as ig]
-              [linked.core :as linked]
-              [reitit.core :as r]
-              [reitit.ring :as ring]
-              [reitit.ring.middleware.muuntaja :as muuntaja]
-              ;;[reitit.ring.middleware.dev :as rdev]
-              [muuntaja.core :as m]
-              [roll.sente :as sente]
-              [roll.util :refer [resolve-map-syms spp]]))
+(ns roll.handler
+  (:require [taoensso.timbre :refer [info]]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [integrant.core :as ig]
+            [linked.core :as linked]
+            [reitit.core :as r]
+            [reitit.ring :as ring]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            ;;[reitit.ring.middleware.dev :as rdev]
+            [muuntaja.core :as m]
+            [roll.sente :as sente]
+            [roll.util :refer [resolve-map-syms spp]]))
 
 
 

@@ -1,5 +1,4 @@
-(ns ;;^{:clojure.tools.namespace.repl/load false}
-    roll.core
+(ns roll.core
     (:require [taoensso.timbre :as timbre :refer [info]]
               [taoensso.timbre.appenders.core :as appenders]
               [integrant.core :as ig]))
