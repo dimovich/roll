@@ -3,7 +3,6 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [integrant.core :as ig]
-            [linked.core :as linked]
             [reitit.core :as reitit]
             [reitit.ring :as ring]
             [reitit.ring.middleware.muuntaja :as muuntaja]
