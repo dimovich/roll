@@ -11,10 +11,10 @@
 
 
 (defn middleware []
-  (vec
+  [(ns-resolve 'cider.nrepl 'cider-middleware)
    (when (and (u/try-require 'cljs.core)
               (u/try-require 'cider.piggieback))
-     [(ns-resolve 'cider.piggieback 'wrap-cljs-repl)])))
+     (ns-resolve 'cider.piggieback 'wrap-cljs-repl))])
 
 
 

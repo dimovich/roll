@@ -4,7 +4,7 @@
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [integrant.core :as ig]
             [linked.core :as linked]
-            [reitit.core :as r]
+            [reitit.core :as reitit]
             [reitit.ring :as ring]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             ;;[reitit.ring.middleware.dev :as rdev]
@@ -15,7 +15,7 @@
 
 
 (defonce _router (atom nil))
-(def ^:dynamic *router*)
+;;(def ^:dynamic *router*)
 
 (defonce ring-handler (atom (promise)))
 
@@ -64,8 +64,7 @@
 
 
 (defn default-handler [req]
-  (binding [*router* @_router]
-    (@@ring-handler req)))
+  (@@ring-handler req))
 
 
 
@@ -77,6 +76,13 @@
     (deliver @ring-handler (init-handler)))
   
   default-handler)
+
+
+
+
+(defn href [& keys]
+  (when-let [router @_router]
+    (:path (apply reitit/match-by-name router keys))))
 
 
 
