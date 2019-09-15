@@ -81,7 +81,7 @@
 
 
 (defn url? [s]
-  (try (boolean (jio/as-url s))
+  (try (boolean (io/as-url s))
        (catch Exception ex false)))
 
 
