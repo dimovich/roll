@@ -14,9 +14,6 @@
 
 
 
-(defonce _router (atom nil))
-;;(def ^:dynamic *router*)
-
 (defonce ring-handler (atom (promise)))
 
 
@@ -35,15 +32,14 @@
                      sente  (into [(:routes sente)]))
         new-middleware (or middleware default-middleware)]
 
-    (->> (ring/router
-          new-routes
-          (cond-> { ;;:reitit.middleware/transform rdev/print-request-diffs
-                   :data {:muuntaja m/instance
-                          :middleware new-middleware}}
+    (ring/router
+     new-routes
+     (cond-> { ;;:reitit.middleware/transform rdev/print-request-diffs
+              :data {:muuntaja m/instance
+                     :middleware new-middleware}}
 
-            (not (true? conflicts))
-            (assoc :conflicts conflicts)))
-         (reset! _router))))
+       (not (true? conflicts))
+       (assoc :conflicts conflicts)))))
 
 
 
@@ -80,8 +76,8 @@
 
 
 
-(defn href [& keys]
-  (when-let [router @_router]
+(defn href [router & keys]
+  (when router
     (:path (apply reitit/match-by-name router keys))))
 
 
