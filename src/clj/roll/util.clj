@@ -32,7 +32,7 @@
 
 (defmacro try-require-cljs [ns-sym]
   `(try
-     (require ~ns-sym)
+     (do (require ~ns-sym) ~ns-sym)
      (catch :default ex#)))
 
 
