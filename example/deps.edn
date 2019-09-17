@@ -1,3 +1,3 @@
 {:paths ["src"]
 
- :deps {dimovich/roll {:mvn/version "0.1.0"}}}
+ :deps {dimovich/roll {:mvn/version "0.1.1"}}}
