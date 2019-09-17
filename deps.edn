@@ -29,5 +29,9 @@
    :main-opts  ["-i init.clj"]}
 
   :cider
-  {:extra-paths ["resources"]}}}
+  {:extra-paths ["resources"]}
 
+  :pack
+  {:extra-deps
+   {seancorfield/depstar {:mvn/version "0.3.3"}}
+   :main-opts ["-m hf.depstar.jar roll.jar"]}}}

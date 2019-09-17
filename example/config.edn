@@ -1,4 +1,5 @@
-{
+{:roll/repl {:port 3311}
+ 
  :roll/httpkit {:port 5000}
  
  :roll/handler {:routes [["/" example.core/index]]}
@@ -7,10 +8,10 @@
               ["src"
                "../src/clj"
                {:watch roll.paths/reload-clj
-                :throttle 500}]
+                :throttle 200}]
 
               ;; reload changed keys when this config file changes
               ["config.edn"
                {:watch roll.core/reload
-                :throttle 500}]]
+                :throttle 200}]]
  }
