@@ -21,11 +21,9 @@ __Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit]
 __deps.edn__
 
 ``` clojure
-{
- :paths ["src"]
+{:paths ["src"]
 
- :deps {dimovich/roll {:mvn/version "0.1.0"}}
-}
+ :deps {dimovich/roll {:mvn/version "0.1.0"}}}
 ```
 
 
@@ -33,11 +31,9 @@ __deps.edn__
 __config.edn__
 
 ```clojure
-{
- :roll/httpkit {:port 5000}
+{:roll/httpkit {:port 5000}
 
- :roll/handler {:routes [["/" example.core/index]]}
-}
+ :roll/handler {:routes [["/" example.core/index]]}}
 ```
 
 
