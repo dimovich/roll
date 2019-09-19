@@ -1,7 +1,7 @@
 (ns roll.core
-    (:require [taoensso.timbre :as timbre :refer [info]]
-              [taoensso.timbre.appenders.core :as appenders]
-              [integrant.core :as ig]))
+  (:require [taoensso.timbre :as timbre :refer [info]]
+            [taoensso.timbre.appenders.core :as appenders]
+            [integrant.core :as ig]))
 
 
 
@@ -73,7 +73,8 @@
 (defn start
   "Start all components or only the specified keys."
   ([ig-config]
-   (apply start ig-config (keys ig-config)))
+   (some->> (keys ig-config)
+            (apply start ig-config)))
   
   ([ig-config & ks]
    (try
