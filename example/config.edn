@@ -1,12 +1,17 @@
-{:roll/repl {:port 3311}
+{:roll/httpkit {:port 5000}
  
- :roll/httpkit {:port 5000}
- 
- :roll/handler {:routes [["/" example.core/index]]}
+ :roll/handler {:routes [["/" example.server/index]]
+                :sente #ig/ref :roll/sente
+                :middleware [ring.middleware.params/wrap-params
+                             ring.middleware.keyword-params/wrap-keyword-params
+                             reitit.ring.middleware.muuntaja/format-middleware
+                             example.server/wrap-session]}
+
+ :roll/sente {}
 
  :roll/paths [ ;; reload clojure code
               ["src"
-               "../src/clj"
+               "../src"
                {:watch roll.paths/reload-clj
                 :throttle 200}]
 
