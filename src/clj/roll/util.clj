@@ -1,6 +1,7 @@
 (ns roll.util
   (:require [clojure.java.io :as io]
-            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]])
+            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
+            [integrant.core :as ig])
   (:import [java.io PushbackReader]))
 
 
@@ -127,6 +128,11 @@
 
 (defmacro load-edn [file]
   (slurp file))
+
+
+
+(defmacro read-config [resource]
+  (ig/read-string (slurp (get-path resource))))
 
 
 

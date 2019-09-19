@@ -1,7 +1,8 @@
 (ns roll.core
   (:require [taoensso.timbre :as timbre :refer [info]]
             [taoensso.timbre.appenders.core :as appenders]
-            [integrant.core :as ig]))
+            [integrant.core :as ig]
+            [roll.util :as u]))
 
 
 
@@ -17,7 +18,7 @@
 
 (def default-appenders
   {:println (timbre/println-appender {:stream :auto})
-   :spit    (appenders/spit-appender {:fname  "timbre.log"})})
+   #?@(:clj [:spit (appenders/spit-appender {:fname  "timbre.log"})])})
 
 
 (defmethod ig/init-key :roll/timbre [_ {:keys [appenders]}]
@@ -32,6 +33,22 @@
 
 
 
+(defn prep-config [ig-config]
+  (cond-> ig-config
+    #?@(:clj
+        [ ;; ensure we have Sente for :roll/reload
+         (:roll/reload ig-config)
+         (-> (update :roll/sente (fnil identity {}))
+             (update-in [:roll/handler :sente]
+                        (fnil identity (ig/ref :roll/sente))))
+
+         ;; ensure we have a handler for :roll/server
+         (some #(isa? % :roll/server) (keys ig-config))
+         (update :roll/handler (fnil identity {}))])))
+
+
+
+
 (defn load-configs
   "Load Integrant configs. Either file path(s) or map(s)."
   [configs]
@@ -42,8 +59,8 @@
                    (fn [all config]
                      (if-let [ig-config
                               (cond
-                                (string? config) (ig/read-string (slurp config))
-                                (map? config)    config
+                                #?@(:clj [(string? config) (ig/read-string (slurp config))])
+                                (map? config) config
                                 :default nil)]
                        (merge all ig-config)
                        all))
@@ -51,20 +68,11 @@
                    configs)
 
         ;; prep global config
-        ig-config (cond-> ig-config
-                    ;; ensure we have Sente for :roll/reload
-                    (:roll/reload ig-config)
-                    (-> (update :roll/sente (fnil identity {}))
-                        (update-in [:roll/handler :sente]
-                                   (fnil identity (ig/ref :roll/sente))))
-
-                    ;; ensure we have a handler for :roll/server
-                    (some #(isa? % :roll/server) (keys ig-config))
-                    (update :roll/handler (fnil identity {})))]
-    
+        ig-config (prep-config ig-config)]
+     
     ;; make sure component namespaces are loaded
-    (ig/load-namespaces ig-config)
-    
+    #?(:clj (ig/load-namespaces ig-config))
+     
     (ig/prep ig-config)))
 
 
@@ -79,7 +87,7 @@
   ([ig-config & ks]
    (try
      (ig/init ig-config ks)
-     (catch Throwable t
+     (catch #?(:clj Throwable :cljs :default) t
        (info (ex-message t))
        (info (ex-message (ex-cause t)) "\n")
        ;; return at least keys that started
@@ -115,12 +123,13 @@
 
 
 
-(defn add-shutdown-hook [state]
-  (update state :shutdown-hook
-          (fn [sh]
-            (or sh (do (.addShutdownHook
-                        (Runtime/getRuntime) (Thread. halt!))
-                       true)))))
+#?(:clj
+   (defn add-shutdown-hook [state]
+     (update state :shutdown-hook
+             (fn [sh]
+               (or sh (do (.addShutdownHook
+                           (Runtime/getRuntime) (Thread. halt!))
+                          true))))))
 
 
 
@@ -137,7 +146,8 @@
 
   ;; start Integrant
   (let [ig-config (load-configs configs)]
-    (swap! state #(-> (add-shutdown-hook %)
+    (swap! state #(-> #?(:clj (add-shutdown-hook %)
+                         :cljs %)
                       (update :roll stop)
                       (assoc :config ig-config
                              :roll (start ig-config))))))
@@ -170,45 +180,45 @@
 (defn reload
   "Check config files and restart changed keys and their dependencies."
   [paths reload-config]
-  (let [new-config (load-configs paths)
-        old-config (:config @state)
-        deps (ig/dependency-graph new-config)
+  (when-let [new-config (load-configs paths)]
+    (let [old-config (:config @state)
+          deps (ig/dependency-graph new-config)
         
-        deleted-keys (clojure.set/difference
-                      (set (keys old-config))
-                      (set (keys new-config)))
+          deleted-keys (clojure.set/difference
+                        (set (keys old-config))
+                        (set (keys new-config)))
         
-        changed-keys (->> new-config
-                          (reduce-kv
-                           (fn [changed k v]
-                             (cond-> changed
-                               (not= v (get old-config k))
-                               (conj k)))
-                           []))
+          changed-keys (->> new-config
+                            (reduce-kv
+                             (fn [changed k v]
+                               (cond-> changed
+                                 (not= v (get old-config k))
+                                 (conj k)))
+                             []))
 
-        ;; also add dependencies
-        changed-keys (concat changed-keys
-                             (get-dependencies deps changed-keys))
+          ;; also add dependencies
+          changed-keys (concat changed-keys
+                               (get-dependencies deps changed-keys))
 
-        ;; also add dependecies' dependents
-        changed-keys (concat changed-keys
-                             (get-dependents deps changed-keys))
+          ;; also add dependecies' dependents
+          changed-keys (concat changed-keys
+                               (get-dependents deps changed-keys))
 
-        ;; also add dependents' dependencies
-        changed-keys (concat changed-keys
-                             (get-dependencies deps changed-keys))
+          ;; also add dependents' dependencies
+          changed-keys (concat changed-keys
+                               (get-dependencies deps changed-keys))
         
-        restart-keys (distinct changed-keys)]
+          restart-keys (distinct changed-keys)]
 
 
-    (swap! state assoc :config new-config)
+      (swap! state assoc :config new-config)
 
-    ;; stop deleted keys
-    (when (not-empty deleted-keys)
-      (info "\nhalting" (vec deleted-keys))
-      (swap! state update :roll (partial apply stop) deleted-keys))
+      ;; stop deleted keys
+      (when (not-empty deleted-keys)
+        (info "\nhalting" (vec deleted-keys))
+        (swap! state update :roll (partial apply stop) deleted-keys))
 
-    ;; restart changed keys
-    (when (not-empty restart-keys)
-      (info "\nrestarting" (vec restart-keys))
-      (swap! state (partial apply restart) restart-keys))))
+      ;; restart changed keys
+      (when (not-empty restart-keys)
+        (info "\nrestarting" (vec restart-keys))
+        (swap! state (partial apply restart) restart-keys)))))

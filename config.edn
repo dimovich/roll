@@ -5,7 +5,8 @@
  :roll/paths
  [
   ["src/clj"
-   ,,,       ;; add more paths as needed
+   "src/cljc"
+   ,,, ;; add more paths as needed
 
    ;; reload clojure code
    {:watch roll.paths/reload-clj

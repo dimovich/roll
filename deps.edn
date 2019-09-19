@@ -1,4 +1,4 @@
-{:paths ["src/clj" "src/cljs"]
+{:paths ["src/clj" "src/cljs" "src/cljc"]
 
  :deps {org.clojure/clojure        {:mvn/version "1.10.1"}
         org.clojure/clojurescript  {:mvn/version "1.10.520"}
@@ -31,7 +31,8 @@
    :main-opts  ["-i init.clj"]}
 
   :cider
-  {:extra-paths ["resources"]}
+  {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
+   :extra-paths ["resources"]}
 
   :pack
   {:extra-deps
