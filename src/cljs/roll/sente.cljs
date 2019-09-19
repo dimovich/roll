@@ -1,10 +1,7 @@
 (ns roll.sente
   (:require [taoensso.timbre :refer [info]]
             [taoensso.sente  :as sente :refer [cb-success?]]
-            [taoensso.sente.packers.transit :as st]
-            [integrant.core :as ig]
-            [roll.util :as u]))
-
+            [taoensso.sente.packers.transit :as st]))
 
 
 
@@ -70,23 +67,3 @@
 
 (def start! start-router!)
 (def stop!  stop-router!)
-
-
-
-
-(defmethod ig/init-key :roll/sente [_ {:as opts :keys [handler]}]
-  (info :roll/sente :start opts)
-  
-  (let [{:keys [ch-chsk]} (->> (dissoc opts :handler)
-                               (init-sente)
-                               (reset! sente-fns))]
-    (->> (or handler event-msg-handler)
-         (sente/start-client-chsk-router! ch-chsk))))
-
-
-
-
-(defmethod ig/halt-key! :roll/sente [_ stop-fn]
-  (info :roll/sente :halt stop-fn)
-  (when stop-fn
-    (stop-fn)))
