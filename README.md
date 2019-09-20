@@ -23,7 +23,7 @@ __deps.edn__
 ``` clojure
 {:paths ["src"]
 
- :deps {dimovich/roll {:mvn/version "0.1.1"}}}
+ :deps {dimovich/roll {:mvn/version "0.1.2"}}}
 ```
 
 
@@ -33,15 +33,15 @@ __config.edn__
 ```clojure
 {:roll/httpkit {:port 5000}
 
- :roll/handler {:routes [["/" example.core/index]]}}
+ :roll/handler {:routes [["/" example.server/index]]}}
 ```
 
 
 
-__src/example/core.clj__
+__src/example/server.clj__
 
 ``` clojure
-(ns example.core
+(ns example.server
   (:require [roll.core]))
 
 
@@ -58,7 +58,7 @@ __src/example/core.clj__
 ### Start
 
 ```
-clj -m example.core
+clj -m example.server
 ```
 
 
