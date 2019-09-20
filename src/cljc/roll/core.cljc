@@ -122,15 +122,9 @@
   (swap! state update :roll stop))
 
 
-
 #?(:clj
-   (defn add-shutdown-hook [state]
-     (update state :shutdown-hook
-             (fn [sh]
-               (or sh (do (.addShutdownHook
-                           (Runtime/getRuntime) (Thread. halt!))
-                          true))))))
-
+   (defonce init-shutdown-hook
+     (delay (.addShutdownHook (Runtime/getRuntime) (Thread. #'halt!)))))
 
 
 (defn init
@@ -146,11 +140,10 @@
 
   ;; start Integrant
   (let [ig-config (load-configs configs)]
-    (swap! state #(-> #?(:clj (add-shutdown-hook %)
-                         :cljs %)
-                      (update :roll stop)
+    (swap! state #(-> (update % :roll stop)
                       (assoc :config ig-config
-                             :roll (start ig-config))))))
+                             :roll (start ig-config))))
+    #?(:clj (force init-shutdown-hook))))
 
 
 
