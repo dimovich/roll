@@ -4,28 +4,31 @@
             [ring.util.response :as resp]
             [ring.middleware.session :as ring-session]
             [ring.middleware.anti-forgery :as anti-forgery]
-            [ring.middleware.session.cookie :refer [cookie-store]]))
+            [ring.middleware.session.cookie :as cookie]))
 
 
 (defn wrap-session [handler]
-  (-> handler
-      (anti-forgery/wrap-anti-forgery)
+  (-> (anti-forgery/wrap-anti-forgery handler)
       (ring-session/wrap-session
        {:cookie-attrs {:max-age 3600}
-        :store (cookie-store {:key "example.cookie!!"})})))
+        :store (cookie/cookie-store {:key "example.cookie!!"})})))
 
 
 (defn index [req]
   (resp/response
    (hiccup/html
-    [:div "hello world"]
+    [:html
+     [:head
+      [:meta {:charset "UTF-8"}]]
+     [:body
+      [:div "hello world"]
     
-    ;; Sente CSRF
-    [:div#sente-csrf-token
-     {:data-csrf-token (force anti-forgery/*anti-forgery-token*)}]
+      ;; Sente CSRF
+      [:div#sente-csrf-token
+       {:data-csrf-token (:anti-forgery-token req)}]
 
-    [:script {:src "js/main.js" :type "text/javascript"}]
-    [:script "example.client.init()"])))
+      [:script {:src "js/main.js" :type "text/javascript"}]
+      [:script "example.client.init()"]]])))
 
 
 (defn -main []
