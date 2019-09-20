@@ -7,7 +7,7 @@
                              reitit.ring.middleware.muuntaja/format-middleware
                              example.server/wrap-session]}
 
- :roll/sente {}
+ :roll/sente {:handshake-data-fn example.server/handshake-data-fn}
 
  :roll/paths [ ;; reload clojure code
               ["src"

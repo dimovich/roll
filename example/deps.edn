@@ -1,12 +1,24 @@
-{:paths ["src" "resources"]
+{:paths ["src"]
 
- :deps {dimovich/roll {:mvn/version "0.1.2"}
-        ring/ring-anti-forgery {:mvn/version "1.3.0"}
-        hiccup {:mvn/version "2.0.0-alpha1"}}
+ :deps {org.clojure/clojure       {:mvn/version "1.10.1"}
+        org.clojure/clojurescript {:mvn/version "1.10.520"}
+        ring/ring-anti-forgery    {:mvn/version "1.3.0"}
+        hiccup        {:mvn/version "2.0.0-alpha1"}
+        reagent       {:mvn/version "0.8.1"}
+        dimovich/roll {:mvn/version "0.1.2"}}
 
  
  :aliases
- {:cider {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}}
+ {:backend {:extra-paths ["resources"]
+            :main-opts ["-m" "example.server"]}
+  
+  :frontend {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
+             :main-opts ["-m figwheel.main" "-b dev"]}
+  
+  :prod {:main-opts ["-m cljs.main -co prod.cljs.edn -c example.client"]}
+  
+  :cider {:extra-paths ["resources"]
+          :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}}
 
-  :figwheel {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
-             :main-opts ["-m figwheel.main" "-b dev"]}}}
+  :pack {:extra-deps {seancorfield/depstar {:mvn/version "0.3.3"}}
+         :main-opts ["-m hf.depstar.uberjar example.jar"]}}}
