@@ -1,5 +1,5 @@
 ^{:watch-dirs ["src"]
-  :open-url false
+  ;;:open-url false
   :log-level :error}
 
 {:main example.client

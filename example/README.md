@@ -1,4 +1,5 @@
-# For the terminal
+# At the terminal
+
 To start backend run __`clj -A:backend`__
 
 To start frontend run __`clj -A:frontend`__
