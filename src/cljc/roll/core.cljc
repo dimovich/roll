@@ -171,7 +171,7 @@
 
 
 (defn reload
-  "Check config files and restart changed keys and their dependencies."
+  "Check configs and restart changed keys and their dependencies."
   [paths reload-config]
   (when-let [new-config (load-configs paths)]
     (let [old-config (:config @state)
