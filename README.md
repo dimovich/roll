@@ -64,7 +64,7 @@ clj -m example.server
 
 <br>
 
-The whole [example](/tree/master/example).
+The whole [example](/example).
 
 For all possible options see [config.edn](/config.edn).
 
