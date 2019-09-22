@@ -12,7 +12,8 @@
  {:backend {:extra-paths ["resources"]
             :main-opts ["-m" "example.server"]}
   
-  :frontend {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
+  :frontend {:extra-paths ["resources"]
+             :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
              :main-opts ["-m figwheel.main" "-b dev"]}
   
   :prod {:main-opts ["-m cljs.main -co prod.cljs.edn -c example.client"]}

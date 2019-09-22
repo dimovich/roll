@@ -1,6 +1,5 @@
 ^{:watch-dirs ["src"]
-  ;;:open-url false
-  :log-level :error}
+  :open-url "http://localhost:5000"}
 
 {:main example.client
  :output-to "resources/public/js/main.js"
