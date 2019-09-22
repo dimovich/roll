@@ -64,8 +64,8 @@ clj -m example.server
 
 <br>
 
-For all possible options see [config.edn](/config.edn).
+The whole [example](/tree/master/example).
 
-Check the full [example](/tree/master/example).
+For all possible options see [config.edn](/config.edn).
 
 For Aleph support see [this git branch](https://github.com/dimovich/roll/tree/aleph).
