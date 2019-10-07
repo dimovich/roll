@@ -2,6 +2,8 @@
   (:require [taoensso.timbre :refer [info]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [ring.middleware.session :as ring-session]
+            [ring.middleware.anti-forgery :as anti-forgery]
             [integrant.core :as ig]
             [reitit.core :as reitit]
             [reitit.ring :as ring]
@@ -22,21 +24,34 @@
    muuntaja/format-middleware])
 
 
+(def session-middleware
+  [ring-session/wrap-session
+   anti-forgery/wrap-anti-forgery])
+
+
+
+(defn wrap-csrf
+  "Replace {{csrf}} in response body with actual token."
+  [handler]
+  (fn [req]
+    (let [resp (handler req)]
+      (update resp :body
+              clojure.string/replace "{{csrf}}"
+              (str "<div id=\"sente-csrf-token\" data-csrf-token=\""
+                   (:anti-forgery-token req) "\"></div>")))))
+
+
 
 (defn init-router
-  "Create router with optional extra routes and default or optional
-  middleware."
+  "Create router with optional extra routes"
   [& [{:keys [sente routes middleware conflicts]}]]
   (let [new-routes (cond->> routes
-                     sente  (into [(:routes sente)]))
-        new-middleware (or middleware default-middleware)]
+                     sente  (into [(:routes sente)]))]
 
     (ring/router
      new-routes
      (cond-> { ;;:reitit.middleware/transform rdev/print-request-diffs
-              :data {:muuntaja m/instance
-                     :middleware new-middleware}}
-
+              :data {:muuntaja m/instance}}
        (not (true? conflicts))
        (assoc :conflicts conflicts)))))
 
@@ -44,7 +59,7 @@
 
 (defn init-handler
   "Initialize ring handler."
-  [& [opts]]
+  [& [{:as opts :keys [sente middleware]}]]
   (ring/ring-handler
    (init-router opts)
    (ring/routes
@@ -53,7 +68,11 @@
      ;;(select-keys opts [:not-found])
      (merge
       {:not-found (constantly {:status 404 :body ""})}
-      (select-keys opts [:not-found]))))))
+      (select-keys opts [:not-found]))))
+   
+   {:middleware (or middleware
+                    (cond-> default-middleware
+                      sente (into session-middleware)))}))
 
 
 

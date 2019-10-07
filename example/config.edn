@@ -1,13 +1,11 @@
 {:roll/httpkit {:port 5000}
- 
- :roll/handler {:routes [["/" example.server/index]]
-                :sente #ig/ref :roll/sente
-                :middleware [ring.middleware.params/wrap-params
-                             ring.middleware.keyword-params/wrap-keyword-params
-                             reitit.ring.middleware.muuntaja/format-middleware
-                             example.server/wrap-session]}
 
  :roll/sente {:handshake-data-fn example.server/handshake-data-fn}
+
+ :roll/handler {:routes [["/" {:get example.server/index
+                               ;; needed for Sente
+                               :middleware [roll.handler/wrap-csrf]}]]
+                :sente #ig/ref :roll/sente}
 
  :roll/paths [ ;; reload clojure code
               ["src"

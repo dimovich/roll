@@ -17,21 +17,12 @@
      [:head [:meta {:charset "UTF-8"}]]
      [:body
       [:div {:id "app"}]
-      ;; Sente CSRF
-      [:div#sente-csrf-token
-       {:data-csrf-token (:anti-forgery-token req)}]
+      
+      ;; CSRF for Sente
+      "{{csrf}}"
 
       [:script {:src "js/main.js" :type "text/javascript"}]
       [:script "example.client.init()"]]])))
-
-
-
-;; we need cookies for websocket session
-(defn wrap-session [handler]
-  (-> (anti-forgery/wrap-anti-forgery handler)
-      (ring-session/wrap-session
-       {:cookie-attrs {:max-age 3600}
-        :store (cookie/cookie-store {:key "example.cookie!!"})})))
 
 
 
