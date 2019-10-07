@@ -3,10 +3,7 @@
             [roll.sente :refer [event-msg-handler]]
             [hiccup.core :as hiccup]
             [taoensso.timbre :refer [info]]
-            [ring.util.response :as resp]
-            [ring.middleware.session :as ring-session]
-            [ring.middleware.anti-forgery :as anti-forgery]
-            [ring.middleware.session.cookie :as cookie]))
+            [ring.util.response :as resp]))
 
 
 
