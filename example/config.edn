@@ -3,7 +3,7 @@
  :roll/sente {:handshake-data-fn example.server/handshake-data-fn}
 
  :roll/handler {:routes [["/" {:get example.server/index
-                               ;; needed for Sente
+                               ;; add to pages that use websockets
                                :middleware [roll.handler/wrap-csrf]}]]
                 :sente #ig/ref :roll/sente}
 

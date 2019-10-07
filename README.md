@@ -23,7 +23,7 @@ __deps.edn__
 ``` clojure
 {:paths ["src"]
 
- :deps {dimovich/roll {:mvn/version "0.1.3"}}}
+ :deps {dimovich/roll {:mvn/version "0.1.5"}}}
 ```
 
 
