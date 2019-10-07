@@ -70,7 +70,7 @@
       {:not-found (constantly {:status 404 :body ""})}
       (select-keys opts [:not-found]))))
    
-   {:middleware (or middleware
+   {:middleware (or (some-> middleware flatten)
                     (cond-> default-middleware
                       sente (into session-middleware)))}))
 
