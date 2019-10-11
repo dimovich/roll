@@ -1,10 +1,11 @@
 {:paths ["src/clj" "src/cljs" "src/cljc"]
 
- :deps {org.clojure/clojure        {:mvn/version "1.10.1"}
-        org.clojure/clojurescript  {:mvn/version "1.10.520"}
-        org.clojure/core.async     {:mvn/version "0.4.500"}
-        com.cognitect/transit-clj  {:mvn/version "0.8.319"}
-        com.cognitect/transit-cljs {:mvn/version "0.8.256"}
+ :deps {org.clojure/clojure         {:mvn/version "1.10.1"}
+        org.clojure/clojurescript   {:mvn/version "1.10.520"}
+        org.clojure/core.async      {:mvn/version "0.4.500"}
+        org.clojure/tools.namespace {:mvn/version "0.3.1"}
+        com.cognitect/transit-clj   {:mvn/version "0.8.319"}
+        com.cognitect/transit-cljs  {:mvn/version "0.8.256"}
         com.taoensso/timbre  {:mvn/version "4.10.0"}
         com.taoensso/sente   {:mvn/version "1.14.0-RC2"}
         com.rpl/specter      {:mvn/version "1.1.2"}

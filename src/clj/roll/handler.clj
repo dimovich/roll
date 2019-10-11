@@ -15,7 +15,7 @@
 
 
 
-(defonce ring-handler (atom (promise)))
+(defonce ring-handler (promise))
 
 
 (def default-middleware
@@ -78,16 +78,16 @@
 
 
 (defn default-handler [req]
-  (@@ring-handler req))
+  (@ring-handler req))
 
 
 
 (defn get-default-handler
   "Make sure we have an initialized handler and return it."
   []
-  (when-not (or (realized? @ring-handler)
-                (delay? @ring-handler))
-    (deliver @ring-handler (init-handler)))
+  (when-not (or (realized? ring-handler)
+                (delay? ring-handler))
+    (deliver ring-handler (init-handler)))
   
   default-handler)
 
@@ -111,7 +111,8 @@
          ;; (future) might not be realized before next call to
          ;; (get-default-handler) => (init-handler)
          (delay)
-         (reset! ring-handler)
+         (constantly)
+         (alter-var-root #'ring-handler)
          ;; force delay to realize
          deref)
     
@@ -123,5 +124,5 @@
 (defmethod ig/halt-key! :roll/handler [_ handler]
   (when handler
     (info "reseting roll/handler...")
-    (reset! ring-handler (promise))))
+    (alter-var-root #'ring-handler (constantly (promise)))))
 
