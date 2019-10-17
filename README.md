@@ -13,6 +13,19 @@ __Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit]
 
 <br>
 
+## Leiningen
+
+`roll` is published on [Clojars](https://clojars.org/dimovich/roll).
+Add the following to your `project.clj`'s `:dependencies`:
+
+    [dimovich/roll "0.1.5"]
+
+
+## Clojure CLI/deps.edn
+
+	dimovich/roll {:mvn/version "0.1.5"}
+
+
 ## Example
 
 (To run this you'll need to install [Clojure CLI tools](https://clojure.org/guides/getting_started).)
