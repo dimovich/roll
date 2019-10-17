@@ -1,10 +1,9 @@
-(ns ^{:clojure.tools.namespace.repl/load false}
-    roll.sente
-    (:require [taoensso.timbre :refer [info]]
-              [taoensso.sente  :as sente]
-              [integrant.core  :as ig]
-              [taoensso.sente.packers.transit :as st]
-              [roll.util :as u]))
+(ns roll.sente
+  (:require [taoensso.timbre :refer [info]]
+            [taoensso.sente  :as sente]
+            [integrant.core  :as ig]
+            [taoensso.sente.packers.transit :as st]
+            [roll.util :as u]))
 
 
 

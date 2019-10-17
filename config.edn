@@ -2,17 +2,25 @@
  :roll/repl {:port 3311}
 
  ;; Paths watching
- :roll/paths [["src/clj" ;; reload clojure code
-               ,,,       ;; add more paths as needed
-               {:watch roll.paths/reload-clj
-                ;; -or- use a more aggresive but safer option
-                ;; :watch roll.paths/refresh-clj
-                :throttle 200}]
+ :roll/paths
+ [
+  ["src/clj"
+   "src/cljc"
+   ,,, ;; add more paths as needed
 
-              ;; reload changed config keys when this file changes
-              ["config.edn"
-               {:watch roll.core/reload
-                :throttle 200}]]
+   ;; reload clojure code
+   {:watch roll.paths/reload-clj
+    ;; -or- a more aggresive reloading of REPL state
+    ;; :watch  roll.paths/refresh-clj
+    ;; -or- load clojure files directly
+    ;; :watch  roll.paths/load-clj
+    
+    :throttle 200}]
+
+  ["config.edn"
+   ;; reload changed config keys when this file changes
+   {:watch roll.core/reload
+    :throttle 200}]]
 
  
  ;; Webserver (for alternatives see below)

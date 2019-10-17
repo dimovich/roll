@@ -13,6 +13,19 @@ __Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit]
 
 <br>
 
+## Leiningen
+
+`roll` is published on [Clojars](https://clojars.org/dimovich/roll).
+Add the following to your `project.clj`'s `:dependencies`:
+
+    [dimovich/roll-aleph "0.1.5"]
+
+
+## Clojure CLI/deps.edn
+
+	dimovich/roll-aleph {:mvn/version "0.1.5"}
+
+
 ## Example
 
 (To run this you'll need to install [Clojure CLI tools](https://clojure.org/guides/getting_started).)
@@ -21,12 +34,9 @@ __Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit]
 __deps.edn__
 
 ``` clojure
-{
- :paths ["src"]
+{:paths ["src"]
 
- :deps {roll {:git/url "https://github.com/dimovich/roll"
-              :sha "f6908466ff65f1f872207d0bd8837af76b068c0f"}}
-}
+ :deps {dimovich/roll-aleph {:mvn/version "0.1.5"}}}
 ```
 
 
@@ -45,10 +55,10 @@ __config.edn__
 
 
 
-__src/example/core.clj__
+__src/example/server.clj__
 
 ``` clojure
-(ns example.core
+(ns example.server
   (:require [roll.core]))
 
 
@@ -65,10 +75,12 @@ __src/example/core.clj__
 ### Start
 
 ```
-clj -m example.core
+clj -m example.server
 ```
 
 
 <br>
+
+The full [example](/example).
 
 For all possible options see [config.edn](/config.edn).

@@ -1,9 +1,7 @@
 (ns roll.sente
   (:require [taoensso.timbre :refer [info]]
             [taoensso.sente  :as sente :refer [cb-success?]]
-            [taoensso.sente.packers.transit :as st]
-            [roll.util :as u]))
-
+            [taoensso.sente.packers.transit :as st]))
 
 
 
@@ -38,12 +36,12 @@
 
 
 
-(defn init-sente [& [{:as opts :keys [packer path]}]]
+(defn init-sente [& [{:as init-opts :keys [packer path opts]}]]
   (let [{:keys [chsk ch-recv send-fn state]}
         (sente/make-channel-socket-client!
          (or path "/chsk")
          ?csrf-token
-         {:packer (get-packer packer)})]
+         (merge {:packer (get-packer packer)} opts))]
     {:chsk       chsk
      :ch-chsk    ch-recv
      :chsk-send! send-fn
@@ -69,4 +67,3 @@
 
 (def start! start-router!)
 (def stop!  stop-router!)
-

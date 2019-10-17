@@ -1,18 +1,26 @@
 {
  :roll/aleph {:port 5000}
  
- :roll/handler {:routes [["/" example.core/index]]
+ :roll/handler {:routes [["/" {:get example.server/index
+                               ;; for websockets
+                               :middleware [roll.handler/wrap-csrf]}]]
+                
                 :middleware [roll.aleph/wrap-ring-async
-                             roll.aleph/wrap-deferred]}
- 
+                             roll.handler/default-middleware
+                             roll.handler/session-middleware
+                             roll.aleph/wrap-deferred]
+                
+                :sente #ig/ref :roll/sente}
+
+ :roll/sente {:handshake-data-fn example.server/handshake-data-fn}
+
  :roll/paths [ ;; reload clojure code
               ["src"
-               "../src/clj"
                {:watch roll.paths/reload-clj
-                :throttle 500}]
+                :throttle 200}]
 
               ;; reload changed keys when this config file changes
               ["config.edn"
                {:watch roll.core/reload
-                :throttle 500}]]
+                :throttle 200}]]
  }

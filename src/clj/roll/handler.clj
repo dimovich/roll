@@ -1,24 +1,21 @@
-(ns ^{:clojure.tools.namespace.repl/load false}
-    roll.handler
-    (:require [taoensso.timbre :refer [info]]
-              [ring.middleware.params :refer [wrap-params]]
-              [ring.middleware.keyword-params :refer [wrap-keyword-params]]
-              [integrant.core :as ig]
-              [linked.core :as linked]
-              [reitit.core :as r]
-              [reitit.ring :as ring]
-              [reitit.ring.middleware.muuntaja :as muuntaja]
-              ;;[reitit.ring.middleware.dev :as rdev]
-              [muuntaja.core :as m]
-              [roll.sente :as sente]
-              [roll.util :refer [resolve-map-syms spp]]))
+(ns roll.handler
+  (:require [taoensso.timbre :refer [info]]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [ring.middleware.session :as ring-session]
+            [ring.middleware.anti-forgery :as anti-forgery]
+            [integrant.core :as ig]
+            [reitit.core :as reitit]
+            [reitit.ring :as ring]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            ;;[reitit.ring.middleware.dev :as rdev]
+            [muuntaja.core :as m]
+            [roll.sente :as sente]
+            [roll.util :refer [resolve-map-syms spp]]))
 
 
 
-(defonce _router (atom nil))
-(def ^:dynamic *router*)
-
-(defonce ring-handler (atom (promise)))
+(defonce ring-handler (promise))
 
 
 (def default-middleware
@@ -27,30 +24,42 @@
    muuntaja/format-middleware])
 
 
+(def session-middleware
+  [ring-session/wrap-session
+   anti-forgery/wrap-anti-forgery])
+
+
+
+(defn wrap-csrf
+  "Replace {{csrf}} in response body with actual token."
+  [handler]
+  (fn [req]
+    (let [resp (handler req)]
+      (update resp :body
+              clojure.string/replace "{{csrf}}"
+              (str "<div id=\"sente-csrf-token\" data-csrf-token=\""
+                   (:anti-forgery-token req) "\"></div>")))))
+
+
 
 (defn init-router
-  "Create router with optional extra routes and default or optional
-  middleware."
+  "Create router with optional extra routes"
   [& [{:keys [sente routes middleware conflicts]}]]
   (let [new-routes (cond->> routes
-                     sente  (into [(:routes sente)]))
-        new-middleware (or middleware default-middleware)]
+                     sente  (into [(:routes sente)]))]
 
-    (->> (ring/router
-          new-routes
-          (cond-> { ;;:reitit.middleware/transform rdev/print-request-diffs
-                   :data {:muuntaja m/instance
-                          :middleware new-middleware}}
-
-            (not (true? conflicts))
-            (assoc :conflicts conflicts)))
-         (reset! _router))))
+    (ring/router
+     new-routes
+     (cond-> { ;;:reitit.middleware/transform rdev/print-request-diffs
+              :data {:muuntaja m/instance}}
+       (not (true? conflicts))
+       (assoc :conflicts conflicts)))))
 
 
 
 (defn init-handler
   "Initialize ring handler."
-  [& [opts]]
+  [& [{:as opts :keys [sente middleware]}]]
   (ring/ring-handler
    (init-router opts)
    (ring/routes
@@ -59,25 +68,35 @@
      ;;(select-keys opts [:not-found])
      (merge
       {:not-found (constantly {:status 404 :body ""})}
-      (select-keys opts [:not-found]))))))
+      (select-keys opts [:not-found]))))
+   
+   {:middleware (or (some-> middleware flatten)
+                    (cond-> default-middleware
+                      sente (into session-middleware)))}))
 
 
 
 
 (defn default-handler [req]
-  (binding [*router* @_router]
-    (@@ring-handler req)))
+  (@ring-handler req))
 
 
 
 (defn get-default-handler
   "Make sure we have an initialized handler and return it."
   []
-  (when-not (or (realized? @ring-handler)
-                (delay? @ring-handler))
-    (deliver @ring-handler (init-handler)))
+  (when-not (or (realized? ring-handler)
+                (delay? ring-handler))
+    (deliver ring-handler (init-handler)))
   
   default-handler)
+
+
+
+
+(defn href [router & keys]
+  (when router
+    (:path (apply reitit/match-by-name router keys))))
 
 
 
@@ -92,7 +111,8 @@
          ;; (future) might not be realized before next call to
          ;; (get-default-handler) => (init-handler)
          (delay)
-         (reset! ring-handler)
+         (constantly)
+         (alter-var-root #'ring-handler)
          ;; force delay to realize
          deref)
     
@@ -104,5 +124,5 @@
 (defmethod ig/halt-key! :roll/handler [_ handler]
   (when handler
     (info "reseting roll/handler...")
-    (reset! ring-handler (promise))))
+    (alter-var-root #'ring-handler (constantly (promise)))))
 

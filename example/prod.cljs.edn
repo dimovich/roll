@@ -1,0 +1,5 @@
+{:main example.client
+ :output-to "resources/public/js/main.js"
+ :output-dir "resources/public/js/out"
+ :asset-path "js/out"
+ :optimizations :advanced}

@@ -1,9 +1,7 @@
 (ns roll.util
   (:require [clojure.java.io :as io]
-            [looper.client :as looper]
-            [cheshire.core :as cheshire]
-            [clojure.java.io :as jio]
-            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]])
+            [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
+            [integrant.core :as ig])
   (:import [java.io PushbackReader]))
 
 
@@ -35,7 +33,7 @@
 
 (defmacro try-require-cljs [ns-sym]
   `(try
-     (require ~ns-sym)
+     (do (require ~ns-sym) ~ns-sym)
      (catch :default ex#)))
 
 
@@ -84,7 +82,7 @@
 
 
 (defn url? [s]
-  (try (boolean (jio/as-url s))
+  (try (boolean (io/as-url s))
        (catch Exception ex false)))
 
 
@@ -130,6 +128,11 @@
 
 (defmacro load-edn [file]
   (slurp file))
+
+
+
+(defmacro read-config [resource]
+  (ig/read-string (slurp (get-path resource))))
 
 
 
@@ -189,34 +192,6 @@
 (defn parse-int [s]
   (try (Integer/parseInt (re-find #"\A-?\d+" s))
        (catch Exception e nil)))
-
-
-
-
-(defn get-html
-  "Try downloading url with configurable failover."
-  [url & [opts]]
-  (let [resp (looper/get url opts)]
-    (when (= 200 (:status resp))
-      (:body resp))))
-
-
-
-
-(defn get-json
-  "Try downloading url and decode json, with configurable failover."
-  [url & [opts]]
-  (let [resp (looper/get url opts)]
-    (when (= 200 (:status resp))
-      (cheshire/decode (:body resp)))))
-
-
-
-(defn decode-json [s]
-  (or
-   (some-> s (clojure.string/replace  #"'" "\"")
-           (cheshire/decode))
-   ""))
 
 
 
