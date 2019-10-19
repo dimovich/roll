@@ -44,6 +44,7 @@
 (defn wrap-async
   "Wrap middleware chain."
   [mw]
+  (info ">>> wrap-async" mw)
   (-> [wrap-ring-async]
       (into mw)
       (conj wrap-deferred)))

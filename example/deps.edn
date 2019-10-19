@@ -3,7 +3,7 @@
         org.clojure/clojurescript {:mvn/version "1.10.520"}
         hiccup        {:mvn/version "2.0.0-alpha1"}
         reagent       {:mvn/version "0.8.1"}
-        dimovich/roll-aleph {:local/root "../"}}
+        dimovich/roll-aleph {:mvn/version "0.1.5"}}
 
  
  :aliases

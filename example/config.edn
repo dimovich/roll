@@ -4,8 +4,11 @@
  :roll/handler {:routes [["/" {:get example.server/index
                                ;; for websockets
                                :middleware [roll.handler/wrap-csrf]}]]
-                
-                :reitit.middleware/transform roll.aleph/wrap-async
+
+                :middleware [roll.aleph/wrap-ring-async
+                             roll.handler/default-middleware
+                             roll.handler/session-middleware
+                             roll.aleph/wrap-deferred]
                 
                 :sente #ig/ref :roll/sente}
  

@@ -45,7 +45,7 @@
 
 (defn init-router
   "Create router with optional extra routes"
-  [& [{:keys [sente routes conflicts]}]]
+  [& [{:as opts :keys [sente routes conflicts]}]]
   (let [new-routes (cond->> routes
                      sente  (into [(:routes sente)]))]
 
@@ -54,7 +54,9 @@
      (cond-> { ;;:reitit.middleware/transform rdev/print-request-diffs
               :data {:muuntaja m/instance}}
        (not (true? conflicts))
-       (assoc :conflicts conflicts)))))
+       (assoc :conflicts conflicts)
+
+       :default (merge (select-keys opts [::middleware/transform]))))))
 
 
 
@@ -71,11 +73,9 @@
       {:not-found (constantly {:status 404 :body ""})}
       (select-keys opts [:not-found]))))
 
-   (merge
-    {:middleware (or (some-> middleware flatten)
-                     (cond-> default-middleware
-                       sente (into session-middleware)))}
-    (select-keys opts [::middleware/transform]))))
+   {:middleware (or (some-> middleware flatten)
+                    (cond-> default-middleware
+                      sente (into session-middleware)))}))
 
 
 
