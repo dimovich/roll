@@ -4,11 +4,8 @@
  :roll/handler {:routes [["/" {:get example.server/index
                                ;; for websockets
                                :middleware [roll.handler/wrap-csrf]}]]
-
-                :middleware [roll.aleph/wrap-ring-async
-                             roll.handler/default-middleware
-                             roll.handler/session-middleware
-                             roll.aleph/wrap-deferred]
+                
+                :reitit.middleware/transform roll.aleph/wrap-async
                 
                 :sente #ig/ref :roll/sente}
  
@@ -16,6 +13,7 @@
 
  :roll/paths [ ;; reload clojure code
               ["src"
+               "../src"
                {:watch roll.paths/reload-clj
                 :throttle 200}]
 

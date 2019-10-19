@@ -3,7 +3,6 @@
             [integrant.core :as ig]
             [aleph.http :as http]
             [manifold.deferred :as d]
-            [roll.handler :refer [get-default-handler]]
             [roll.util :as u]))
 
 
@@ -40,6 +39,14 @@
                   respond)
         (d/catch' raise))))
 
+
+
+(defn wrap-async
+  "Wrap middleware chain."
+  [mw]
+  (-> [wrap-ring-async]
+      (into mw)
+      (conj wrap-deferred)))
 
 
 

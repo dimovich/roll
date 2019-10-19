@@ -8,6 +8,7 @@
             [reitit.core :as reitit]
             [reitit.ring :as ring]
             [reitit.ring.middleware.muuntaja :as muuntaja]
+            [reitit.middleware :as middleware]
             ;;[reitit.ring.middleware.dev :as rdev]
             [muuntaja.core :as m]
             [roll.sente :as sente]
@@ -44,7 +45,7 @@
 
 (defn init-router
   "Create router with optional extra routes"
-  [& [{:keys [sente routes middleware conflicts]}]]
+  [& [{:keys [sente routes conflicts]}]]
   (let [new-routes (cond->> routes
                      sente  (into [(:routes sente)]))]
 
@@ -69,10 +70,12 @@
      (merge
       {:not-found (constantly {:status 404 :body ""})}
       (select-keys opts [:not-found]))))
-   
-   {:middleware (or (some-> middleware flatten)
-                    (cond-> default-middleware
-                      sente (into session-middleware)))}))
+
+   (merge
+    {:middleware (or (some-> middleware flatten)
+                     (cond-> default-middleware
+                       sente (into session-middleware)))}
+    (select-keys opts [::middleware/transform]))))
 
 
 
@@ -84,10 +87,10 @@
 
 (defn get-default-handler
   "Make sure we have an initialized handler and return it."
-  []
+  [& [opts]]
   (when-not (or (realized? ring-handler)
                 (delay? ring-handler))
-    (deliver ring-handler (init-handler)))
+    (deliver ring-handler (init-handler opts)))
   
   default-handler)
 
