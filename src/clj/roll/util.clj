@@ -94,13 +94,13 @@
 
 (defn read-edn [path]
   (with-open [r (PushbackReader. (io/reader (get-path path)))]
-    (clojure.edn/read r)))
+    (clojure.edn/read {:readers *data-readers*} r)))
 
 
 
 (defn- read-one [r]
   (try
-    (clojure.edn/read r)
+    (clojure.edn/read {:readers *data-readers*} r)
     (catch java.lang.RuntimeException e
       (if (= "EOF while reading" (.getMessage e))
         ::EOF
@@ -183,7 +183,7 @@
      (when (.exists file#)
        (with-open [rdr# (java.io.PushbackReader.
                          (clojure.java.io/reader file#))]
-         (when-let [~name (clojure.edn/read rdr#)]
+         (when-let [~name (clojure.edn/read {:readers *data-readers*} rdr#)]
            ~@body)))))
 
 
