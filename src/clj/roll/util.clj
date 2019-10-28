@@ -80,6 +80,10 @@
   (.exists (io/file path)))
 
 
+(defn exists [path]
+  (when (exists? path) path))
+
+
 
 (defn url? [s]
   (try (boolean (io/as-url s))
