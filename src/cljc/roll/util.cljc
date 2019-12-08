@@ -1,6 +1,7 @@
 (ns roll.util
   (:require [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
             [integrant.core :as ig]
+            [clojure.pprint]
             #?@(:clj [[clojure.java.io :as io]]))
   
   #?(:cljs
@@ -74,16 +75,18 @@
 
 
 
-(defmacro resolve-cljs [ns-sym var-sym]
-  `(some-> ((ns-publics ~ns-sym) ~var-sym)
-           deref))
+#?(:clj
+   (defmacro resolve-cljs [ns-sym var-sym]
+     `(some-> ((ns-publics ~ns-sym) ~var-sym)
+              deref)))
 
 
 
-(defmacro try-require-cljs [ns-sym]
-  `(try
-     (do (require ~ns-sym) ~ns-sym)
-     (catch :default ex#)))
+#?(:clj
+   (defmacro try-require-cljs [ns-sym]
+     `(try
+        (do (require ~ns-sym) ~ns-sym)
+        (catch :default ex#))))
 
 
 
@@ -178,10 +181,21 @@
          (cond
            (fn? f) (doseq [item coll] (f item))
            (keyword? f) (doall (map f coll))
-           :else (doall coll)))
-    
-       #_(doall (cond->> (take-while #(not= ::EOF %) (repeatedly #(read-one r)))
-                  f (map f))))))
+           :else (doall coll))))))
+
+
+
+#?(:clj
+   (defn lazy-read-edn-seq [path]
+     (let [rdr (PushbackReader. (io/reader (get-path path)))]
+       (letfn [(helper [rdr]
+                 (lazy-seq
+                  (let [line (read-one rdr)]
+                    (if (not= ::EOF line)
+                      (cons line (helper rdr))
+                      (do (.close rdr) nil)))))]
+         (helper rdr)))))
+
 
 
 
@@ -196,39 +210,43 @@
 
 
 
-(defmacro read-config [resource]
-  (ig/read-string (slurp (get-path resource))))
+#?(:clj
+   (defmacro read-config [resource]
+     (ig/read-string (slurp (get-path resource)))))
 
 
 
 ;; todo: use read-edn
-(defmacro with-in-> [in & body]
-  `(-> ~in
-       slurp
-       clojure.edn/read-string
-       ~@body))
+#?(:clj
+   (defmacro with-in-> [in & body]
+     `(-> ~in
+          slurp
+          clojure.edn/read-string
+          ~@body)))
 
 
 
 
 ;; todo: use write-edn
-(defmacro with-out-> [out & body]
-  `(binding [*print-length* nil]
-     (-> ~@body
-         pr-str
-         (#(spit ~out %)))))
+#?(:clj
+   (defmacro with-out-> [out & body]
+     `(binding [*print-length* nil]
+        (-> ~@body
+            pr-str
+            (#(spit ~out %))))))
 
 
 
 
-(defmacro with-in-out-> [in out & body]
-  `(binding [*print-length* nil]
-     (-> ~in
-         slurp
-         clojure.edn/read-string
-         ~@body
-         pr-str
-         (#(spit ~out %)))))
+#?(:clj
+   (defmacro with-in-out-> [in out & body]
+     `(binding [*print-length* nil]
+        (-> ~in
+            slurp
+            clojure.edn/read-string
+            ~@body
+            pr-str
+            (#(spit ~out %))))))
 
 
 
