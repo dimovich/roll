@@ -41,9 +41,9 @@
      (merge-with deep-merge-into a b)
      
      (and (coll? a) (coll? b))
-     (if (vector? a)
-       (into a b)
-       (concat a b))
+     (if (list? a)
+       (concat a b)
+       (into a b))
      
      (and (set? a) (set? b))
      (clojure.set/union b a)
