@@ -39,5 +39,5 @@
 
   :pack
   {:extra-deps
-   {seancorfield/depstar {:mvn/version "0.3.3"}}
+   {seancorfield/depstar {:mvn/version "0.3.4"}}
    :main-opts ["-m hf.depstar.jar roll.jar"]}}}
