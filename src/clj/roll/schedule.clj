@@ -10,11 +10,13 @@
 
 (def periods
   {:ms t/millis
-   :s t/seconds
-   :m t/minutes
-   :h t/hours
-   :d t/hours
-   :y t/years})
+   :s  t/seconds
+   :m  t/minutes
+   :h  t/hours
+   :d  t/days
+   :w  t/weeks
+   :mn t/months
+   :y  t/years})
 
 
 
