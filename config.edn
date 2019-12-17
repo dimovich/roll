@@ -99,6 +99,18 @@
    }
 
 
+  ;; Task Scheduling
+  
+  :roll/schedule [ ;; every 2 minutes
+                  [2 :m my.project/some-task-fn]
+                  ;; every week
+                  [1 :w my.project/some-other-task-fn]
+
+                  ;; possible periods
+                  ;; :ms / :s / :m / :h / :d / :w / :mn / :y
+                  ]
+
+
   
   :roll/run ["<some shell command to run>" ,,,]
 
