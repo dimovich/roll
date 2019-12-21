@@ -114,7 +114,11 @@
       ;; stop
       (update :roll (partial apply stop) ks)
       ;; start
-      (update :roll merge (apply start config ks))))
+      (update :roll
+              (fn [old-roll]
+                (let [new-roll (apply start config ks)]
+                  (with-meta (merge old-roll new-roll)
+                    (meta new-roll)))))))
 
 
 

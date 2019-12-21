@@ -1,8 +1,9 @@
 (ns roll.schedule
   (:require [taoensso.timbre :refer [info]]
+            [clojure.core.async :as a :refer [<! go-loop]]
             [clj-time.core :as t]
             [clj-time.periodic :refer [periodic-seq]]
-            [chime :refer [chime-at]]
+            [chime :refer [chime-ch]]
             [integrant.core :as ig]
             [roll.util :as ru]))
 
@@ -35,16 +36,22 @@
                 tasks [tasks])]
     (->> (ru/resolve-coll-syms tasks)
          (reduce
-          (fn [stop-fns [n k run-fn]]
+          (fn [chans [n k run-fn]]
             (if-let [times (periodic* k n)]
-              (conj stop-fns (chime-at times run-fn))
-              stop-fns))
+              (let [chimes (->>
+                            {:ch (a/chan (a/sliding-buffer 1))}
+                            (chime-ch times))]
+                (go-loop []
+                  (when-let [time (<! chimes)]
+                    (run-fn time)
+                    (recur)))
+                (conj chans chimes))
+              chans))
           []))))
 
 
 
 
-(defmethod ig/halt-key! :roll/schedule [_ stop-fns]
-  (when (not-empty stop-fns)
-    (info "stopping roll/schedule...")
-    (doseq [f stop-fns] (f))))
+(defmethod ig/halt-key! :roll/schedule [_ chans]
+  (info "stopping roll/schedule...")
+  (doseq [ch chans] (a/close! ch)))
