@@ -2,7 +2,8 @@
   (:require [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
             [integrant.core :as ig]
             [clojure.pprint]
-            #?@(:clj [[clojure.java.io :as io]]))
+            #?@(:clj [[clojure.java.io :as io]
+                      [clojure.java.shell :as sh]]))
   
   #?(:cljs
      (:require-macros
@@ -378,3 +379,8 @@
            parent (->> (.getParent file) (re-find #"\w*$"))]
        (str (some-> (not-empty parent) (str "/"))
             fname))))
+
+
+#?(:clj
+   (defn backup [path]
+     (sh/sh "mv" path (str path ".1"))))

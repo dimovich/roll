@@ -138,7 +138,10 @@
   ;; init Timbre
   (timbre/set-config!
    {:level :info
-    :output-fn (fn [{:keys [timestamp_ level msg_]}] (force msg_))
+    :output-fn (fn [{:keys [timestamp_ level msg_ ?err]}]
+                 (cond-> ""
+                   ?err (str ?err " ")
+                   msg_ (str (force msg_))))
     :appenders (select-keys default-appenders [:println])})
 
 
