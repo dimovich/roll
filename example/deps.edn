@@ -4,7 +4,7 @@
         org.clojure/clojurescript {:mvn/version "1.10.597"}
         hiccup        {:mvn/version "2.0.0-alpha1"}
         reagent       {:mvn/version "0.8.1"}
-        dimovich/roll {:mvn/version "0.1.8"}}
+        dimovich/roll {:mvn/version "0.1.9"}}
 
  
  :aliases
