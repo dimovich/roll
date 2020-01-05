@@ -114,7 +114,11 @@
       ;; stop
       (update :roll (partial apply stop) ks)
       ;; start
-      (update :roll merge (apply start config ks))))
+      (update :roll
+              (fn [old-roll]
+                (let [new-roll (apply start config ks)]
+                  (with-meta (merge old-roll new-roll)
+                    (meta new-roll)))))))
 
 
 
@@ -134,7 +138,10 @@
   ;; init Timbre
   (timbre/set-config!
    {:level :info
-    :output-fn (fn [{:keys [timestamp_ level msg_]}] (force msg_))
+    :output-fn (fn [{:keys [timestamp_ level msg_ ?err]}]
+                 (cond-> ""
+                   ?err (str ?err " ")
+                   msg_ (str (force msg_))))
     :appenders (select-keys default-appenders [:println])})
 
 

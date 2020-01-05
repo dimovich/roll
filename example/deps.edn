@@ -1,13 +1,13 @@
 {:paths ["src"]
- :deps {org.clojure/clojure       {:mvn/version "1.10.1"}
-        org.clojure/clojurescript {:mvn/version "1.10.520"}
-        hiccup        {:mvn/version "2.0.0-alpha1"}
-        reagent       {:mvn/version "0.8.1"}
-        dimovich/roll-aleph {:mvn/version "0.1.5"}}
 
- 
- :aliases
- {:backend {:extra-paths ["resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.10.1"}
+        org.clojure/clojurescript {:mvn/version "1.10.597"}
+        hiccup {:mvn/version "2.0.0-alpha1"}
+        reagent {:mvn/version "0.8.1"}
+        dimovich/roll-aleph {:mvn/version "0.1.7"}}
+
+
+ :aliases {:backend {:extra-paths ["resources"]
             :main-opts ["-m" "example.server"]}
   
   :frontend {:extra-paths ["resources"]
@@ -19,5 +19,5 @@
   :cider {:extra-paths ["resources"]
           :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}}
 
-  :pack {:extra-deps {seancorfield/depstar {:mvn/version "0.3.3"}}
+  :pack {:extra-deps {seancorfield/depstar {:mvn/version "0.3.4"}}
          :main-opts ["-m hf.depstar.uberjar example.jar"]}}}
