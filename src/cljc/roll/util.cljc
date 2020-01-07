@@ -2,8 +2,7 @@
   (:require [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
             [integrant.core :as ig]
             [clojure.pprint]
-            #?@(:clj [[clojure.java.io :as io]
-                      [clojure.java.shell :as sh]]))
+            #?@(:clj [[clojure.java.io :as io]]))
   
   #?(:cljs
      (:require-macros
@@ -383,4 +382,5 @@
 
 #?(:clj
    (defn backup [path]
-     (sh/sh "mv" path (str path ".1"))))
+     (io/copy (io/file path)
+              (io/file (str path ".1")))))
