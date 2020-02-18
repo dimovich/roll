@@ -37,7 +37,7 @@
   {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
    :extra-paths ["resources"]}
 
-  :pack
+  :jar
   {:extra-deps
-   {seancorfield/depstar {:mvn/version "0.3.4"}}
+   {seancorfield/depstar {:mvn/version "0.5.2"}}
    :main-opts ["-m hf.depstar.jar roll.jar"]}}}
