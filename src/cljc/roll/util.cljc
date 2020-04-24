@@ -383,6 +383,8 @@
 
 #?(:clj
    (defn backup [path]
-     (io/copy (io/file path)
-              (io/file (str path ".1")))
+     (try
+       (io/copy (io/file path)
+                (io/file (str path ".1")))
+       (catch Exception _))
      path))
