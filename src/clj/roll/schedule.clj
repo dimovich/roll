@@ -17,7 +17,7 @@
    :h  t/hours
    :d  t/days
    :w  t/weeks
-   :mn t/months
+   :mt t/months
    :y  t/years})
 
 
@@ -39,35 +39,39 @@
 
     (info tasks)
     
-    (->> (ru/resolve-coll-syms tasks)
+    (->> tasks
          (reduce
-          (fn [chans [n k run-fn]]
+          (fn [chans [n k run-fn :as task]]
             (if-let [times (periodic* k n)]
-              (let [chimes (->> {:ch (a/chan (a/sliding-buffer 1))}
+              (let [run-fn (ru/sym->var run-fn)
+                    chimes (->> {:ch (a/chan (a/sliding-buffer 1))}
                                 (chime-ch times))
                     cancel-ch (a/chan)]
                 
                 (go-loop []
                   (when-let [time (<! chimes)]
                     (let [task-ch (run-fn time)]
-                      ;; task function returned an async channel
+                      ;; task function returned an async channel;
+                      ;; the channel can be closed or auto-close
                       (when (instance? ManyToManyChannel task-ch)
-                        #_(let [[v ch] (a/alts! [task-ch cancel-ch])]
-                            (when (= ch cancel-ch)
-                              (a/close! task-ch)))
-                        (a/alt!
-                          cancel-ch (a/close! task-ch)
-                          task-ch ())))
+                        (let [[_ ch] (a/alts! [task-ch cancel-ch])]
+                          (when (= ch cancel-ch)
+                            (a/close! task-ch)
+                            (a/close! chimes)
+                            ;; exhaust the time channel
+                            (while (a/poll! chimes))))))
                     
                     (recur)))
                 
-                (conj chans chimes cancel-ch))
+                (assoc chans task [chimes cancel-ch]))
               chans))
-          []))))
+          {}))))
 
 
 
 
 (defmethod ig/halt-key! :roll/schedule [_ chans]
   (info "stopping roll/schedule...")
-  (doseq [ch chans] (a/close! ch)))
+  (some->> (not-empty chans)
+           (map (fn [[k v]] (doseq [ch v] (a/close! ch))))
+           doall))

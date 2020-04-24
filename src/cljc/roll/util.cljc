@@ -99,11 +99,12 @@
     
        ;; for development, wrap config fns with a deref on every call so
        ;; autoreloading works
-       (or (when-let [v (try-resolve s)]
-             (if (fn? (deref v))
-               #(-> (deref v) (apply %&))
-               (deref v)))
-           (throw (Exception. (str "Could not resolve" s))))
+       (if-let [v (try-resolve s)]
+         (if (fn? (deref v))
+           #(-> (deref v) (apply %&))
+           (deref v))
+         (throw (Exception. (str "Could not resolve" s))))
+       
        s)))
 
 
@@ -383,4 +384,5 @@
 #?(:clj
    (defn backup [path]
      (io/copy (io/file path)
-              (io/file (str path ".1")))))
+              (io/file (str path ".1")))
+     path))
