@@ -43,25 +43,25 @@
          (reduce
           (fn [chans [n k run-fn]]
             (if-let [times (periodic* k n)]
-              (let [chimes (->>
-                            {:ch (a/chan (a/sliding-buffer 1))}
-                            (chime-ch times))
-                    close-ch (a/chan)]
+              (let [chimes (->> {:ch (a/chan (a/sliding-buffer 1))}
+                                (chime-ch times))
+                    cancel-ch (a/chan)]
                 
                 (go-loop []
                   (when-let [time (<! chimes)]
-                    (let [in-ch (run-fn time)]
-                      ;; task function returns a channel; consume it
-                      (when (instance? ManyToManyChannel in-ch)
-                        (loop []
-                          (a/alt!
-                            close-ch (a/close! in-ch)
-                            in-ch ([v] (when v
-                                         (recur)))))))
+                    (let [task-ch (run-fn time)]
+                      ;; task function returned an async channel
+                      (when (instance? ManyToManyChannel task-ch)
+                        #_(let [[v ch] (a/alts! [task-ch cancel-ch])]
+                            (when (= ch cancel-ch)
+                              (a/close! task-ch)))
+                        (a/alt!
+                          cancel-ch (a/close! task-ch)
+                          task-ch ())))
                     
                     (recur)))
                 
-                (conj chans chimes close-ch))
+                (conj chans chimes cancel-ch))
               chans))
           []))))
 
