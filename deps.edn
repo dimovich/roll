@@ -17,7 +17,7 @@
         metosin/spec-tools {:mvn/version "0.10.1"}
         cider/piggieback   {:mvn/version "0.4.2"}
         cider/cider-nrepl  {:mvn/version "0.24.0"}
-        jarohen/chime {:mvn/version "0.3.0"}
+        jarohen/chime {:mvn/version "0.2.2"}
         nrepl/nrepl {:mvn/version "0.7.0"}
         integrant   {:mvn/version "0.8.0"}
         http-kit    {:mvn/version "2.3.0"}

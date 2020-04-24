@@ -5,7 +5,8 @@
             [clj-time.periodic :refer [periodic-seq]]
             [chime :refer [chime-ch]]
             [integrant.core :as ig]
-            [roll.util :as ru]))
+            [roll.util :as ru])
+  (:import [clojure.core.async.impl.channels ManyToManyChannel]))
 
 
 
@@ -30,22 +31,35 @@
 
 (defmethod ig/init-key :roll/schedule [_ tasks]
   (info "starting roll/schedule...")
-  (info tasks)
 
-  (let [tasks (if (sequential? (first tasks))
-                tasks [tasks])]
+  (when-let [tasks (some-> (not-empty tasks)
+                           (cond->
+                               (not (sequential? (first tasks)))
+                               [tasks]))]
+    
     (->> (ru/resolve-coll-syms tasks)
          (reduce
           (fn [chans [n k run-fn]]
             (if-let [times (periodic* k n)]
               (let [chimes (->>
                             {:ch (a/chan (a/sliding-buffer 1))}
-                            (chime-ch times))]
+                            (chime-ch times))
+                    close-ch (a/chan)]
+                
                 (go-loop []
                   (when-let [time (<! chimes)]
-                    (run-fn time)
+                    (let [in-ch (run-fn time)]
+                      ;; task function returns a channel; consume it
+                      (when (instance? ManyToManyChannel in-ch)
+                        (loop []
+                          (a/alt!
+                            close-ch (a/close! in-ch)
+                            in-ch ([v] (when v
+                                         (recur)))))))
+                    
                     (recur)))
-                (conj chans chimes))
+                
+                (conj chans chimes close-ch))
               chans))
           []))))
 
