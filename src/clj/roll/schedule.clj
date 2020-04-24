@@ -31,11 +31,13 @@
 
 (defmethod ig/init-key :roll/schedule [_ tasks]
   (info "starting roll/schedule...")
-
+  
   (when-let [tasks (some-> (not-empty tasks)
                            (cond->
                                (not (sequential? (first tasks)))
                                [tasks]))]
+
+    (info tasks)
     
     (->> (ru/resolve-coll-syms tasks)
          (reduce
