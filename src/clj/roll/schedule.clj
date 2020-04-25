@@ -37,7 +37,7 @@
                                (not (sequential? (first tasks)))
                                [tasks]))]
 
-    (info tasks)
+    (info (ru/spp tasks))
     
     (->> tasks
          (reduce
@@ -50,6 +50,7 @@
                 
                 (go-loop []
                   (when-let [time (<! chimes)]
+                    (info "[START]" task)
                     (let [task-ch (run-fn time)]
                       ;; task function returned an async channel;
                       ;; the channel can be closed or auto-close
@@ -59,7 +60,8 @@
                             (a/close! task-ch)
                             (a/close! chimes)
                             ;; exhaust the time channel
-                            (while (a/poll! chimes))))))
+                            (while (a/poll! chimes)))))
+                      (info "[DONE]" task))
                     
                     (recur)))
                 
@@ -74,4 +76,4 @@
   (info "stopping roll/schedule...")
   (some->> (not-empty chans)
            (map (fn [[k v]] (doseq [ch v] (a/close! ch))))
-           doall))
+           dorun))

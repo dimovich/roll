@@ -220,5 +220,5 @@
 
       ;; restart changed keys
       (when (not-empty restart-keys)
-        (info "\nrestarting" (vec restart-keys))
+        (info "restarting" (vec restart-keys))
         (swap! state (partial apply restart) restart-keys)))))

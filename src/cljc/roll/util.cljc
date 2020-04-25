@@ -96,14 +96,18 @@
      (if (symbol? s)
        ;; for production better without fn wrapping
        ;; (some-> (try-resolve s) deref)
-    
-       ;; for development, wrap config fns with a deref on every call so
-       ;; autoreloading works
-       (if-let [v (try-resolve s)]
-         (if (fn? (deref v))
-           #(-> (deref v) (apply %&))
-           (deref v))
-         (throw (Exception. (str "Could not resolve" s))))
+       
+       (or (some-> (try-resolve s) deref)
+           (throw (Exception. (str "Could not resolve " s))))
+
+       ;; for development, wrap config fns with a deref on every call
+       ;; so autoreloading works
+       
+       #_(if-let [v (try-resolve s)]
+           #_(if (fn? (deref v))
+               #(-> (deref v) (apply %&))
+               (deref v))
+           (throw (Exception. (str "Could not resolve" s))))
        
        s)))
 
