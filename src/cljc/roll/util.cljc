@@ -388,7 +388,14 @@
 #?(:clj
    (defn backup [path]
      (try
-       (io/copy (io/file path)
-                (io/file (str path ".1")))
+       (let [old (str path ".1")]
+         (when (exists? old)
+           (io/copy (io/file old)
+                    (io/file (str path ".2"))))
+
+         (io/copy (io/file path)
+                  (io/file old)))
+       
+       
        (catch Exception _))
      path))

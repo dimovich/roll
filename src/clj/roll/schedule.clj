@@ -53,7 +53,10 @@
                     (let [tasks-ch (a/to-chan run-fns)]
                       (loop []
                         (when-let [task-fn (a/<! tasks-ch)]
-                          (let [run-ch (task-fn time)]
+                          (let [[task-fn & args] (if (sequential? task-fn)
+                                                   task-fn [task-fn])
+                                args (or args [time])
+                                run-ch (apply task-fn args)]
                             ;; task function returned an async channel;
                             ;; the channel can be closed or auto-close
                             (when (instance? ManyToManyChannel run-ch)
