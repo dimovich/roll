@@ -29,21 +29,20 @@
 
 
 
-(defmethod ig/init-key :roll/schedule [_ tasks]
-  (info "starting roll/schedule...")
-  
-  (when-let [tasks (some-> (not-empty tasks)
-                           (cond->
-                               (not (sequential? (first tasks)))
-                               [tasks]))]
 
+(defmethod ig/init-key :roll/schedule [_ tasks]
+  (when-let [tasks (not-empty
+                    (if (sequential? (first tasks))
+                      tasks [tasks]))]
+
+    (info "starting roll/schedule...")
     (info (ru/spp tasks))
     
     (->> tasks
          (reduce
-          (fn [chans [n k run-fn :as task]]
+          (fn [chans [n k & run-fns :as task]]
             (if-let [times (periodic* k n)]
-              (let [run-fn (ru/sym->var run-fn)
+              (let [run-fns (ru/resolve-coll-syms run-fns)
                     chimes (->> {:ch (a/chan (a/sliding-buffer 1))}
                                 (chime-ch times))
                     cancel-ch (a/chan)]
@@ -51,17 +50,23 @@
                 (go-loop []
                   (when-let [time (<! chimes)]
                     (info "[START]" task)
-                    (let [task-ch (run-fn time)]
-                      ;; task function returned an async channel;
-                      ;; the channel can be closed or auto-close
-                      (when (instance? ManyToManyChannel task-ch)
-                        (let [[_ ch] (a/alts! [task-ch cancel-ch])]
-                          (when (= ch cancel-ch)
-                            (a/close! task-ch)
-                            (a/close! chimes)
-                            ;; exhaust the time channel
-                            (while (a/poll! chimes)))))
-                      (info "[DONE]" task))
+                    (let [tasks-ch (a/to-chan run-fns)]
+                      (loop []
+                        (when-let [task-fn (a/<! tasks-ch)]
+                          (let [run-ch (task-fn time)]
+                            ;; task function returned an async channel;
+                            ;; the channel can be closed or auto-close
+                            (when (instance? ManyToManyChannel run-ch)
+                              (let [[_ ch] (a/alts! [run-ch cancel-ch])]
+                                (when (= ch cancel-ch)
+                                  (a/close! run-ch)
+                                  (a/close! tasks-ch)
+                                  (a/close! chimes)
+                                  ;; exhaust the time channel
+                                  (while (a/poll! chimes))
+                                  (while (a/poll! tasks-ch))))))
+                          (recur))))
+                    (info "[DONE]" task)
                     
                     (recur)))
                 
