@@ -31,9 +31,9 @@
 
 
 (defmethod ig/init-key :roll/schedule [_ tasks]
-  (when-let [tasks (not-empty
-                    (if (sequential? (first tasks))
-                      tasks [tasks]))]
+  (when-let [tasks (when (not-empty tasks)
+                     (if (sequential? (first tasks))
+                       tasks [tasks]))]
 
     (info "starting roll/schedule...")
     (info (ru/spp tasks))

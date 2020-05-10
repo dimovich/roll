@@ -399,3 +399,11 @@
        
        (catch Exception _))
      path))
+
+
+
+#?(:clj
+   (defn backup-and-delete [path]
+     (backup path)
+     (io/delete-file path true)
+     path))
