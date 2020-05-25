@@ -5,14 +5,15 @@
 
 
 
-(defn- spit-appender [opts]
-  (merge (timbre/spit-appender (select-keys opts [:fname :append?]))
-         (dissoc opts :fname :append?)))
-
-
 (defn- println-appender [opts]
   (merge (timbre/println-appender (select-keys opts [:stream]))
          (dissoc opts :stream)))
+
+
+#?(:clj
+   (defn- spit-appender [opts]
+     (merge (timbre/spit-appender (select-keys opts [:fname :append?]))
+            (dissoc opts :fname :append?))))
 
 
 
