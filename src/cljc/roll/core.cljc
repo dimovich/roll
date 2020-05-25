@@ -1,6 +1,5 @@
 (ns roll.core
   (:require [taoensso.timbre :as timbre :refer [info]]
-            [taoensso.timbre.appenders.core :as appenders]
             [integrant.core :as ig]
             [roll.util :as u]))
 
@@ -12,24 +11,6 @@
 (derive :roll/httpkit :roll/server)
 (derive :roll/nginx   :roll/server)
 (derive :roll/aleph   :roll/server)
-
-
-;; Timbre
-
-(def default-appenders
-  {:println (timbre/println-appender {:stream :auto})
-   #?@(:clj [:spit (appenders/spit-appender {:fname  "timbre.log"})])})
-
-
-(defmethod ig/init-key :roll/timbre [_ {:keys [appenders]}]
-  (when appenders
-    (info "timbre appenders:" appenders)
-    (timbre/merge-config!
-     {:appenders (->> appenders
-                      (select-keys default-appenders)
-                      (merge (zipmap (keys default-appenders)
-                                     (repeat nil))))})))
-
 
 
 
@@ -136,13 +117,12 @@
   [configs]
 
   ;; init Timbre
-  (timbre/set-config!
+  (timbre/merge-config!
    {:level :info
     :output-fn (fn [{:keys [timestamp_ level msg_ ?err]}]
                  (cond-> ""
                    ?err (str ?err " ")
-                   msg_ (str (force msg_))))
-    :appenders (select-keys default-appenders [:println])})
+                   msg_ (str (force msg_))))})
 
 
   ;; start Integrant
