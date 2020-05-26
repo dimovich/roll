@@ -14,51 +14,6 @@
 
 
 
-(defn prep-config [ig-config]
-  (cond-> ig-config
-    #?@(:clj
-        [ ;; ensure we have Sente for :roll/reload
-         (:roll/reload ig-config)
-         (-> (update :roll/sente (fnil identity {}))
-             (update-in [:roll/handler :sente]
-                        (fnil identity (ig/ref :roll/sente))))
-
-         ;; ensure we have a handler for :roll/server
-         (some #(isa? % :roll/server) (keys ig-config))
-         (update :roll/handler (fnil identity {}))])))
-
-
-
-
-(defn load-configs
-  "Load Integrant configs. Either file path(s) or map(s)."
-  [configs]
-  (let [configs (cond-> configs
-                  (not (sequential? configs)) vector)
-        ;; merge all configs
-        ig-config (reduce
-                   (fn [all config]
-                     (if-let [ig-config
-                              (cond
-                                #?@(:clj [(string? config) (ig/read-string (slurp config))])
-                                (map? config) config
-                                :default nil)]
-                       (merge all ig-config)
-                       all))
-                   {}
-                   configs)
-
-        ;; prep global config
-        ig-config (prep-config ig-config)]
-     
-    ;; make sure component namespaces are loaded
-    #?(:clj (ig/load-namespaces ig-config))
-     
-    (ig/prep ig-config)))
-
-
-
-
 (defn start
   "Start all components or only the specified keys."
   ([ig-config]
@@ -112,6 +67,59 @@
      (delay (.addShutdownHook (Runtime/getRuntime) (Thread. #'halt!)))))
 
 
+
+(defn prep-config [ig-config]
+  (cond-> ig-config
+    #?@(:clj
+        [ ;; ensure we have Sente for :roll/reload
+         (:roll/reload ig-config)
+         (-> (update :roll/sente (fnil identity {}))
+             (update-in [:roll/handler :sente]
+                        (fnil identity (ig/ref :roll/sente))))
+
+         ;; ensure we have a handler for :roll/server
+         (some #(isa? % :roll/server) (keys ig-config))
+         (update :roll/handler (fnil identity {}))])))
+
+
+
+
+(defn load-configs
+  "Load Integrant configs. Either file path(s) or map(s)."
+  [configs]
+  (let [configs (cond-> configs
+                  (not (sequential? configs)) vector)
+        ;; merge all configs
+        ig-config (reduce
+                   (fn [all config]
+                     (if-let [ig-config
+                              (cond
+                                #?@(:clj [(string? config) (ig/read-string (slurp config))])
+                                (map? config) config
+                                :default nil)]
+                       (merge all ig-config)
+                       all))
+                   {}
+                   configs)
+
+        ;; prep global config
+        ig-config (prep-config ig-config)]
+     
+    ;; make sure component namespaces are loaded
+    #?(:clj (ig/load-namespaces ig-config))
+
+    (cond-> ig-config
+      ;; init logging first
+      (:roll/timbre ig-config)
+      (do (start ig-config :roll/timbre)
+          (dissoc ig-config :roll/timbre))
+
+      :default
+      (ig/prep))))
+
+
+
+
 (defn init
   "Init Integrant using either file path(s) or map(s) configs."
   [configs]
@@ -119,10 +127,11 @@
   ;; init Timbre
   (timbre/merge-config!
    {:level :info
-    :output-fn (fn [{:keys [timestamp_ level msg_ ?err]}]
-                 (cond-> ""
-                   ?err (str ?err " ")
-                   msg_ (str (force msg_))))})
+    :output-fn
+    (fn [{:keys [msg_ ?err]}]
+      (str (force msg_)
+           (when ?err
+             (str "\n" (timbre/stacktrace ?err)))))})
 
 
   ;; start Integrant

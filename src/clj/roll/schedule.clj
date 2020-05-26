@@ -35,8 +35,7 @@
                      (if (sequential? (first tasks))
                        tasks [tasks]))]
 
-    (info "starting roll/schedule...")
-    (info (ru/spp tasks))
+    (info "starting roll/schedule...\n" (ru/spp tasks))
     
     (->> tasks
          (reduce
@@ -57,7 +56,7 @@
                                                    task-fn [task-fn])
                                 args (or args [time])
                                 run-ch (apply task-fn args)]
-                            ;; task function returned an async channel;
+                            ;; task function returned an async channel,
                             ;; the channel can be closed or auto-close
                             (when (instance? ManyToManyChannel run-ch)
                               (let [[_ ch] (a/alts! [run-ch cancel-ch])]
