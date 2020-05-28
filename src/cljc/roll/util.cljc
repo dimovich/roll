@@ -4,10 +4,9 @@
             [clojure.pprint]
             #?@(:clj [[clojure.java.io :as io]]))
   
-  #?(:cljs
-     (:require-macros
-      [roll.util :refer [read-config resolve-cljs
-                         try-require-cljs]]))
+  #?(:cljs (:require-macros
+            [roll.util :refer [read-config resolve-cljs
+                               try-require-cljs]]))
   
   #?(:clj (:import [java.io PushbackReader])))
 
@@ -218,40 +217,6 @@
 #?(:clj
    (defmacro read-config [resource]
      (ig/read-string (slurp (get-path resource)))))
-
-
-
-;; todo: use read-edn
-#?(:clj
-   (defmacro with-in-> [in & body]
-     `(-> ~in
-          slurp
-          clojure.edn/read-string
-          ~@body)))
-
-
-
-
-;; todo: use write-edn
-#?(:clj
-   (defmacro with-out-> [out & body]
-     `(binding [*print-length* nil]
-        (-> ~@body
-            pr-str
-            (#(spit ~out %))))))
-
-
-
-
-#?(:clj
-   (defmacro with-in-out-> [in out & body]
-     `(binding [*print-length* nil]
-        (-> ~in
-            slurp
-            clojure.edn/read-string
-            ~@body
-            pr-str
-            (#(spit ~out %))))))
 
 
 

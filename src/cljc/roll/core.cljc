@@ -92,32 +92,19 @@
         ;; merge all configs
         ig-config (reduce
                    (fn [all config]
-                     (if-let [ig-config
-                              (cond
-                                #?@(:clj [(string? config) (ig/read-string (slurp config))])
-                                (map? config) config
-                                :default nil)]
-                       (merge all ig-config)
-                       all))
-                   {}
-                   configs)
+                     (merge all (cond
+                                  (map? config) config
+                                  #?@(:clj [(string? config)
+                                            (ig/read-string (slurp config))]))))
+                   {} configs)
 
         ;; prep global config
         ig-config (prep-config ig-config)]
      
     ;; make sure component namespaces are loaded
     #?(:clj (ig/load-namespaces ig-config))
-
-    (cond->> ig-config
-      ;; init logging first
-      (:roll/timbre ig-config)
-      ((fn [config]
-         (start config :roll/timbre)
-         (dissoc config :roll/timbre)))
-
-      ;; run ig/prep-key methods
-      :default
-      (ig/prep))))
+    
+    (ig/prep ig-config)))
 
 
 
@@ -142,7 +129,11 @@
               (fn [state config]
                 (-> (update state :roll stop)
                     (assoc :config config
-                           :roll (start config))))))
+                           :roll (merge
+                                  ;; start logging first
+                                  (start config :roll/timbre)
+                                  (start (dissoc config :roll/timbre))))))))
+
   
   #?(:clj (force init-shutdown-hook)))
 
@@ -209,7 +200,7 @@
 
       ;; stop deleted keys
       (when (not-empty deleted-keys)
-        (info "\nhalting" (vec deleted-keys))
+        (info "halting" (vec deleted-keys))
         (swap! state update :roll (partial apply stop) deleted-keys))
 
       ;; restart changed keys

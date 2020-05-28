@@ -37,12 +37,19 @@
 
 
 
-(defmethod ig/init-key :roll/timbre [_ opts]
+(defn init-timbre [opts]
   (let [old-appenders (zipmap (keys (:appenders timbre/*config*))
                               (repeat nil))]
-    (-> (u/resolve-map-syms opts)
+    (-> opts
+        #?(:clj u/resolve-map-syms)
         (update :appenders init-appenders default-appenders)
         (update :appenders (partial merge old-appenders))
         (timbre/merge-config!)))
   
   (info "initialized roll/timbre\n" (u/spp opts)))
+
+
+
+
+(defmethod ig/init-key :roll/timbre [_ opts]
+  (init-timbre opts))
