@@ -108,7 +108,16 @@
     ;; make sure component namespaces are loaded
     #?(:clj (ig/load-namespaces ig-config))
 
-    (ig/prep ig-config)))
+    (cond->> ig-config
+      ;; init logging first
+      (:roll/timbre ig-config)
+      ((fn [config]
+         (start config :roll/timbre)
+         (dissoc config :roll/timbre)))
+
+      ;; run ig/prep-key methods
+      :default
+      (ig/prep))))
 
 
 
@@ -128,24 +137,14 @@
 
 
   ;; start Integrant
-  (let [ig-config (load-configs configs)]
-
-    (cond->> ig-config
-      ;; init logging first
-      (:roll/timbre ig-config)
-      ((fn [config]
-         (start config :roll/timbre)
-         (dissoc config :roll/timbre)))
-      
-      :default
-      (swap! state
-             (fn [state config]
-               (-> (update state :roll stop)
-                   (assoc :config config
-                          :roll (start config))))))
-    
-    
-    #?(:clj (force init-shutdown-hook))))
+  (->> (load-configs configs)
+       (swap! state
+              (fn [state config]
+                (-> (update state :roll stop)
+                    (assoc :config config
+                           :roll (start config))))))
+  
+  #?(:clj (force init-shutdown-hook)))
 
 
 
