@@ -1,6 +1,5 @@
 (ns roll.core
   (:require [taoensso.timbre :as timbre :refer [info]]
-            [taoensso.timbre.appenders.core :as appenders]
             [integrant.core :as ig]
             [roll.util :as u]))
 
@@ -12,69 +11,6 @@
 (derive :roll/httpkit :roll/server)
 (derive :roll/nginx   :roll/server)
 (derive :roll/aleph   :roll/server)
-
-
-;; Timbre
-
-(def default-appenders
-  {:println (timbre/println-appender {:stream :auto})
-   #?@(:clj [:spit (appenders/spit-appender {:fname  "timbre.log"})])})
-
-
-(defmethod ig/init-key :roll/timbre [_ {:keys [appenders]}]
-  (when appenders
-    (info "timbre appenders:" appenders)
-    (timbre/merge-config!
-     {:appenders (->> appenders
-                      (select-keys default-appenders)
-                      (merge (zipmap (keys default-appenders)
-                                     (repeat nil))))})))
-
-
-
-
-(defn prep-config [ig-config]
-  (cond-> ig-config
-    #?@(:clj
-        [ ;; ensure we have Sente for :roll/reload
-         (:roll/reload ig-config)
-         (-> (update :roll/sente (fnil identity {}))
-             (update-in [:roll/handler :sente]
-                        (fnil identity (ig/ref :roll/sente))))
-
-         ;; ensure we have a handler for :roll/server
-         (some #(isa? % :roll/server) (keys ig-config))
-         (update :roll/handler (fnil identity {}))])))
-
-
-
-
-(defn load-configs
-  "Load Integrant configs. Either file path(s) or map(s)."
-  [configs]
-  (let [configs (cond-> configs
-                  (not (sequential? configs)) vector)
-        ;; merge all configs
-        ig-config (reduce
-                   (fn [all config]
-                     (if-let [ig-config
-                              (cond
-                                #?@(:clj [(string? config) (ig/read-string (slurp config))])
-                                (map? config) config
-                                :default nil)]
-                       (merge all ig-config)
-                       all))
-                   {}
-                   configs)
-
-        ;; prep global config
-        ig-config (prep-config ig-config)]
-     
-    ;; make sure component namespaces are loaded
-    #?(:clj (ig/load-namespaces ig-config))
-     
-    (ig/prep ig-config)))
-
 
 
 
@@ -131,26 +67,75 @@
      (delay (.addShutdownHook (Runtime/getRuntime) (Thread. #'halt!)))))
 
 
+
+(defn prep-config [ig-config]
+  (cond-> ig-config
+    #?@(:clj
+        [ ;; ensure we have Sente for :roll/reload
+         (:roll/reload ig-config)
+         (-> (update :roll/sente (fnil identity {}))
+             (update-in [:roll/handler :sente]
+                        (fnil identity (ig/ref :roll/sente))))
+
+         ;; ensure we have a handler for :roll/server
+         (some #(isa? % :roll/server) (keys ig-config))
+         (update :roll/handler (fnil identity {}))])))
+
+
+
+
+(defn load-configs
+  "Load Integrant configs. Either file path(s) or map(s)."
+  [configs]
+  (let [configs (cond-> configs
+                  (not (sequential? configs)) vector)
+        ;; merge all configs
+        ig-config (reduce
+                   (fn [all config]
+                     (merge all (cond
+                                  (map? config) config
+                                  #?@(:clj [(string? config)
+                                            (ig/read-string (slurp config))]))))
+                   {} configs)
+
+        ;; prep global config
+        ig-config (prep-config ig-config)]
+     
+    ;; make sure component namespaces are loaded
+    #?(:clj (ig/load-namespaces ig-config))
+    
+    (ig/prep ig-config)))
+
+
+
+
 (defn init
   "Init Integrant using either file path(s) or map(s) configs."
   [configs]
 
   ;; init Timbre
-  (timbre/set-config!
+  (timbre/merge-config!
    {:level :info
-    :output-fn (fn [{:keys [timestamp_ level msg_ ?err]}]
-                 (cond-> ""
-                   ?err (str ?err " ")
-                   msg_ (str (force msg_))))
-    :appenders (select-keys default-appenders [:println])})
+    :output-fn
+    (fn [{:keys [msg_ ?err]}]
+      (str (force msg_)
+           (when ?err
+             (str "\n" (timbre/stacktrace ?err)))))})
 
 
   ;; start Integrant
-  (let [ig-config (load-configs configs)]
-    (swap! state #(-> (update % :roll stop)
-                      (assoc :config ig-config
-                             :roll (start ig-config))))
-    #?(:clj (force init-shutdown-hook))))
+  (->> (load-configs configs)
+       (swap! state
+              (fn [state config]
+                (-> (update state :roll stop)
+                    (assoc :config config
+                           :roll (merge
+                                  ;; start logging first
+                                  (start config :roll/timbre)
+                                  (start (dissoc config :roll/timbre))))))))
+
+  
+  #?(:clj (force init-shutdown-hook)))
 
 
 
@@ -179,7 +164,7 @@
 
 (defn reload
   "Check configs and restart changed keys and their dependencies."
-  [paths reload-config]
+  [paths & [watch-opts]]
   (when-let [new-config (load-configs paths)]
     (let [old-config (:config @state)
           deps (ig/dependency-graph new-config)
@@ -215,10 +200,10 @@
 
       ;; stop deleted keys
       (when (not-empty deleted-keys)
-        (info "\nhalting" (vec deleted-keys))
+        (info "halting" (vec deleted-keys))
         (swap! state update :roll (partial apply stop) deleted-keys))
 
       ;; restart changed keys
       (when (not-empty restart-keys)
-        (info "\nrestarting" (vec restart-keys))
+        (info "restarting" (vec restart-keys))
         (swap! state (partial apply restart) restart-keys)))))

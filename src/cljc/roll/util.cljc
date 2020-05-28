@@ -4,10 +4,9 @@
             [clojure.pprint]
             #?@(:clj [[clojure.java.io :as io]]))
   
-  #?(:cljs
-     (:require-macros
-      [roll.util :refer [read-config resolve-cljs
-                         try-require-cljs]]))
+  #?(:cljs (:require-macros
+            [roll.util :refer [read-config resolve-cljs
+                               try-require-cljs]]))
   
   #?(:clj (:import [java.io PushbackReader])))
 
@@ -96,14 +95,19 @@
      (if (symbol? s)
        ;; for production better without fn wrapping
        ;; (some-> (try-resolve s) deref)
-    
-       ;; for development, wrap config fns with a deref on every call so
-       ;; autoreloading works
-       (or (when-let [v (try-resolve s)]
-             (if (fn? (deref v))
+       
+       (or (some-> (try-resolve s) deref)
+           (throw (Exception. (str "Could not resolve " s))))
+
+       ;; for development, wrap config fns with a deref on every call
+       ;; so autoreloading works
+       
+       #_(if-let [v (try-resolve s)]
+           #_(if (fn? (deref v))
                #(-> (deref v) (apply %&))
-               (deref v)))
+               (deref v))
            (throw (Exception. (str "Could not resolve" s))))
+       
        s)))
 
 
@@ -213,40 +217,6 @@
 #?(:clj
    (defmacro read-config [resource]
      (ig/read-string (slurp (get-path resource)))))
-
-
-
-;; todo: use read-edn
-#?(:clj
-   (defmacro with-in-> [in & body]
-     `(-> ~in
-          slurp
-          clojure.edn/read-string
-          ~@body)))
-
-
-
-
-;; todo: use write-edn
-#?(:clj
-   (defmacro with-out-> [out & body]
-     `(binding [*print-length* nil]
-        (-> ~@body
-            pr-str
-            (#(spit ~out %))))))
-
-
-
-
-#?(:clj
-   (defmacro with-in-out-> [in out & body]
-     `(binding [*print-length* nil]
-        (-> ~in
-            slurp
-            clojure.edn/read-string
-            ~@body
-            pr-str
-            (#(spit ~out %))))))
 
 
 
@@ -382,5 +352,23 @@
 
 #?(:clj
    (defn backup [path]
-     (io/copy (io/file path)
-              (io/file (str path ".1")))))
+     (try
+       (let [old (str path ".1")]
+         (when (exists? old)
+           (io/copy (io/file old)
+                    (io/file (str path ".2"))))
+
+         (io/copy (io/file path)
+                  (io/file old)))
+       
+       
+       (catch Exception _))
+     path))
+
+
+
+#?(:clj
+   (defn backup-and-delete [path]
+     (backup path)
+     (io/delete-file path true)
+     path))

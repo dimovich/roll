@@ -5,7 +5,8 @@
             [clj-time.periodic :refer [periodic-seq]]
             [chime :refer [chime-ch]]
             [integrant.core :as ig]
-            [roll.util :as ru]))
+            [roll.util :as ru])
+  (:import [clojure.core.async.impl.channels ManyToManyChannel]))
 
 
 
@@ -16,7 +17,7 @@
    :h  t/hours
    :d  t/days
    :w  t/weeks
-   :mn t/months
+   :mt t/months
    :y  t/years})
 
 
@@ -28,30 +29,58 @@
 
 
 
-(defmethod ig/init-key :roll/schedule [_ tasks]
-  (info "starting roll/schedule...")
-  (info tasks)
 
-  (let [tasks (if (sequential? (first tasks))
-                tasks [tasks])]
-    (->> (ru/resolve-coll-syms tasks)
+(defmethod ig/init-key :roll/schedule [_ tasks]
+  (when-let [tasks (when (not-empty tasks)
+                     (if (sequential? (first tasks))
+                       tasks [tasks]))]
+
+    (info "starting roll/schedule...\n" (ru/spp tasks))
+    
+    (->> tasks
          (reduce
-          (fn [chans [n k run-fn]]
+          (fn [chans [n k & run-fns :as task]]
             (if-let [times (periodic* k n)]
-              (let [chimes (->>
-                            {:ch (a/chan (a/sliding-buffer 1))}
-                            (chime-ch times))]
+              (let [run-fns (ru/resolve-coll-syms run-fns)
+                    chimes (->> {:ch (a/chan (a/sliding-buffer 1))}
+                                (chime-ch times))
+                    cancel-ch (a/chan)]
+                
                 (go-loop []
                   (when-let [time (<! chimes)]
-                    (run-fn time)
+                    (info "[START]" task)
+                    (let [tasks-ch (a/to-chan run-fns)]
+                      (loop []
+                        (when-let [task-fn (a/<! tasks-ch)]
+                          (let [[task-fn & args] (if (sequential? task-fn)
+                                                   task-fn [task-fn])
+                                args (or args [time])
+                                run-ch (apply task-fn args)]
+                            ;; task function returned an async channel,
+                            ;; the channel can be closed or auto-close
+                            (when (instance? ManyToManyChannel run-ch)
+                              (let [[_ ch] (a/alts! [run-ch cancel-ch])]
+                                (when (= ch cancel-ch)
+                                  (a/close! run-ch)
+                                  (a/close! tasks-ch)
+                                  (a/close! chimes)
+                                  ;; exhaust the time channel
+                                  (while (a/poll! chimes))
+                                  (while (a/poll! tasks-ch))))))
+                          (recur))))
+                    (info "[DONE]" task)
+                    
                     (recur)))
-                (conj chans chimes))
+                
+                (assoc chans task [chimes cancel-ch]))
               chans))
-          []))))
+          {}))))
 
 
 
 
 (defmethod ig/halt-key! :roll/schedule [_ chans]
   (info "stopping roll/schedule...")
-  (doseq [ch chans] (a/close! ch)))
+  (some->> (not-empty chans)
+           (map (fn [[k v]] (doseq [ch v] (a/close! ch))))
+           dorun))

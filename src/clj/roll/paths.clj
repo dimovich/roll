@@ -21,7 +21,7 @@
 (defn reload-clj
   "Reload clojure files using (require ... :reload). Safe for `defonce`
   declarations."
-  [paths reload-config]
+  [paths & [watch-opts]]
   (when-let [ns-syms
              (->> (map io/file paths)
                   (filter (comp #{"clj" "cljc"} w/file-suffix))
@@ -43,7 +43,7 @@
 (defn load-clj
   "Load clojure files. Overwrites the definitions of libs from
   classpath."
-  [paths reload-config]
+  [paths & [watch-opts]]
   (when-let [files (->> (map io/file paths)
                         (filter (comp #{"clj" "cljc"} w/file-suffix))
                         (filter (comp loadable? ns-sym))
@@ -63,8 +63,8 @@
 (defn refresh-clj
   "Reload clojure libs using `clojure.tools.namespace.repl/refresh`.
   Not safe for `defonce` declarations."
-  [_ reload-config]
-  (apply nr/set-refresh-dirs (:paths reload-config))
+  [_ & [watch-opts]]
+  (apply nr/set-refresh-dirs (:paths watch-opts))
   (let [result (nr/refresh)]
     (when (not= :ok result)
       (println (ex-message result) "\n"
@@ -86,12 +86,12 @@
                                              (info "Warning: Could not open" %)))
                                 vec not-empty)]
             
-            (let [reload-config {:paths paths :opts opts}]
-              (when init (init reload-config))
+            (let [watch-opts {:paths paths :opts opts}]
+              (when init (init watch-opts))
               
               (when-let [watch-fn (if (true? watch) init watch)]
                 (w/add-watch!
-                 reload-config
+                 watch-opts
                  {:paths paths
                   :filter w/file-filter
                   :handler
@@ -101,7 +101,7 @@
                      (when-let [files (->> evts
                                            (mapv (comp #(.getCanonicalPath %) :file))
                                            set vec not-empty)]
-                       (watch-fn files reload-config))))}))))))))
+                       (watch-fn files watch-opts))))}))))))))
 
 
 

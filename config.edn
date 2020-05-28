@@ -108,7 +108,7 @@
                   [1 :w my.project/some-other-task-fn]
 
                   ;; possible periods
-                  ;; :ms / :s / :m / :h / :d / :w / :mn / :y
+                  ;; :ms / :s / :m / :h / :d / :w / :mt / :y
                   ]
 
 
