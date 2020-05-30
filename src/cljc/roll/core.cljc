@@ -58,6 +58,10 @@
 
 
 
+(defn restart! [& ks]
+  (apply swap! state restart ks))
+
+
 (defn halt! []
   (swap! state update :roll stop))
 

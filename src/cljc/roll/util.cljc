@@ -213,6 +213,12 @@
 
 
 
+#?(:clj
+   (defn append-edn [path data]
+     (write-edn path data :append true)
+     data))
+
+
 
 #?(:clj
    (defmacro read-config [resource]
