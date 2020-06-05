@@ -14,6 +14,6 @@ To start a frontend REPL, open `src/example/client.cljs` and type __`C-c C-x j s
 
 # For production
 
-To pack the backend into a jar run __`clj -A:pack`__
+To pack the backend into a jar run __`clj -A:uberjar`__
 
 To compile frontend with advanced optimizations run __`clj -A:prod`__

@@ -18,12 +18,12 @@ __Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit]
 `roll` is published on [Clojars](https://clojars.org/dimovich/roll).
 Add the following to your `project.clj`'s `:dependencies`:
 
-    [dimovich/roll-aleph "0.1.7"]
+    [dimovich/roll-aleph "0.2.0"]
 
 
 ## Clojure CLI/deps.edn
 
-	dimovich/roll-aleph {:mvn/version "0.1.7"}
+	dimovich/roll-aleph {:mvn/version "0.2.0"}
 
 
 ## Example
@@ -36,7 +36,7 @@ __deps.edn__
 ``` clojure
 {:paths ["src"]
 
- :deps {dimovich/roll-aleph {:mvn/version "0.1.7"}}}
+ :deps {dimovich/roll-aleph {:mvn/version "0.2.0"}}}
 ```
 
 
