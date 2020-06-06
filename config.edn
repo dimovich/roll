@@ -1,9 +1,28 @@
-{
- :roll/repl {:port 3311}
-
- ;; Paths watching
+{:roll/repl {:port 3311}
+ 
+ 
+ ;; Webserver
+ 
+ :roll/httpkit
+ {
+  :port 5000
+  ;; :handler  my.project/handler
+  
+  ;; -- default --
+  ;;    :port  5000
+  ;; :handler  #ig/ref :roll/handler
+  }
+ 
+ 
+ ;; File watching
+ 
  :roll/paths
  [
+  ["config.edn"
+   ;; reload changed config keys when this file changes
+   {:watch roll.core/reload
+    :throttle 200}]
+  
   ["src/clj"
    "src/cljc"
    ,,, ;; add more paths as needed
@@ -15,24 +34,7 @@
     ;; -or- load clojure files directly
     ;; :watch  roll.paths/load-clj
     
-    :throttle 200}]
-
-  ["config.edn"
-   ;; reload changed config keys when this file changes
-   {:watch roll.core/reload
     :throttle 200}]]
-
- 
- ;; Webserver (for alternatives see below)
- :roll/httpkit
- {
-  :port 5000
-  ;; :handler  my.project/handler
-  
-  ;; -- default --
-  ;;    :port  5000
-  ;; :handler  #ig/ref :roll/handler
-  }
  }
 
 
@@ -41,7 +43,9 @@
 ;;
 (comment
 
-  ;; Ring handler  
+  ;; Ring handler
+  ;;
+  
   :roll/handler
   {
    ;; :middleware  my.project/middleware -or- [ring-middleware ...]
@@ -58,30 +62,10 @@
    }
 
 
-  
-  ;; Nginx Webserver (make sure to add nginx-clojure dependency)
-  :roll/nginx
-  {
-   :config "my-nginx.conf"
-   ;; -or-
-   ;;    :port  <port number>
-   ;; :handler  my.project/handler
-  
-   ;; -- default --
-   ;;    :port  5000
-   ;; :handler  #ig/ref :roll/handler
-   }
-  
-
-  ;; Aleph Webserver (make sure to add aleph & manifold dependency)
-  :roll/aleph
-  {
-   :port 5000
-   ;; other opts similar to :roll/httpkit
-   ,,,}
-
 
   ;; Websockets
+  ;;
+  
   :roll/sente
   {
    ;;           :handler  my.project/event-msg-handler
@@ -99,17 +83,39 @@
    }
 
 
-  ;; Task Scheduling
+  ;; Logging
+  ;; https://github.com/ptaoussanis/timbre#configuration
   
-  :roll/schedule [ ;; every 2 minutes
-                  [2 :m my.project/some-task-fn]
-                  ;; every week
-                  [1 :w my.project/some-other-task-fn]
+  :roll/timbre
+  {:level :debug
+   :appenders {:println {:min-level :error}
+               :spit {:fname "timbre.log"}}}
+  
 
-                  ;; possible periods
-                  ;; :ms / :s / :m / :h / :d / :w / :mt / :y
-                  ]
+  
+  ;; Task Scheduling
+  ;;
+  
+  :roll/schedule
+  [ ;; every 2 minutes
+   [2 :m my.project/some-task-fn]
+   
+   ;; every week
+   [1 :w my.project/some-other-task-fn]
+   
+   ;; multiple fns, and passing arguments
+   [1 :h
+    my.project/some-fn
+    my.project/another-fn
+    [my.project/yet-another-fn arg1 arg2 ,,,]]
+   
 
+   ;; possible periods
+   ;; :ms / :s / :m / :h / :d / :w / :mt / :y
+
+   ;; task fns can also return a core.async channel that can be closed
+   ;; or will auto-close on task completion
+   ]
 
   
   :roll/run ["<some shell command to run>" ,,,]
@@ -119,7 +125,7 @@
   ;; Frontend Reloading
   ;; make sure to include reload.js in your html page
   ;; https://raw.githubusercontent.com/dimovich/reload/master/release/reload.js
- 
+  
   :roll/reload {:css ["resources/public/css" ,,,]
                 :page ["resources/public/jade" ,,,]}
 
