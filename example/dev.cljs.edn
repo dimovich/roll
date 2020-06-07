@@ -1,5 +1,6 @@
 ^{:watch-dirs ["src"]
-  :open-url "http://localhost:5000"}
+  :open-url "http://localhost:5000"
+  :open-url-wait-ms 1000}
 
 {:main example.client
  :output-to "resources/public/js/main.js"

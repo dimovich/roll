@@ -34,10 +34,10 @@
    :main-opts  ["-i init.clj"]}
 
   :cider
-  {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
+  {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.8"}}
    :extra-paths ["resources"]}
 
   :jar
   {:extra-deps
-   {seancorfield/depstar {:mvn/version "0.5.2"}}
+   {seancorfield/depstar {:mvn/version "1.0.94"}}
    :main-opts ["-m hf.depstar.jar roll.jar"]}}}

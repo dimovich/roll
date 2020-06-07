@@ -17,17 +17,15 @@
  ;; File watching
  
  :roll/paths
- [
+ [ ;; reload changed config keys when this file changes
   ["config.edn"
-   ;; reload changed config keys when this file changes
    {:watch roll.core/reload
     :throttle 200}]
-  
+
+  ;; reload clojure code
   ["src/clj"
    "src/cljc"
    ,,, ;; add more paths as needed
-
-   ;; reload clojure code
    {:watch roll.paths/reload-clj
     ;; -or- a more aggresive reloading of REPL state
     ;; :watch  roll.paths/refresh-clj

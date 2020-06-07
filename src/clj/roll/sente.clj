@@ -7,14 +7,15 @@
 
 
 
-(defonce sente-fns (atom nil))
+(defonce sente-fns nil)
 
 
 (defn send-msg [& args]
-  (some-> @sente-fns :chsk-send! (apply args)))
+  (some-> (:chsk-send! sente-fns)
+          (apply args)))
 
 (defn connected-uids []
-  (some-> @sente-fns :connected-uids))
+  (:connected-uids sente-fns))
 
 
 
@@ -34,7 +35,7 @@
 
 
 (defn broadcast [event]
-  (when-let [uids (:any @(connected-uids))]
+  (when-let [uids (some-> (connected-uids) deref :any)]
     ;;(info "broadcasting data to" (count uids) "clients...")
     (doseq [uid uids]
       (send-msg uid event))))
@@ -97,29 +98,26 @@
   (let [{:as opts :keys [handler]
          :or {handler event-msg-handler}} (u/resolve-syms opts)]
     
-    (when-let [fns (-> opts (select-keys [:handshake-data-fn
-                                          :packer])
-                       (init-sente))]
-      (let [sente (->> handler
-                       (sente/start-server-chsk-router! (:ch-chsk fns))
-                       (assoc fns :stop-fn)
-                       (reset! sente-fns))]
-
-        (assoc sente :routes
-               [(or (:path opts) "/chsk")
-                {:get  (:ring-ajax-get-or-ws-handshake sente)
-                 :post (:ring-ajax-post sente)}])))))
+    (when-let [fns (init-sente
+                    (select-keys opts [:handshake-data-fn :packer]))]
+      (assoc fns
+             :stop-fn (sente/start-server-chsk-router! (:ch-chsk fns) handler)
+             ;; needed by ring handler
+             :routes [(or (:path opts) "/chsk")
+                      {:get  (:ring-ajax-get-or-ws-handshake fns)
+                       :post (:ring-ajax-post fns)}]))))
 
 
 
 
 (defmethod ig/init-key :roll/sente [_ opts]
-  (start-sente opts))
+  (alter-var-root #'sente-fns (constantly (start-sente opts))))
 
 
 
 (defmethod ig/halt-key! :roll/sente [_ {:keys [stop-fn]}]
+  (info "stopping roll/sente...")
+  (alter-var-root #'sente-fns (constantly nil))
   (when stop-fn
-    (info "stopping roll/sente...")
     (stop-fn)))
 

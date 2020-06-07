@@ -4,6 +4,13 @@
             [taoensso.sente.packers.transit :as st]))
 
 
+(defonce sente-fns nil)
+
+
+(defn send-msg [& args]
+  (some-> (:chsk-send! sente-fns)
+          (apply args)))
+
 
 
 (defmulti event-msg-handler :id)
@@ -12,13 +19,6 @@
 (defmethod event-msg-handler :default
   [{:as ev-msg :keys [event id]}])
 
-
-
-(def sente-fns (atom nil))
-
-(defn send-msg [& args]
-  (some-> (:chsk-send! @sente-fns)
-          (apply args)))
 
 
 
@@ -49,20 +49,19 @@
 
 
 
+(defn stop-router! []
+  (when-let [stop-fn (:stop-fn sente-fns)] (stop-fn))
+  (set! sente-fns nil))
 
-(defonce router_ (atom nil))
 
-(defn  stop-router! [] (when-let [stop-f @router_] (stop-f)))
 
-(defn start-router! [& [{:as opts :keys [handler]}]]
+(defn start-router! [& [{:as opts :keys [handler]
+                         :or {handler event-msg-handler}}]]
   (stop-router!)
-  (let [{:keys [ch-chsk]} (->> (dissoc opts :handler)
-                               (init-sente)
-                               (reset! sente-fns))]
-    
-    (->> (or handler event-msg-handler)
-         (sente/start-client-chsk-router! ch-chsk)
-         (reset! router_))))
+  (let [fns (init-sente (dissoc opts :handler))]
+    (->> (sente/start-client-chsk-router! (:ch-chsk fns) handler)
+         (assoc fns :stop-fn)
+         (set! sente-fns))))
 
 
 (def start! start-router!)

@@ -1,19 +1,24 @@
-{:roll/httpkit {:port 5000}
+{:roll/repl {:port 3311}
+ 
+ :roll/httpkit {:port 5000}
 
- :roll/sente {:handshake-data-fn example.server/handshake-data-fn}
+ :roll/sente
+ {:handshake-data-fn example.server/handshake-data-fn}
 
- :roll/handler {:routes [["/" {:get example.server/index
-                               ;; add to pages that use websockets
-                               :middleware [roll.handler/wrap-csrf]}]]
-                :sente #ig/ref :roll/sente}
+ :roll/handler
+ {:routes [["/" {:get example.server/index
+                 ;; add to pages that use websockets
+                 :middleware [roll.handler/wrap-csrf]}]]
+  :sente #ig/ref :roll/sente}
+ 
 
- :roll/paths [ ;; reload clojure code
-              ["src"
-               {:watch roll.paths/reload-clj
-                :throttle 200}]
+ :roll/paths
+ [ ;; reload clojure code
+  ["src"
+   {:watch roll.paths/reload-clj
+    :throttle 200}]
 
-              ;; reload changed keys when this config file changes
-              ["config.edn"
-               {:watch roll.core/reload
-                :throttle 200}]]
- }
+  ;; reload changed keys when this config file changes
+  ["config.edn"
+   {:watch roll.core/reload
+    :throttle 200}]]}
