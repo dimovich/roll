@@ -41,7 +41,7 @@
   (let [old-appenders (zipmap (keys (:appenders timbre/*config*))
                               (repeat nil))]
     (-> opts
-        #?(:clj u/resolve-map-syms)
+        #?(:clj u/resolve-syms)
         (update :appenders init-appenders default-appenders)
         (update :appenders (partial merge old-appenders))
         (timbre/merge-config!)))

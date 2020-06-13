@@ -86,6 +86,7 @@
   
   :roll/timbre
   {:level :debug
+   :output-fn taoensso.timbre/default-output-fn
    :appenders {:println {:min-level :error}
                :spit {:fname "timbre.log"}}}
   
