@@ -1,16 +1,88 @@
 (ns roll.core
   (:require [taoensso.timbre :as timbre :refer [info]]
             [integrant.core :as ig]
+            [roll.state :as state]
             [roll.util :as u]))
 
-
-
-(defonce state (atom nil))
 
 
 (derive :roll/httpkit :roll/server)
 (derive :roll/nginx   :roll/server)
 (derive :roll/aleph   :roll/server)
+
+
+
+(defn set-config! [config]
+  (alter-var-root #'state/config (constantly config)))
+
+
+(defn- halt-system [system]
+  (when system (ig/halt! system)))
+
+
+(defn- build-system [build wrap-ex]
+  (try
+    (build)
+    (catch clojure.lang.ExceptionInfo ex
+      (when-let [system (:system (ex-data ex))]
+        (try
+          (ig/halt! system)
+          (catch clojure.lang.ExceptionInfo halt-ex
+            (throw (wrap-ex ex halt-ex)))))
+      (throw ex))))
+
+
+
+(defn- init-system [config & [ks]]
+  (build-system
+   (if ks
+     #(ig/init config ks)
+     #(ig/init config))
+   #(ex-info
+     "Config failed to init; also failed to halt failed system"
+     {:init-exception %1}
+     %2)))
+
+
+
+(defn- resume-system [config system & [ks]]
+  (build-system
+   (if ks
+     #(ig/resume config system ks)
+     #(ig/resume config system))
+   #(ex-info
+     "Config failed to resume; also failed to halt failed system"
+     {:resume-exception %1}
+     %2)))
+
+
+
+(defn- suspend-system [system & [ks]]
+  (if ks
+    (ig/suspend! state/system ks)
+    (ig/suspend! state/system)))
+
+
+
+(defn init [& [ks]]
+  (alter-var-root #'state/system
+                  (fn [sys]
+                    (halt-system sys)
+                    (init-system state/config ks))))
+
+
+(defn halt []
+  (halt-system state/system)
+  (alter-var-root #'state/system (constantly nil)))
+
+
+(defn clear []
+  (halt)
+  (alter-var-root #'state/config (constantly nil)))
+
+
+
+
 
 
 
