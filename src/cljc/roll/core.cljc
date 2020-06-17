@@ -1,6 +1,7 @@
 (ns roll.core
   (:require [taoensso.timbre :as timbre :refer [info]]
             [integrant.core :as ig]
+            [meta-merge.core :refer [meta-merge]]
             [roll.state :as state]
             [roll.util :as u]))
 
@@ -12,12 +13,16 @@
 
 
 
-(defn set-config! [config]
+(defn- set-config! [config]
   (alter-var-root #'state/config (constantly config)))
 
 
-(defn- halt-system [system]
-  (when system (ig/halt! system)))
+(defn- halt-system [system & [ks]]
+  (when system
+    (if ks
+      (do (ig/halt! system ks)
+          (apply dissoc system ks))
+      (ig/halt! system))))
 
 
 (defn- build-system [build wrap-ex]
@@ -58,22 +63,19 @@
 
 
 (defn- suspend-system [system & [ks]]
-  (if ks
-    (ig/suspend! state/system ks)
-    (ig/suspend! state/system)))
+  (when system
+    (if ks
+      (ig/suspend! state/system ks)
+      (ig/suspend! state/system))))
 
 
 
-(defn init [& [ks]]
-  (alter-var-root #'state/system
-                  (fn [sys]
-                    (halt-system sys)
-                    (init-system state/config ks))))
+(defn halt [& [ks]]
+  (alter-var-root
+   #'state/system
+   (fn [sys]
+     (halt-system sys ks))))
 
-
-(defn halt []
-  (halt-system state/system)
-  (alter-var-root #'state/system (constantly nil)))
 
 
 (defn clear []
@@ -82,65 +84,32 @@
 
 
 
+(defn restart [& [ks]]
+  (alter-var-root
+   #'state/system
+   (fn [sys]
+     (if sys
+       (do ;; we have a running system
+         (suspend-system sys ks)
+         (if ks
+           ;; resume will halt missing keys, so make sure to select
+           ;; only specified keys
+           (meta-merge
+            (apply dissoc sys ks)
+            (resume-system (select-keys state/config ks)
+                           (select-keys sys ks)
+                           ks))
+           (resume-system state/config sys)))
+
+       ;; no running system
+       (init-system state/config ks)))))
 
 
-
-
-(defn start
-  "Start all components or only the specified keys."
-  ([ig-config]
-   (some->> (keys ig-config)
-            (apply start ig-config)))
-  
-  ([ig-config & ks]
-   (try
-     (ig/init ig-config ks)
-     (catch #?(:clj Throwable :cljs :default) t
-       (info (ex-message t))
-       (info (ex-message (ex-cause t)) "\n")
-       ;; return at least keys that started
-       (:system (ex-data t))))))
-
-
-
-
-(defn stop
-  "Stop all components or only the specified keys."
-  ([roll]
-   (some->> (keys roll) (apply stop roll)))
-  
-  ([roll & ks]
-   (some-> roll not-empty (ig/halt! ks))
-   (apply dissoc roll ks)))
-
-
-
-
-(defn restart
-  [{:as state :keys [roll config]} & ks]
-  (-> state
-      ;; stop
-      (update :roll (partial apply stop) ks)
-      ;; start
-      (update :roll
-              (fn [old-roll]
-                (let [new-roll (apply start config ks)]
-                  (with-meta (merge old-roll new-roll)
-                    (meta new-roll)))))))
-
-
-
-(defn restart! [& ks]
-  (apply swap! state restart ks))
-
-
-(defn halt! []
-  (swap! state update :roll stop))
 
 
 #?(:clj
    (defonce init-shutdown-hook
-     (delay (.addShutdownHook (Runtime/getRuntime) (Thread. #'halt!)))))
+     (delay (.addShutdownHook (Runtime/getRuntime) (Thread. #'halt)))))
 
 
 
@@ -168,10 +137,11 @@
         ;; merge all configs
         ig-config (reduce
                    (fn [all config]
-                     (merge all (cond
-                                  (map? config) config
-                                  #?@(:clj [(string? config)
-                                            (ig/read-string (slurp config))]))))
+                     (let [config (cond
+                                    (map? config) config
+                                    #?@(:clj [(string? config)
+                                              (ig/read-string (slurp config))]))]
+                       (u/deep-merge-into all config)))
                    {} configs)
 
         ;; prep global config
@@ -199,17 +169,16 @@
              (str "\n" (timbre/stacktrace ?err)))))})
 
 
-  ;; start Integrant
-  (->> (load-configs configs)
-       (swap! state
-              (fn [state config]
-                (-> (update state :roll stop)
-                    (assoc :config config
-                           :roll (merge
-                                  ;; start logging first
-                                  (start config :roll/timbre)
-                                  (start (dissoc config :roll/timbre))))))))
+  (set-config! (load-configs configs))
 
+  (alter-var-root
+   #'state/system
+   (fn [sys]
+     (halt-system sys)
+     (meta-merge
+      ;; start logging first
+      (init-system state/config [:roll/timbre])
+      (init-system (dissoc state/config :roll/timbre)))))
   
   #?(:clj (force init-shutdown-hook)))
 
@@ -242,9 +211,9 @@
   "Check configs and restart changed keys and their dependencies."
   [paths & [watch-opts]]
   (when-let [new-config (load-configs paths)]
-    (let [old-config (:config @state)
+    (let [old-config state/config
           deps (ig/dependency-graph new-config)
-        
+          
           deleted-keys (clojure.set/difference
                         (set (keys old-config))
                         (set (keys new-config)))
@@ -271,15 +240,15 @@
         
           restart-keys (distinct changed-keys)]
 
-
-      (swap! state assoc :config new-config)
-
+      
+      (set-config! new-config)
+      
       ;; stop deleted keys
       (when (not-empty deleted-keys)
         (info "halting" (vec deleted-keys))
-        (swap! state update :roll (partial apply stop) deleted-keys))
+        (halt deleted-keys))
 
       ;; restart changed keys
       (when (not-empty restart-keys)
         (info "restarting" (vec restart-keys))
-        (swap! state (partial apply restart) restart-keys)))))
+        (restart restart-keys)))))
