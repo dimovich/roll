@@ -1,7 +1,6 @@
 (ns roll.core
   (:require [taoensso.timbre :as timbre :refer [info]]
             [integrant.core :as ig]
-            [meta-merge.core :refer [meta-merge]]
             [roll.state :as state]
             [roll.util :as u]))
 
@@ -17,12 +16,16 @@
   (alter-var-root #'state/config (constantly config)))
 
 
+
 (defn- halt-system [system & [ks]]
   (when system
     (if ks
       (do (ig/halt! system ks)
-          (apply dissoc system ks))
+          (-> (apply dissoc system ks)
+              (vary-meta update ::ig/build #(apply dissoc % ks))
+              (vary-meta update ::ig/origin #(apply dissoc % ks))))
       (ig/halt! system))))
+
 
 
 (defn- build-system [build wrap-ex]
@@ -93,12 +96,12 @@
          (suspend-system sys ks)
          (if ks
            ;; resume will halt missing keys, so make sure to select
-           ;; only specified keys
-           (meta-merge
+           ;; only specified keys (why are they halted?)
+           (u/meta-preserving-merge
             (apply dissoc sys ks)
-            (resume-system (select-keys state/config ks)
-                           (select-keys sys ks)
-                           ks))
+            (resume-system state/config (select-keys sys ks) ks))
+
+           ;; resume all keys
            (resume-system state/config sys)))
 
        ;; no running system
@@ -175,7 +178,7 @@
    #'state/system
    (fn [sys]
      (halt-system sys)
-     (meta-merge
+     (u/meta-preserving-merge
       ;; start logging first
       (init-system state/config [:roll/timbre])
       (init-system (dissoc state/config :roll/timbre)))))

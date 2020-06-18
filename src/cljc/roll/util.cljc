@@ -52,6 +52,11 @@
    (apply merge-with deep-merge-into a b more)))
 
 
+(defn meta-preserving-merge
+  [& ms]
+  (let [data (apply deep-merge (map meta ms))]
+    (with-meta (apply deep-merge ms) data)))
+
 
 
 #?(:clj
