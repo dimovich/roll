@@ -87,25 +87,34 @@
 
 
 
-(defn restart [& [ks]]
-  (alter-var-root
-   #'state/system
-   (fn [sys]
-     (if sys
-       (do ;; we have a running system
-         (suspend-system sys ks)
-         (if ks
-           ;; resume will halt missing keys, so make sure to select
-           ;; only specified keys (why are they halted?)
-           (u/meta-preserving-merge
-            (apply dissoc sys ks)
-            (resume-system state/config (select-keys sys ks) ks))
+(defn restart-system [config system & [ks]]
+  (if system
+    (do
+      ;; we have a running system
+      (suspend-system system ks)
+      (if ks
+        ;; resume will halt missing keys, so make sure to select
+        ;; only specified keys from running system
+        ;; https://github.com/weavejester/integrant/issues/84
+        (u/meta-preserving-merge
+         (apply dissoc system ks)
+         (resume-system config (select-keys system ks) ks))
 
-           ;; resume all keys
-           (resume-system state/config sys)))
+        ;; or resume all keys
+        (resume-system config system)))
 
-       ;; no running system
-       (init-system state/config ks)))))
+    ;; init if no running system
+    (init-system config ks)))
+
+
+
+(defn restart
+  ([] (restart nil))
+  ([ks] (restart state/config ks))
+  ([config ks]
+   (alter-var-root
+    #'state/system
+    (fn [system] (restart-system config system ks)))))
 
 
 
@@ -134,16 +143,14 @@
 
 (defn load-configs
   "Load Integrant configs. Either file path(s) or map(s)."
-  [configs]
-  (let [configs (cond-> configs
-                  (not (sequential? configs)) vector)
-        ;; merge all configs
+  [& configs]
+  (let [ ;; merge all configs
         ig-config (reduce
                    (fn [all config]
                      (let [config (cond
-                                    (map? config) config
                                     #?@(:clj [(string? config)
-                                              (ig/read-string (slurp config))]))]
+                                              (ig/read-string (slurp config))])
+                                    :else config)]
                        (u/deep-merge-into all config)))
                    {} configs)
 
@@ -159,10 +166,10 @@
 
 
 (defn init
-  "Init Integrant using either file path(s) or map(s) configs."
-  [configs]
+  "Init Integrant with file path(s) or map(s) configs."
+  [& configs]
 
-  ;; init Timbre
+  ;; init Timbre with simpler output
   (timbre/merge-config!
    {:level :info
     :output-fn
@@ -170,18 +177,18 @@
       (str (force msg_)
            (when ?err
              (str "\n" (timbre/stacktrace ?err)))))})
-
-
-  (set-config! (load-configs configs))
-
-  (alter-var-root
-   #'state/system
-   (fn [sys]
-     (halt-system sys)
-     (u/meta-preserving-merge
-      ;; start logging first
-      (init-system state/config [:roll/timbre])
-      (init-system (dissoc state/config :roll/timbre)))))
+  
+  (let [config (apply load-configs configs)]
+    (alter-var-root
+     #'state/system
+     (fn [sys]
+       (halt-system sys)
+       (u/meta-preserving-merge
+        ;; start logging first
+        (init-system config [:roll/timbre])
+        (init-system (dissoc config :roll/timbre)))))
+    
+    (set-config! config))
   
   #?(:clj (force init-shutdown-hook)))
 
@@ -212,9 +219,9 @@
 
 (defn reload
   "Check configs and restart changed keys and their dependencies."
-  [paths & [watch-opts]]
-  (when-let [new-config (load-configs paths)]
-    (let [old-config state/config
+  [configs & [watch-opts]]
+  (when-let [new-config (apply load-configs configs)]
+    (let [old-config (::ig/origin (meta state/system))
           deps (ig/dependency-graph new-config)
           
           deleted-keys (clojure.set/difference
@@ -242,9 +249,6 @@
                                (get-dependencies deps changed-keys))
         
           restart-keys (distinct changed-keys)]
-
-      
-      (set-config! new-config)
       
       ;; stop deleted keys
       (when (not-empty deleted-keys)
@@ -254,4 +258,6 @@
       ;; restart changed keys
       (when (not-empty restart-keys)
         (info "restarting" (vec restart-keys))
-        (restart restart-keys)))))
+        (restart new-config restart-keys))
+
+      (set-config! new-config))))

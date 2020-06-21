@@ -55,5 +55,5 @@
   (init-timbre opts))
 
 
-(defmethod ig/halt-key! :roll/timbre [_ _]
-  (init-timbre {}))
+#_(defmethod ig/halt-key! :roll/timbre [_ _]
+    (init-timbre {}))
