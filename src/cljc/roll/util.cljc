@@ -73,8 +73,10 @@
    (defn try-resolve
      "Tries to resolve the given namespace-qualified symbol, returning nil if not found."
      [sym]
-     (when (try-require (symbol (namespace sym)))
-       (resolve sym))))
+     (or
+      (resolve sym)
+      (when (try-require (symbol (namespace sym)))
+        (resolve sym)))))
 
 
 
