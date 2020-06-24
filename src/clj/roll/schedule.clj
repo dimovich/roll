@@ -29,6 +29,8 @@
 
 
 (defn start-tasks [tasks]
+  (when-not (empty? tasks)
+    (info "starting...\n" (ru/spp tasks)))
   (reduce
    (fn [chans task]
      (let [[n k & run-fns :as task-config] (ru/resolve-syms task)]
@@ -64,42 +66,48 @@
                     
                (recur)))
                 
-           (assoc chans task {:config task-config
-                              :chans [chimes cancel-ch]}))
+           (assoc chans task (with-meta {:chans [chimes cancel-ch]}
+                               {::build task-config})))
          chans)))
    {} tasks))
 
 
 
+(defn stop-tasks
+  ([system] (stop-tasks system (keys system)))
+  ([system tasks]
+   (if (empty? tasks)
+     system
+     (do
+       (info "stopping...\n" (ru/spp tasks))
+       (run!
+        (fn [task]
+          (doseq [ch (-> system (get task) :chans)] (a/close! ch)))
+        tasks)
 
-(defn stop-tasks [tasks]
-  (run!
-   (fn [[k v]]
-     (doseq [ch (:chans v)] (a/close! ch)))
-   tasks))
-
+       (apply dissoc system tasks)))))
 
 
 
 (defmethod ig/init-key :roll/schedule [_ tasks]
   (when-let [tasks (when (not-empty tasks)
-                     (if (sequential? (first tasks))
-                       tasks [tasks]))]
-
-    (info "starting roll/schedule...\n" (ru/spp tasks))
+                     (if (sequential? (first tasks)) tasks [tasks]))]
+    (info "starting roll/schedule...")
     (start-tasks tasks)))
 
 
 
-
-(defmethod ig/halt-key! :roll/schedule [_ tasks]
-  (info "stopping roll/schedule...")
-  (stop-tasks tasks))
+(defmethod ig/halt-key! :roll/schedule [_ system]
+  (info "halting roll/schedule...")
+  (stop-tasks system))
 
 
 
 (defmethod ig/suspend-key! :roll/schedule [_ tasks]
-  (info "suspending roll/schedule..."))
+  (info "suspending roll/schedule...")
+  ;; doing nothing, as halting/restarting will happen in resume-key
+  )
+
 
 
 (defmethod ig/resume-key :roll/schedule [_ new-tasks old-value old-impl]
@@ -107,32 +115,15 @@
   (let [ ;; - missing tasks
         missing-keys (remove (set new-tasks) (keys old-impl))
         
-        ;; - changed task fn definition
+        ;; - tasks with changed task-fn definition
         changed-keys
         (->> (filter old-impl new-tasks)
-             (filter
-              (fn [task]
-                (not= (ru/resolve-syms task)
-                      (get-in old-impl [task :config])))))
+             (filter (fn [task]
+                       (not= (ru/resolve-syms task)
+                             (-> old-impl (get task) meta ::build)))))
 
-        to-halt (select-keys old-impl (concat missing-keys changed-keys))
-        
-        new-keys (remove old-impl new-tasks)
-
-        to-start (concat changed-keys new-keys)]
-    
-    (when (not-empty to-halt)
-      (info "halting...")
-      (info (ru/spp (keys to-halt)))
-      (stop-tasks to-halt))
-
-    
-    (when (not-empty to-start)
-      (info "starting...")
-      (info (ru/spp to-start)))
+        new-keys (remove old-impl new-tasks)]
     
     (merge
-     ;; previous unchanged tasks
-     (apply dissoc old-impl (keys to-halt))
-     ;; new and changed tasks
-     (start-tasks to-start))))
+     (stop-tasks old-impl (concat missing-keys changed-keys))
+     (start-tasks (concat changed-keys new-keys)))))
