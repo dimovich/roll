@@ -220,44 +220,45 @@
 (defn reload
   "Check configs and restart changed keys and their dependencies."
   [configs & [watch-opts]]
-  (when-let [new-config (apply load-configs configs)]
-    (let [old-config (::ig/origin (meta state/system))
-          deps (ig/dependency-graph new-config)
+  (let [configs (if (sequential? configs) configs [configs])]
+    (when-let [new-config (apply load-configs configs)]
+      (let [old-config (::ig/origin (meta state/system))
+            deps (ig/dependency-graph new-config)
           
-          deleted-keys (clojure.set/difference
-                        (set (keys old-config))
-                        (set (keys new-config)))
+            deleted-keys (clojure.set/difference
+                          (set (keys old-config))
+                          (set (keys new-config)))
         
-          changed-keys (->> new-config
-                            (reduce-kv
-                             (fn [changed k v]
-                               (cond-> changed
-                                 (not= v (get old-config k))
-                                 (conj k)))
-                             []))
+            changed-keys (->> new-config
+                              (reduce-kv
+                               (fn [changed k v]
+                                 (cond-> changed
+                                   (not= v (get old-config k))
+                                   (conj k)))
+                               []))
 
-          ;; also add dependencies
-          changed-keys (concat changed-keys
-                               (get-dependencies deps changed-keys))
+            ;; also add dependencies
+            changed-keys (concat changed-keys
+                                 (get-dependencies deps changed-keys))
 
-          ;; also add dependecies' dependents
-          changed-keys (concat changed-keys
-                               (get-dependents deps changed-keys))
+            ;; also add dependecies' dependents
+            changed-keys (concat changed-keys
+                                 (get-dependents deps changed-keys))
 
-          ;; also add dependents' dependencies
-          changed-keys (concat changed-keys
-                               (get-dependencies deps changed-keys))
+            ;; also add dependents' dependencies
+            changed-keys (concat changed-keys
+                                 (get-dependencies deps changed-keys))
         
-          restart-keys (distinct changed-keys)]
+            restart-keys (distinct changed-keys)]
       
-      ;; stop deleted keys
-      (when (not-empty deleted-keys)
-        (info "halting" (vec deleted-keys))
-        (halt deleted-keys))
+        ;; stop deleted keys
+        (when (not-empty deleted-keys)
+          (info "halting" (vec deleted-keys))
+          (halt deleted-keys))
 
-      ;; restart changed keys
-      (when (not-empty restart-keys)
-        (info "restarting" (vec restart-keys))
-        (restart new-config restart-keys))
+        ;; restart changed keys
+        (when (not-empty restart-keys)
+          (info "restarting" (vec restart-keys))
+          (restart new-config restart-keys))
 
-      (set-config! new-config))))
+        (set-config! new-config)))))

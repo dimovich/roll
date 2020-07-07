@@ -41,7 +41,7 @@
            
            (go-loop []
              (when-let [time (<! chimes)]
-               (info "[START]" task)
+               (info "[⏵]" task)
                (let [tasks-ch (a/to-chan! run-fns)]
                  (loop []
                    (when-let [task-fn (a/<! tasks-ch)]
@@ -62,7 +62,7 @@
                              (while (a/poll! chimes))
                              (while (a/poll! tasks-ch))))))
                      (recur))))
-               (info "[DONE]" task)
+               (info "[✓]" task)
                     
                (recur)))
                 
@@ -112,10 +112,10 @@
 
 (defmethod ig/resume-key :roll/schedule [_ new-tasks old-value old-impl]
   (info "resuming roll/schedule...")
-  (let [ ;; - missing tasks
+  (let [ ;; deleted tasks
         missing-keys (remove (set new-tasks) (keys old-impl))
         
-        ;; - tasks with changed task-fn definition
+        ;; tasks with changed task-fn definition
         changed-keys
         (->> (filter old-impl new-tasks)
              (filter (fn [task]
