@@ -1,30 +1,30 @@
 (ns roll.schedule
   (:require [taoensso.timbre :refer [info]]
             [clojure.core.async :as a :refer [<! go-loop]]
-            [clj-time.core :as t]
-            [clj-time.periodic :refer [periodic-seq]]
-            [chime :refer [chime-ch]]
+            [chime.core :as chime]
+            [chime.core-async :as chime-async]
             [integrant.core :as ig]
             [roll.util :as ru])
-  (:import [clojure.core.async.impl.channels ManyToManyChannel]))
+  (:import [clojure.core.async.impl.channels ManyToManyChannel]
+           [java.time Instant Period Duration]))
 
 
 
 (def periods
-  {:ms t/millis
-   :s  t/seconds
-   :m  t/minutes
-   :h  t/hours
-   :d  t/days
-   :w  t/weeks
-   :mt t/months
-   :y  t/years})
+  {:ms #(Duration/ofMillis %)
+   :s  #(Duration/ofSeconds %)
+   :m  #(Duration/ofMinutes %)
+   :h  #(Duration/ofHours %)
+   :d  #(Duration/ofDays %)
+   :w  #(Period/ofWeeks %)
+   :mt #(Period/ofMonths %)
+   :y  #(Period/ofYears %)})
 
 
 
 (defn periodic* [k n]
   (when-let [pf (get periods k)]
-    (rest (periodic-seq (t/now) (pf n)))))
+    (rest (chime/periodic-seq (Instant/now) (pf n)))))
 
 
 
@@ -35,8 +35,8 @@
    (fn [chans task]
      (let [[n k & run-fns :as task-config] (ru/resolve-syms task)]
        (if-let [times (periodic* k n)]
-         (let [chimes (->> {:ch (a/chan (a/sliding-buffer 1))}
-                           (chime-ch times))
+         (let [chimes (chime-async/chime-ch
+                       times {:ch (a/chan (a/sliding-buffer 1))})
                cancel-ch (a/chan)]
            
            (go-loop []
