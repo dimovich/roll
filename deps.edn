@@ -34,7 +34,7 @@
    :main-opts  ["-i init.clj"]}
 
   :cider
-  {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.10"}}
+  {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.11"}}
    :extra-paths ["resources"]}
 
   :jar
