@@ -2,7 +2,8 @@
   (:require [taoensso.timbre :as timbre :refer [info]]
             [integrant.core :as ig]
             [roll.state :as state]
-            [roll.util :as u]))
+            [roll.util :as u]
+            #?(:clj [roll.env])))
 
 
 
@@ -145,14 +146,17 @@
   "Load Integrant configs. Either file path(s) or map(s)."
   [& configs]
   (let [ ;; merge all configs
-        ig-config (reduce
-                   (fn [all config]
-                     (let [config (cond
-                                    #?@(:clj [(string? config)
-                                              (ig/read-string (slurp config))])
-                                    :else config)]
-                       (u/deep-merge-into all config)))
-                   {} configs)
+        ig-config
+        (reduce
+         (fn [all config]
+           (let [config
+                 (cond
+                   #?@(:clj [(string? config)
+                             (ig/read-string {:readers *data-readers*}
+                                             (slurp config))])
+                   :else config)]
+             (u/deep-merge-into all config)))
+         {} configs)
 
         ;; prep global config
         ig-config (prep-config ig-config)]
