@@ -77,7 +77,11 @@ clj -m example.server
 
 <br>
 
-The full [example](/example).
+## Example Projects
+
+[Basic](/example), [Descryptors](https://github.com/descryptors/descryptors), [Destreams](https://github.com/descryptors/destreams).
+
+<br>
 
 For all possible options see [config.edn](/config.edn).
 
