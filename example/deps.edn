@@ -3,9 +3,8 @@
  :deps {org.clojure/clojure       {:mvn/version "1.10.1"}
         org.clojure/clojurescript {:mvn/version "1.10.773"}
         hiccup        {:mvn/version "2.0.0-alpha1"}
-        reagent       {:mvn/version "0.8.1"}
-        dimovich/roll { ;;:mvn/version "0.2.0"
-                       :local/root ".."}}
+        reagent       {:mvn/version "0.10.0"}
+        dimovich/roll {:mvn/version "0.3.0"}}
 
  
  :aliases
@@ -15,7 +14,7 @@
   
   :frontend
   {:extra-paths ["resources"]
-   :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.8"}}
+   :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.11"}}
    :main-opts ["-m figwheel.main" "-b dev"]}
   
   :prod
@@ -23,7 +22,7 @@
   
   :cider
   {:extra-paths ["resources"]
-   :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.8"}}}
+   :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.11"}}}
 
   :uberjar
   {:extra-deps {seancorfield/depstar {:mvn/version "1.0.94"}}
