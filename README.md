@@ -9,7 +9,7 @@
 
 <br>
 
-__Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit](http://www.http-kit.org/) or [Aleph](https://aleph.io/)), ___Websockets___ ([Sente](https://github.com/ptaoussanis/sente)), ___REPL___ ([nREPL](https://github.com/clojure-emacs/cider-nrepl)), ___Routing___ ([Reitit](https://github.com/metosin/reitit)) and ___File Watching___ ([Hawk](https://github.com/wkf/hawk)). Configure and manage them using a simple config file ([Integrant](https://github.com/weavejester/integrant)).
+__Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit](http://www.http-kit.org/) or [Aleph](https://aleph.io/)), ___Websockets___ ([Sente](https://github.com/ptaoussanis/sente)), ___REPL___ ([nREPL](https://github.com/clojure-emacs/cider-nrepl)), ___Routing___ ([Reitit](https://github.com/metosin/reitit)), ___Task Scheduling___ ([Chime](https://github.com/jarohen/chime)), ___File Watching___ ([Hawk](https://github.com/wkf/hawk)) and ___Logging___ ([Timbre](https://github.com/ptaoussanis/timbre)). Configure and manage them using a simple config file ([Integrant](https://github.com/weavejester/integrant)).
 
 <br>
 
@@ -18,12 +18,12 @@ __Roll__ makes it easy for your project to include a ___Webserver___ ([Http-kit]
 `roll` is published on [Clojars](https://clojars.org/dimovich/roll).
 Add the following to your `project.clj`'s `:dependencies`:
 
-    [dimovich/roll-aleph "0.2.0"]
+    [dimovich/roll-aleph "0.3.0"]
 
 
 ## Clojure CLI/deps.edn
 
-	dimovich/roll-aleph {:mvn/version "0.2.0"}
+	dimovich/roll-aleph {:mvn/version "0.3.0"}
 
 
 ## Example
@@ -36,7 +36,7 @@ __deps.edn__
 ``` clojure
 {:paths ["src"]
 
- :deps {dimovich/roll-aleph {:mvn/version "0.2.0"}}}
+ :deps {dimovich/roll-aleph {:mvn/version "0.3.0"}}}
 ```
 
 
@@ -81,6 +81,10 @@ clj -m example.server
 
 <br>
 
-The full [example](/example).
+## Example Projects
+
+[Basic](/example), [Descryptors](https://github.com/descryptors/descryptors), [Destreams](https://github.com/descryptors/destreams).
+
+<br>
 
 For all possible options see [config.edn](/config.edn).

@@ -52,6 +52,11 @@
    (apply merge-with deep-merge-into a b more)))
 
 
+(defn meta-preserving-merge
+  [& ms]
+  (let [data (apply deep-merge (map meta ms))]
+    (with-meta (apply deep-merge ms) data)))
+
 
 
 #?(:clj
@@ -68,8 +73,10 @@
    (defn try-resolve
      "Tries to resolve the given namespace-qualified symbol, returning nil if not found."
      [sym]
-     (when (try-require (symbol (namespace sym)))
-       (resolve sym))))
+     (or
+      (resolve sym)
+      (when (try-require (symbol (namespace sym)))
+        (resolve sym)))))
 
 
 
