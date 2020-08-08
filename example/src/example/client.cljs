@@ -1,6 +1,7 @@
 (ns ^:figwheel-hooks example.client
   (:require [roll.sente :as sente :refer [event-msg-handler]]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [reagent.dom :as rd]))
 
 ;; will hold websocket response from server
 (defonce resp (r/atom nil))
@@ -26,7 +27,7 @@
 
 
 (defn ^:after-load mount-app []
-  (r/render
+  (rd/render
    [app]
    (.getElementById js/document "app")))
 
