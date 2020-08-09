@@ -74,6 +74,7 @@ __src/example/server.clj__
 clj -m example.server
 ```
 
+Navigate to [localhost:5000](http://localhost:5000).
 
 <br>
 
