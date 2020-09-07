@@ -90,8 +90,8 @@
 
 
 (defmethod ig/init-key :roll/schedule [_ tasks]
-  (when-let [tasks (when (not-empty tasks)
-                     (if (sequential? (first tasks)) tasks [tasks]))]
+  (let [tasks (when (not-empty tasks)
+                (if (sequential? (first tasks)) tasks [tasks]))]
     (info "starting roll/schedule...")
     (start-tasks tasks)))
 
