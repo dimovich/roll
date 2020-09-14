@@ -1,8 +1,8 @@
 <img height="80px" src="/resources/roll.png">
 
-# Roll metaframework
+# Roll framework
 
->  roll   /ˈrōl/
+>  roll /ˈrōl/
 >
 >  _informal_. to begin to move or operate; start; commence.
 >  _Let's roll at sunrise._
