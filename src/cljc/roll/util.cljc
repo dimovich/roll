@@ -26,6 +26,18 @@
 
 
 
+(defn deep-merge2
+  {:arglists '([& maps])}
+  ([])
+  ([a] a)
+  ([a b]
+   (if (and (map? a) (map? b) (not-empty b))
+     (merge-with deep-merge2 a b)
+     b))
+  ([a b & more]
+   (apply merge-with deep-merge2 a b more)))
+
+
 
 (defn deep-merge-into
   {:arglists '([& maps])}
@@ -54,8 +66,8 @@
 
 (defn meta-preserving-merge
   [& ms]
-  (let [data (apply deep-merge (map meta ms))]
-    (with-meta (apply deep-merge ms) data)))
+  (let [data (apply deep-merge2 (map meta ms))]
+    (with-meta (apply deep-merge2 ms) data)))
 
 
 

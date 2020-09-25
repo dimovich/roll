@@ -1,47 +1,74 @@
-{ ;; Webserver
- 
- :roll/httpkit
- {
-  :port 5000
-  ;; :handler  my.project/handler
-  
-  ;; -- default --
-  ;;    :port  5000
-  ;; :handler  #ig/ref :roll/handler
-  }
- 
- 
- ;; File watching
+{:roll/repl {:port 3311}
+
+ :roll/httpkit {:port 5000}
+
  
  :roll/paths
- [ ;; reload changed config keys when this file changes
-  ["config.edn"
+ [["config.edn"
    {:watch roll.core/reload
-    :throttle 200}]
+    :throttle 20}]]}
 
-  ;; reload clojure code
-  ["src/clj"
-   "src/cljc"
-   {:watch roll.paths/reload-clj
-    :throttle 200}]]
-
- 
- ;; REPL
- 
- :roll/repl {:port 3311}
- 
- }
 
 
 
 
 (comment
 
-  ;; Environment Variables
 
-  {:some-opt #roll/env "SOME_VAR"}
+  ;; Logging
+  ;; https://github.com/ptaoussanis/timbre#configuration
+  
+  :roll/timbre
+  {:min-level :debug
+   :output-fn taoensso.timbre/default-output-fn
+   :appenders {:println {:min-level :info}
+               :spit {:fname "timbre.log"}}}
+  
+
+
+
+  ;; File watching
+  ;;
+ 
+  :roll/paths
+  [[path1 path2 ,,,
+    {
+     ;;     :init  my.ns/some-fn     ;; (fn [{:as paths-opts :keys [paths opts]])
+     ;;    :watch  my.ns/another-fn  ;; (fn [changed-paths paths-opts])
+     ;; :throttle  100               ;; watch-fn thottler in milliseconds
+     }]
+
+   ;; add more paths as needed...
+   ,,,]
+
+
+ 
+  
+  
+  ;; Environment Variables
+  ;;
+
+  {:some-opt  #roll/env  "SOME_VAR"}
 
   
+
+
+  ;; Webserver
+  ;;
+ 
+  :roll/httpkit
+  {
+   :port  5000
+   :handler  my.project/handler
+  
+   ;; -- default --
+   ;;    :port  5000
+   ;; :handler  #ig/ref :roll/handler
+   }
+
+
+ 
+
   
   ;; Ring handler
   ;;
@@ -82,16 +109,6 @@
    ;; :handler roll.sente/event-msg-handler
    }
 
-
-  ;; Logging
-  ;; https://github.com/ptaoussanis/timbre#configuration
-  
-  :roll/timbre
-  {:level :debug
-   :output-fn taoensso.timbre/default-output-fn
-   :appenders {:println {:min-level :error}
-               :spit {:fname "timbre.log"}}}
-  
 
   
   ;; Task Scheduling

@@ -175,7 +175,7 @@
 
   ;; init Timbre with simpler output
   (timbre/merge-config!
-   {:level :info
+   {:min-level :info
     :output-fn
     (fn [{:keys [msg_ ?err]}]
       (str (force msg_)
@@ -228,11 +228,11 @@
     (when-let [new-config (apply load-configs configs)]
       (let [old-config (::ig/origin (meta state/system))
             deps (ig/dependency-graph new-config)
-          
+
             deleted-keys (clojure.set/difference
                           (set (keys old-config))
                           (set (keys new-config)))
-        
+
             changed-keys (->> new-config
                               (reduce-kv
                                (fn [changed k v]
@@ -252,9 +252,10 @@
             ;; also add dependents' dependencies
             changed-keys (concat changed-keys
                                  (get-dependencies deps changed-keys))
-        
+
             restart-keys (distinct changed-keys)]
-      
+
+
         ;; stop deleted keys
         (when (not-empty deleted-keys)
           (info "halting" (vec deleted-keys))
