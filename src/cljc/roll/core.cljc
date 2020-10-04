@@ -127,7 +127,11 @@
 
 
 (defn prep-config [ig-config]
+  (alter-var-root
+   #'state/opts (constantly (:roll/opts ig-config)))
+  
   (cond-> ig-config
+    :default (dissoc :roll/opts)
     #?@(:clj
         [ ;; ensure we have Sente for :roll/reload
          (:roll/reload ig-config)
@@ -160,7 +164,7 @@
 
         ;; prep global config
         ig-config (prep-config ig-config)]
-     
+    
     ;; make sure component namespaces are loaded
     #?(:clj (ig/load-namespaces ig-config))
     

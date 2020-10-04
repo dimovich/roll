@@ -2,6 +2,7 @@
   (:require [com.rpl.specter :as sr :refer [ALL MAP-VALS transform]]
             [integrant.core :as ig]
             [clojure.pprint]
+            [roll.state :as rs]
             #?@(:clj [[clojure.java.io :as io]]))
   
   #?(:cljs (:require-macros
@@ -111,23 +112,20 @@
 
 #?(:clj
    (defn sym->var [s]
-     (if (symbol? s)
-       ;; for production better without fn wrapping
-       ;; (some-> (try-resolve s) deref)
-       
-       (or (some-> (try-resolve s) deref)
-           (throw (Exception. (str "Could not resolve " s))))
-
-       ;; for development, wrap config fns with a deref on every call
-       ;; so autoreloading works
-       
-       #_(if-let [v (try-resolve s)]
-           #_(if (fn? (deref v))
-               #(-> (deref v) (apply %&))
-               (deref v))
+     (if-not (symbol? s)
+       s
+       (if (:dynamic rs/opts)
+         ;; for development, wrap config fns with a deref on every call
+         ;; so autoreloading works
+         (if-let [v (try-resolve s)]
+           (if (fn? (deref v))
+             #(-> (deref v) (apply %&))
+             (deref v))
            (throw (Exception. (str "Could not resolve" s))))
-       
-       s)))
+
+         ;; for production better without fn wrapping
+         (or (some-> (try-resolve s) deref)
+             (throw (Exception. (str "Could not resolve " s))))))))
 
 
 (declare resolve-map-syms)
