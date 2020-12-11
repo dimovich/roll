@@ -80,7 +80,7 @@ Navigate to [localhost:5000](http://localhost:5000).
 
 ## Example Projects
 
-[Basic](/example), [Descryptors](https://github.com/descryptors/descryptors), [Destreams](https://github.com/descryptors/destreams).
+[Basic](/example) and [Descryptors](https://github.com/descryptors/descryptors).
 
 <br>
 
