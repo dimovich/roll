@@ -395,3 +395,9 @@
      (backup path)
      (io/delete-file path true)
      path))
+
+
+
+#?(:clj
+   (defmacro preload-edn [path]
+     (read-edn path)))
