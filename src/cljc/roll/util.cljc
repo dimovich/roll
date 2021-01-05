@@ -297,6 +297,14 @@
         m))))
 
 
+(defn coerce-map2 [coerce-fns m]
+  (let [default-fn (or (:default coerce-fns)
+                       identity)]
+    (reduce-kv
+     (fn [m k v]
+       (assoc m k ((get coerce-fns k default-fn) v)))
+     {} m)))
+
 
 
 (defn coll->pattern [coll]
