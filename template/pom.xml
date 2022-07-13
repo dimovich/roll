@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>dimovich</groupId>
+  <artifactId>roll</artifactId>
+  <name>roll</name>
+  <description>Simple backend for Clojure.</description>
+  <url>https://github.com/dimovich/roll</url>
+  <scm>
+    <connection>scm:git:git://github.com/dimovich/roll.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/dimovich/roll.git</developerConnection>
+    <url>https://github.com/dimovich/roll</url>
+  </scm>
+</project>

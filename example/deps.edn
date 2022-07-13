@@ -1,10 +1,12 @@
 {:paths ["src"]
 
- :deps {org.clojure/clojure       {:mvn/version "1.10.1"}
-        org.clojure/clojurescript {:mvn/version "1.10.773"}
-        hiccup        {:mvn/version "2.0.0-alpha1"}
-        reagent       {:mvn/version "0.10.0"}
-        dimovich/roll {:mvn/version "0.3.2"}}
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/clojurescript {:mvn/version "1.11.60"}
+        hiccup/hiccup {:mvn/version "2.0.0-alpha2"}
+        reagent/reagent {:mvn/version "1.1.1"}
+        cljsjs/react {:mvn/version "17.0.2-0"}
+        cljsjs/react-dom {:mvn/version "17.0.2-0"}
+        dimovich/roll {:mvn/version "0.3.337"}}
 
  
  :aliases
@@ -14,16 +16,12 @@
   
   :frontend
   {:extra-paths ["resources"]
-   :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.11"}}
-   :main-opts ["-m figwheel.main" "-b dev"]}
+   :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.18"}}
+   :main-opts ["-m" "figwheel.main" "-b" "dev"]}
   
   :prod
-  {:main-opts ["-m cljs.main -co prod.cljs.edn -c example.client"]}
+  {:main-opts ["-m" "cljs.main" "-co" "prod.cljs.edn" "-c" "example.client"]}
   
   :cider
   {:extra-paths ["resources"]
-   :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.11"}}}
-
-  :uberjar
-  {:extra-deps {seancorfield/depstar {:mvn/version "1.0.94"}}
-   :main-opts ["-m hf.depstar.uberjar example.jar"]}}}
+   :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.18"}}}}}
